@@ -12,13 +12,13 @@
 {% endblock %}
 
 {% block html-head %}
-<meta name="Keywords" content="links, enlaces, ulrs de interes, wtfs, todo" />
-<meta name="Description" content="Colleccion de enlaces de interes." />
+<meta name="Keywords" content="links, shared links, wtf" />
+<meta name="Description" content="My shared links" />
 {% endblock %}
 
 {% block body %}
 <div class="submodule-content">
-    <h2>{% trans "Enlaces de interes publicos:" %}</h2>
+    <h2>{% trans "My shared links:" %}</h2>
     <div class="link-list">
         {% for link in page_obj.object_list %}
         <div class="link">

@@ -3,7 +3,7 @@
 {% load utils %}
 {% load url from future %}
 
-{% block title %} {% trans "- Pagina principal." %}{% endblock %}
+{% block title %} {% trans "- Home page." %}{% endblock %}
 
 {% block opengraph %}
 <meta property="og:title" content="Niwi.Be Page"/>
@@ -15,12 +15,12 @@
 
 {% block html-head %}
 <meta name="Keywords" content="niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux" />
-<meta name="Description" content="Sitio dedicado a mis pequeñas contribuicions al mundo open source y software libre entre otras." />
+<meta name="Description" content="My personal blog, dedicated to my small contribution to the opensource world." />
 {% endblock %}
 
 {% block main %}
 <div class="news-block box-posts">
-    <h2>{% trans "Ultimos posts:" %}</h2>
+    <h2>{% trans "Latest posts:" %}</h2>
     <div class="block-content">
         {% for post in posts %}
         <div class="post">
@@ -35,12 +35,12 @@
         </div>
         {% endfor %}
     </div>
-    <div class="show-more"><a href="{% url "web:posts" %}">{% trans "Ver todos los posts..." %}</a></div>
+    <div class="show-more"><a href="{% url "web:posts" %}">{% trans "See all posts..." %}</a></div>
 </div>
 
 {% if links|length > 0 %}
 <div class="links-block box-links">
-    <h2>{% trans "Ultimos enlaces:" %}</h2>
+    <h2>{% trans "Latest links:" %}</h2>
     <div class="block-content">
         {% for link in links %}
         <div class="link">
@@ -55,7 +55,7 @@
        </div>
        {% endfor %}
     </div>
-    <div class="show-more"><a href="{% url "web:links" %}">{% trans "Ver todos los enlaces..." %}</a></div>
+    <div class="show-more"><a href="{% url "web:links" %}">{% trans "See all links..." %}</a></div>
 </div>
 {% endif %}
 {% endblock %}

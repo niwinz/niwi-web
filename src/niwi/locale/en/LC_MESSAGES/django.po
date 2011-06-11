@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 17:41+0200\n"
+"POT-Creation-Date: 2011-06-11 23:24+0200\n"
 "PO-Revision-Date: 2011-06-11 17:41+0200\n"
 "Last-Translator: Andrei Antoukh <niwi@niwi.be>\n"
 "Language-Team: en\n"
@@ -73,72 +73,68 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: templates/niwi/base.html:26
+#: templates/niwi/base.html:29
 msgid "Home"
 msgstr ""
 
-#: templates/niwi/base.html:27
+#: templates/niwi/base.html:30
 msgid "Posts"
 msgstr ""
 
-#: templates/niwi/base.html:28
+#: templates/niwi/base.html:31
 msgid "Links"
 msgstr ""
 
-#: templates/niwi/base.html:29
+#: templates/niwi/base.html:32
 msgid "Projects"
 msgstr ""
 
-#: templates/niwi/base.html:30
+#: templates/niwi/base.html:33
 msgid "Paste"
 msgstr ""
 
-#: templates/niwi/base.html:31
+#: templates/niwi/base.html:34
 msgid "About"
 msgstr ""
 
-#: templates/niwi/base.html:48
-msgid "Tecnologias utilizadas para construir este sitio:"
-msgstr "Software used for make this web:"
+#: templates/niwi/base.html:51
+msgid "OpenSource software used for make this site:"
+msgstr ""
 
 #: templates/niwi/index.html:6
-msgid "- Pagina principal."
-msgstr "- Home page"
+msgid "- Home page."
+msgstr ""
 
 #: templates/niwi/index.html:23
-msgid "Ultimos posts:"
-msgstr "Latest posts"
+msgid "Latest posts:"
+msgstr ""
 
 #: templates/niwi/index.html:31 templates/niwi/post_list.html:29
 msgid "Language: "
 msgstr ""
 
 #: templates/niwi/index.html:38
-msgid "Ver todos los posts..."
-msgstr "See all posts..."
+msgid "See all posts..."
+msgstr ""
+
+#: templates/niwi/index.html:43
+msgid "Latest links:"
+msgstr ""
+
+#: templates/niwi/index.html:58
+msgid "See all links..."
+msgstr ""
 
 #: templates/niwi/link_list.html:21
-msgid "Enlaces de interes publicos:"
-msgstr "Public links:"
+msgid "My shared links:"
+msgstr ""
 
 #: templates/niwi/post_detail.html:37
-msgid "Archivos asociados:"
-msgstr "Asociated files:"
+msgid "Asociated files:"
+msgstr ""
 
 #: templates/niwi/post_list.html:22
-msgid "Public posts:"
-msgstr ""
-
-#: templates/niwi/project_detail.html:6
-msgid "Project:"
-msgstr ""
-
-#: templates/niwi/project_list.html:8
-msgid "My public project list:"
-msgstr ""
-
-#: templates/niwi/snippet_list.html:14
-msgid "Snippets:"
+msgid "All public posts:"
 msgstr ""
 
 #: templates/paste/post.html:6
@@ -171,27 +167,4 @@ msgstr ""
 
 #: templates/paste/view.html:14
 msgid "[New paste]"
-msgstr ""
-
-#: templates/photo/album_list.html:15
-msgid "My public album list:"
-msgstr ""
-
-#: templates/photo/photo_detail.html:6
-msgid "Album:"
-msgstr ""
-
-#: templates/photo/photo_detail.html:6
-msgid "Photo:"
-msgstr ""
-
-#: templates/photo/photo_detail.html:33
-#, python-format
-msgid ""
-"Puede ver la foto en su tamaño orginal desde <a target=\"_blank\" href="
-"\"%(purl)s\">aqui.</a>"
-msgstr ""
-
-#: templates/photo/photo_detail.html:38
-msgid "Mapa de la zona:"
 msgstr ""

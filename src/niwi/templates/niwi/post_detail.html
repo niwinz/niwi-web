@@ -34,7 +34,7 @@
         {% with postfiles=object.files.all %}
         {% if postfiles.count > 0 %}
         <div class="asociated-files">
-            <h3>{% trans "Archivos asociados:" %}</h3>
+            <h3>{% trans "Asociated files:" %}</h3>
             <ul>
                 {% for fobj in postfiles %}
                 <li><a target="_blank" href="{{ fobj.file.url }}">{{ fobj.file.name|fixname }}</a></li>
