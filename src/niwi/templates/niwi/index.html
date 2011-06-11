@@ -38,7 +38,6 @@
     <div class="show-more"><a href="{% url "web:posts" %}">{% trans "Ver todos los posts..." %}</a></div>
 </div>
 
-{% comment %}
 {% if links|length > 0 %}
 <div class="links-block box-links">
     <h2>{% trans "Ultimos enlaces:" %}</h2>
@@ -56,8 +55,7 @@
        </div>
        {% endfor %}
     </div>
-    <div class="show-more"><a href="{% url links %}">{% trans "Ver todos los enlaces..." %}</a></div>
+    <div class="show-more"><a href="{% url "web:links" %}">{% trans "Ver todos los enlaces..." %}</a></div>
 </div>
 {% endif %}
-{% endcomment %}
 {% endblock %}
