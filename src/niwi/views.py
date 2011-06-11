@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, TemplateView, ListView
+from django.views.generic import DetailView, TemplateView, ListView, View
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader
@@ -52,7 +52,7 @@ class HomePageView(ResponseMixIn, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(HomePageView, self).get_context_data(*args, **kwargs)
-        context['posts'] = Post.objects.order_by('-modified_date')[:10]
+        context['posts'] = Post.objects.order_by('-modified_date')[:4]
 
         try:
             config = Config.objects.get(path='core.homepage')
@@ -93,6 +93,19 @@ class LinkView(ResponseMixIn, DetailView):
     def render_to_response(self, context, **kwargs):
         linkobj = self.get_object()
         return HttpResponseRedirect(linkobj.url)
+
+
+class LangChangeView(View):
+    def post(self, request, *args, **kwargs):
+        if request.POST['lang'] and len(request.POST['lang']) <= 10:
+            request.session['django_language'] = request.POST['lang']
+            return HttpResponse('ok', mimetype="text/plain")
+        else:
+            return HttpResponse('error', mimetype='text/plain')
+
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(LangChangeView, self).dispatch(*args, **kwargs)
 
 
 

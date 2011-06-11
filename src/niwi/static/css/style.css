@@ -167,6 +167,7 @@ a {
 .submodule-footer .langcode {
     text-decoration: underline;
     padding-left: 4px;
+    cursor: pointer;
 }
 
 .snippet-entity .snippet-view-box,

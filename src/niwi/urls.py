@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, RedirectView
 
 from .feeds import LatestPostsFeed 
 from .views import DocumentView, PageView,  HomePageView, \
-    PostsView, PostView, LinksView, LinkView 
+    PostsView, PostView, LinksView, LinkView, LangChangeView
 
 
 urlpatterns = patterns('',
@@ -22,6 +22,8 @@ urlpatterns = patterns('',
     
     url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
     url(r'^doc/(?P<slug>[\w\d\-]+)/$', DocumentView.as_view(), name="show-doc"),
+
+    url(r'^set/lang/$', LangChangeView.as_view(), name="set-lang"),
     
     # Old style views
     url(r'^paste/$', 'niwi.paste.views.paste', name='paste-home'),

@@ -5,6 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <title>Niwi.Be {% block title %}{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/base.js"></script>
+
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/fonts.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/trac.css" />
@@ -55,7 +58,7 @@
                 </p>
                 <p>
                     {% for code, name in LANGUAGES %}
-                    <span class="langcode">{{ code|language_name_local|capfirst }}</span> 
+                    <span class="langcode" rel="{{ code }}">{{ code|language_name_local|capfirst }}</span> 
                     {% endfor %}
                 </p>
 
