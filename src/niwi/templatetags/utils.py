@@ -42,7 +42,7 @@ class AnalyticsNode(template.Node):
             self.analytics_code = Config.objects.get(path="contrib.google.analytics.code").value
             self.analytics_domain = Config.objects.get(path="contrib.google.analytics.domain").value
             self.enabled = True
-        except Config.DoesNotExis:
+        except Config.DoesNotExist:
             self.enabled = False
 
     def render_to_string(self, context):
