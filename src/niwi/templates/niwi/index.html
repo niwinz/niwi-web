@@ -28,7 +28,7 @@
                 <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
                 <div class="post-meta">
                     <span class="fecha">{{ post.modified_date }}</span> // 
-                    <span class="lang">{% trans "Language: " %}{{ post.get_lang_display }}</span>
+                    <span class="lang">{% trans "Language: " %}{{ post.lang|language_name_local|capfirst }}</span>
                 </div>
             </div>
             <div class="post-content">{{ post.intro|safe }}</div>

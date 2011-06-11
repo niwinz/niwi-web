@@ -46,12 +46,19 @@
             {% endblock %}
             <div class="submodule-footer">
                 <p>{% trans "Tecnologias utilizadas para construir este sitio:" %} <br />
-                <a target="_blank" href="http://www.python.org">Python,</a>
-                <a target="_blank" href="http://www.djangoproject.com/">Django,</a>
-                <a target="_blank" href="http://www.sqlite.org/index.html">SQlite,</a>
-                <a target="_blank" href="http://pygments.org/">Pygments,</a>
-                <a target="_blank" href="http://www.gevent.org/">Gevent</a><span> y </span>
-                <a target="_blank" href="http://nginx.org/en/">Nginx.</a>
+                    <a target="_blank" href="http://www.python.org">Python,</a>
+                    <a target="_blank" href="http://www.djangoproject.com/">Django,</a>
+                    <a target="_blank" href="http://www.sqlite.org/index.html">SQlite,</a>
+                    <a target="_blank" href="http://pygments.org/">Pygments,</a>
+                    <a target="_blank" href="http://www.gevent.org/">Gevent</a><span> y </span>
+                    <a target="_blank" href="http://nginx.org/en/">Nginx.</a>
+                </p>
+                <p>
+                    {% for code, name in LANGUAGES %}
+                    <span class="langcode">{{ code|language_name_local|capfirst }}</span> 
+                    {% endfor %}
+                </p>
+
                 <p>This web application is open source, and you can download the sources from 
                     <a href="https://github.com/niwibe/niwi-web/">here.</a><br />py-niwi-web version 1.0 Alpha</p>
             </div>

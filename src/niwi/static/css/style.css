@@ -164,6 +164,11 @@ a {
     color: #444;
 }
 
+.submodule-footer .langcode {
+    text-decoration: underline;
+    padding-left: 4px;
+}
+
 .snippet-entity .snippet-view-box,
 .submodule-paste-view {
     padding: 10px;
