@@ -34,7 +34,7 @@ class GenericDocumentModelAdmin(GenericModelAdmin):
     #exclude = ('content_type',)
     fieldsets = (
         ('Head', {
-            'fields': ('title', 'uuid', 'slug', ('markup', 'status'),)
+            'fields': ('title', 'uuid', 'slug', ('markup', 'status', 'lang'),)
         }),
         ('Content', {
             'fields': ('content',)
