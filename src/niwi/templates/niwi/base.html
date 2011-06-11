@@ -26,7 +26,7 @@
                     <li><a href="{% url "web:show-home" %}">{% trans "Home" %}</a></li><span> // </span>
                     <li><a href="{% url "web:posts" %}">{% trans "Posts" %}</a></li><span> // </span>
                     <li><a href="{% url "web:links" %}">{% trans "Links" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:projects-home" %}">{% trans "Projects" %}</a></li><span> // </span>
+                    <li><a href="{% url "web:show-page" "projects" %}">{% trans "Projects" %}</a></li><span> // </span>
                     <li><a href="{% url "web:paste-home" %}">{% trans "Paste" %}</a></li><span> // </span>
                     <li><a href="{% url "web:show-page" "about" %}">{% trans "About" %}</a></li>
                 </div>
@@ -52,15 +52,8 @@
                 <a target="_blank" href="http://pygments.org/">Pygments,</a>
                 <a target="_blank" href="http://www.gevent.org/">Gevent</a><span> y </span>
                 <a target="_blank" href="http://nginx.org/en/">Nginx.</a>
-
-                <p>
-                    <div class="cotitular">
-                        <img width="40" src="{{ STATIC_URL }}res/twitter.png"></img>
-                        <img width="40" src="{{ STATIC_URL }}res/facebook.png"></img>
-                    </div>
-                </p>
                 <p>This web application is open source, and you can download the sources from 
-                    <a href="http://hg.niwi.be/py-niwi-web/">here.</a><br />py-niwi-web version 1.0 Alpha</p>
+                    <a href="https://github.com/niwibe/niwi-web/">here.</a><br />py-niwi-web version 1.0 Alpha</p>
             </div>
         </div>
         {% if not debug %}

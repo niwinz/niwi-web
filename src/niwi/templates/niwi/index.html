@@ -1,6 +1,7 @@
 {% extends "niwi/base.html" %}
 {% load i18n %}
 {% load utils %}
+{% load url from future %}
 
 {% block title %} {% trans "- Pagina principal." %}{% endblock %}
 
@@ -18,7 +19,6 @@
 {% endblock %}
 
 {% block main %}
-{% comment %}
 <div class="news-block box-posts">
     <h2>{% trans "Ultimos posts:" %}</h2>
     <div class="block-content">
@@ -35,9 +35,10 @@
         </div>
         {% endfor %}
     </div>
-    <div class="show-more"><a href="{% url posts %}">{% trans "Ver todos los posts..." %}</a></div>
+    <div class="show-more"><a href="{% url "web:posts" %}">{% trans "Ver todos los posts..." %}</a></div>
 </div>
 
+{% comment %}
 {% if links|length > 0 %}
 <div class="links-block box-links">
     <h2>{% trans "Ultimos enlaces:" %}</h2>

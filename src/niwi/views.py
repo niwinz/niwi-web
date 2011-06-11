@@ -28,30 +28,31 @@ import logging
 logger = logging.getLogger("niwi")
 
 
-class CacheMixIn(object):
+class ResponseMixIn(object):
     """ Class for generic cache decorator. """
     template_name = None
     
-    #@method_decorator(cache_page(40)) 
     def dispatch(self, *args, **kwargs):
         self.head = self.get
-        return super(CacheMixIn, self).dispatch(*args, **kwargs)
+        return super(ResponseMixIn, self).dispatch(*args, **kwargs)
 
     def render_to_response(self, context, **response_kwargs):
         return render_to_response(self.get_template_names(), context,
             context_instance = RequestContext(self.request), **response_kwargs)
     
+
 class ObjectListMixIn(ListView):
     """ Class for generic settings for all object list. """
     allow_empty = True
     paginate_by = 20
 
 
-class HomePageView(CacheMixIn, TemplateView):
+class HomePageView(ResponseMixIn, TemplateView):
     template_name = 'niwi/index.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(HomePageView, self).get_context_data(*args, **kwargs)
+        context['posts'] = Post.objects.order_by('-modified_date')[:10]
 
         try:
             config = Config.objects.get(path='core.homepage')
@@ -63,29 +64,30 @@ class HomePageView(CacheMixIn, TemplateView):
         return context
 
 
-class PageView(CacheMixIn, DetailView):
+class DocumentView(ResponseMixIn, DetailView):
+    template_name = 'niwi/page_detail.html'
+    queryset = Document.objects.all()
+    context_object_name = "page"
+
+
+class PageView(ResponseMixIn, DetailView):
     queryset = Page.objects.all()
     context_object_name = "page"
 
 
-class PostsView(CacheMixIn, ObjectListMixIn):
+class PostsView(ResponseMixIn, ObjectListMixIn):
     queryset = Post.objects.filter(status='public').order_by('-created_date')
 
 
-class LinksView(CacheMixIn, ObjectListMixIn):
+class LinksView(ResponseMixIn, ObjectListMixIn):
     queryset = Link.objects.exclude(public=False).order_by('-created_date')
 
 
-class ProjectsView(CacheMixIn, ListView):
-    context_object_name = 'projects'
-    queryset = Project.objects.all().order_by('title')
-
-
-class PostView(CacheMixIn, DetailView):
+class PostView(ResponseMixIn, DetailView):
     queryset = Post.objects.all()
 
 
-class LinkView(CacheMixIn, DetailView):
+class LinkView(ResponseMixIn, DetailView):
     queryset = Link.objects.exclude(public=False)
 
     def render_to_response(self, context, **kwargs):
@@ -93,14 +95,15 @@ class LinkView(CacheMixIn, DetailView):
         return HttpResponseRedirect(linkobj.url)
 
 
-class ProjectView(CacheMixIn, DetailView):
-    model = Project
 
+class Robots(TemplateView):
+    template_name = "utils/robots.txt"
 
-@cache_page(7200)
-def robots(request):
-    return render_to_response("utils/robots.txt", {}, mimetype="text/plain")
+class Sitemap(TemplateView):
+    template_name = "utils/sitemap.xml"
 
-@cache_page(60)
-def sitemap(request):
-    return render_to_response("utils/sitemap.xml", {}, mimetype="application/xml")
+#def robots(request):
+#    return render_to_response("utils/robots.txt", {}, mimetype="text/plain")
+#
+#def sitemap(request):
+#    return render_to_response("utils/sitemap.xml", {}, mimetype="application/xml")
