@@ -4,20 +4,10 @@ from django.conf import settings
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
+from niwi.utils import Singleton
+from niwi.models import Config
 
 register = template.Library()
-
-@register.filter(name="tags_parser")
-def tags_parser(tags):
-    response = []
-    if tags.strip():
-        for tag in [x.strip() for x in tags.split(",")]:
-            tagobj = u"<a href='' class='tag'>%s</a>" % (tag)
-            response.append(tagobj)
-
-    if response: return mark_safe(" ".join(response))
-    else: return ""
-
 
 @register.filter(name="markdown")
 def markdown(value, arg=''):
@@ -33,9 +23,45 @@ def markdown(value, arg=''):
 
 markdown.is_safe = True
 
+
 @register.filter(name="fixname")
 def correct_filename(name):
     return name.rsplit("/",1)[-1]
 
 
-   
+class AnalyticsNode(template.Node):
+    """ Analytics singleton Node. """
+
+    __metaclass__ = Singleton
+
+    def __init__(self):
+        self.enabled = None
+        self.rendered = None
+
+        try:
+            self.analytics_code = Config.objects.get(path="contrib.google.analytics.code").value
+            self.analytics_domain = Config.objects.get(path="contrib.google.analytics.domain").value
+            self.enabled = True
+        except Config.DoesNotExis:
+            self.enabled = False
+
+    def render_to_string(self, context):
+        if self.rendered:
+            return self.rendered
+        else:
+            context.update({'code': self.analytics_code, 'domain': self.analytics_domain})
+            self.rendered = template.loader.render_to_string("utils/analytics.html", context)
+            return self.rendered
+
+    def render(self, context):
+        if self.enabled:
+            return self.render_to_string(context)
+        else:
+            return ''
+
+@register.tag(name="analytics")
+def analytics_tag(parser, token):
+    return AnalyticsNode()
+
+
+
