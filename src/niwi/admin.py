@@ -60,7 +60,8 @@ class ProjectModelAdmin(GenericDocumentModelAdmin):
     pass
 
 class DocumentModelAdmin(GenericDocumentModelAdmin):
-    pass
+    def queryset(self, request):
+        return super(DocumentModelAdmin).queryset(request).filter(content_type__name='document')
 
 class PageModelAdmin(GenericDocumentModelAdmin):
     pass

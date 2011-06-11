@@ -41,6 +41,8 @@ CACHES = {
 # ETAGS Feature for good cache. (true only for production)
 USE_ETAGS=True
 
+
+
 #SESSION BACKEND
 SESSION_ENGINE='django.contrib.sessions.backends.db'
 #SESSION_ENGINE='django.contrib.sessions.backends.cache'
@@ -62,7 +64,14 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 #MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 TIME_ZONE = 'Europe/Madrid'
-LANGUAGE_CODE = 'es'
+
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+    ('es', _('Spanish')),
+    ('en', _('English')),
+)
+
 USE_I18N = True
 USE_L10N = True
 

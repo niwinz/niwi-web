@@ -12,20 +12,21 @@
 {% endblock %}
 
 {% block html-head %}
-<meta name="Keywords" content="niwi posts, posts, articles, articulos, software libre, opensource, open source" />
-<meta name="Description" content="Colleccion de articulos mayoritariamente escritos por mi con alguna que otra excepción." />
+<meta name="Keywords" content="niwi posts, posts, news, articles, articulos, software libre, opensource, open source" />
+<meta name="Description" content="Collection of articles, mostly written by me." />
 {% endblock %}
 
 
 {% block body %}
 <div class="submodule-content">
-    <h2>{% trans "Articulos publicos:" %}</h2>
+    <h2>{% trans "Public posts:" %}</h2>
     <div class="post-list">
         {% for post in page_obj.object_list %}
         <div class="post">
             <div class="post-head">
                 <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-                <div class="post-meta"><span class="fecha">{{ post.modified_date }}</span></div>
+                <div class="post-meta"><span class="fecha">{{ post.modified_date }}</span> // 
+                    <span class="lang">{% trans "Language: " %}{{ post.get_lang_display }}</span></div>
             </div>
             <div class="post-content">{{ post.content|truncatewords:30 }}</div>
         </div>

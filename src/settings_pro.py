@@ -62,7 +62,14 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 #MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 TIME_ZONE = 'Europe/Madrid'
-LANGUAGE_CODE = 'es'
+
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+    ('es', _('Spanish')),
+    ('en', _('English')),
+)
+
 USE_I18N = True
 USE_L10N = True
 
