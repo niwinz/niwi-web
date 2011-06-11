@@ -32,12 +32,8 @@ def correct_filename(name):
 class AnalyticsNode(template.Node):
     """ Analytics singleton Node. """
 
-    __metaclass__ = Singleton
-
     def __init__(self):
         self.enabled = None
-        self.rendered = None
-
         try:
             self.analytics_code = Config.objects.get(path="contrib.google.analytics.code").value
             self.analytics_domain = Config.objects.get(path="contrib.google.analytics.domain").value
@@ -45,17 +41,10 @@ class AnalyticsNode(template.Node):
         except Config.DoesNotExist:
             self.enabled = False
 
-    def render_to_string(self, context):
-        if self.rendered:
-            return self.rendered
-        else:
-            context.update({'code': self.analytics_code, 'domain': self.analytics_domain})
-            self.rendered = template.loader.render_to_string("utils/analytics.html", context)
-            return self.rendered
-
     def render(self, context):
         if self.enabled:
-            return self.render_to_string(context)
+            context.update({'code': self.analytics_code, 'domain': self.analytics_domain})
+            return template.loader.render_to_string("utils/analytics.html", context)
         else:
             return ''
 
