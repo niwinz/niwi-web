@@ -41,8 +41,6 @@ CACHES = {
 # ETAGS Feature for good cache. (true only for production)
 USE_ETAGS=True
 
-
-
 #SESSION BACKEND
 SESSION_ENGINE='django.contrib.sessions.backends.db'
 #SESSION_ENGINE='django.contrib.sessions.backends.cache'
@@ -100,15 +98,16 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'niwi.middleware.FacebookMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', 
+    'django.middleware.csrf.CsrfResponseMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'niwi.middleware.FacebookMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

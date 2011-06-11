@@ -3,7 +3,6 @@
 from django.conf import settings
 
 def main(request):
-    request.session['django_language'] = 'es'
     context_extra = dict(
         debug=settings.DEBUG,
         current_url = request.META.get('PATH_INFO'),
