@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'AnonymousProRegular';
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot');
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.woff') format('woff'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.ttf') format('truetype'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.svg#webfonty8871YFO') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+textarea#id_intro {
+    width: 830px;
+    min-height: 120px;
+}
+textarea#id_content {
+    width:830px;
+    min-height: 500px;
+}
+
+textarea {
+    font-family:"AnonymousProRegular";
+}
+
+input.vTextField {
+    width: 450px;
+    font-family:"AnonymousProRegular";
+}
+input.vTextField, textarea, select {
+    font-size: 14px;
+}

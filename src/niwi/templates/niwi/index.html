@@ -1,0 +1,62 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load utils %}
+
+{% block title %} {% trans "- Pagina principal." %}{% endblock %}
+
+{% block opengraph %}
+<meta property="og:title" content="Niwi.Be Page"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="{{ full_host_url }}" />
+<meta property="og:image" content="{{ host }}/static/logo.png"/>
+{% endblock %}
+
+
+{% block html-head %}
+<meta name="Keywords" content="niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux" />
+<meta name="Description" content="Sitio dedicado a mis pequeñas contribuicions al mundo open source y software libre entre otras." />
+{% endblock %}
+
+{% block main %}
+{% comment %}
+<div class="news-block box-posts">
+    <h2>{% trans "Ultimos posts:" %}</h2>
+    <div class="block-content">
+        {% for post in posts %}
+        <div class="post">
+            <div class="post-head">
+                <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <div class="post-meta">
+                    <span class="fecha">{{ post.modified_date }}</span> // 
+                    <span class="tags">{{ post.tags|tags_parser }}</span>
+                </div>
+            </div>
+            <div class="post-content">{{ post.intro|safe }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="show-more"><a href="{% url posts %}">{% trans "Ver todos los posts..." %}</a></div>
+</div>
+
+{% if links|length > 0 %}
+<div class="links-block box-links">
+    <h2>{% trans "Ultimos enlaces:" %}</h2>
+    <div class="block-content">
+        {% for link in links %}
+        <div class="link">
+            <div class="link-head">
+                <a  target="_blank" class="link-title" href="{{ link.get_absolute_url }}">{{ link.title }}</a>
+                <div class="link-meta">
+                    <span class="fecha">{{ link.modified_date }}</span> // 
+                    <span class="tags">{{ link.tags|tags_parser }}</span>
+                </div>
+            </div>
+            <div class="link-content"></div>
+       </div>
+       {% endfor %}
+    </div>
+    <div class="show-more"><a href="{% url links %}">{% trans "Ver todos los enlaces..." %}</a></div>
+</div>
+{% endif %}
+{% endcomment %}
+{% endblock %}

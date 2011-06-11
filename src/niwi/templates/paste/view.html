@@ -1,0 +1,18 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block body %}
+<div class="submodule-paste-view">
+    <style type="text/css">
+        {{ style|safe }}
+        .module-main { width: 95% }
+        .code .highlight { padding-left: 5px; }
+    </style>
+    <div class="viewer-menu">
+        <a href="{% url "web:paste-view-raw" obj.id %}">{% trans "[Raw]" %}</a> 
+        <a href="{% url "web:paste-home" %}">{% trans "[New paste]" %}</a>
+    </div>
+    <div class="viewer-content">{{ result|safe }}</div>
+</div>
+{% endblock %}

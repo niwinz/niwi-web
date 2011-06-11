@@ -1,0 +1,44 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load markup %}
+{% load cache %}
+
+{% block title %}- Snippets: {{ snippet.title }} {% endblock %}
+
+{% block html-head %}
+<meta name="Keywords" content="{{ snippet.keywords }}" />
+<meta name="Description" content="{{ snippet.description|truncatewords:20 }}" />
+{% endblock %}
+
+{% block body %}
+<div class="submodule-content">
+    <div class="snippet-entity">
+        <div class="title">
+            <h1>{{ snippet.title }}</h1>
+            <small>
+                <span>{{ snippet.modified_date }}</span>
+                <span>{{ snippet.get_type_display }}</span>
+                <span class="version">Version {{ snippet.history.count }}</span>
+                <span><a href="{{ current_url }}?raw=1">View raw</a></span>
+            </small>
+        </div>
+
+        {% cache 7200 snippet.slug snippet.modified_date %}
+        <style type="text/css">
+            {{ style|safe }}
+            .module-main { width: 95% }
+            .code .highlight { padding-left: 5px; }
+        </style>
+
+        <div class="snippet-view-box">
+            {{ result|safe }}
+        </div>
+        
+        <div class="description">
+            {{ snippet.description|markdown }}
+        </div>
+        {% endcache %}
+    </div>
+    {% include "share.block.html" %}
+</div>
+{% endblock %}

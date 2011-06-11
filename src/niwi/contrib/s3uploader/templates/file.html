@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block body %}
+<div class="uploaded-file">
+    <h4><a href="..">{% trans "<< Return" %}</a> // <a href="{% url 's3uploader:delete-file' obj.id %}">{% trans "Delete" %}</a></h4>
+    <div class="uploaded-description">
+        <b>Created:</b> {{ obj.created }}<br />
+        <b>Size:</b> {{ obj.size }}<br />
+        <b>Url:</b> <a target="_blank" href="{{ obj.full_url }}">{{ obj.full_url }}</a>
+    </div>
+    <div class="uploaded-preview">
+        <img src="{{ obj.full_url }}"></img>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <title>{% trans "Amazon S3 uploader app." %}</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}s3uploader/css/style.css" />
+        <script type="text/javascript" src="{{ STATIC_URL }}s3uploader/js/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}s3uploader/js/script.js"></script>
+    </head>
+    <body>
+        <div class="page">
+            {% include "messages.html" %}
+            {% block body %}
+            <div class="uploader-block">
+                <div class="uploader-title">Amazon S3 uploader app. (niwi.be)</div>
+                <div class="uploader-form">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="file-inputs">
+                            <div class="inputs-container">
+                                <input type="file" name="file_0"></input>
+                            </div>
+                            <div class="inputs-options">
+                                <a href="">{% trans "More files..." %}</a>
+                            </div>
+                        </div>
+                        <div class="submit-block">
+                            <input class="button" type="submit" value="{% trans "Upload" %}"></input>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="uploads-list">
+                <div class="uploads-title">{% trans "Recent uploads:" %}</div>
+                <div class="uploads-container">
+
+                    {% for obj in uploads %}
+                    <div class="upload-item">
+                        <div class="name"><a href="{{ obj.get_absolute_url }}">{{ obj.name }}</a></div>
+                        <div class="date">{{ obj.created }} / {{ obj.size }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </body>
+</html>

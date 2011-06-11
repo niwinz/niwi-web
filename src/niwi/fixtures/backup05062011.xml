@@ -1,0 +1,2222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+    <object pk="1" model="niwi.document">
+        <field type="CharField" name="uuid">52e6a6a4-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">postgresql-9x-high-availability</field>
+        <field type="CharField" name="title">PostgreSQL 9.x &amp; High Availability</field>
+        <field type="TextField" name="content">Introducción
+------------
+
+En PostgreSQL 9.x se introducen varias características que nos permiten usar los registros de archivos wal para realizar replicación «master-slave», lo que a su vez nos da la posibilidad de tener un cluster de alta disponibilidad «activo-pasivo». Es decir, un servidor maestro y otro/s que están a la espera con replicación activada. En caso de que el servidor principal falle, puede activarse automáticamente uno de los muchos servidores «standby». También cabe mencionar que los servidores de espera pueden ser usados como nodos de acceso de solo lectura, es decir, en modo «hot_standby».
+
+El funcionamiento se basa en que el servidor principal esta funcionando y ofreciendo su servicio y funcionando siempre con «continuous archiving mode», que quiere decir que continuamente registrará los archivos «Wal»
+
+&gt; *Véase*: [documentación oficial](http://www.postgresql.org/docs/9.0/static/continuous-archiving.html)
+
+No es necesario ningún cambio en las tabas ni las bases de datos y tampoco requiere mucha mano de obra por parte del administrador, comparando-lo con otros sistemas de clusterización. De igual manera, no sobrecarga de manera excesiva el servidor principal, por lo que el rendimiento no se vería casi afectado.
+
+PostgreSQL implementa dos maneras de transferir los logs binarios («Wal»), mediante sistema de ficheros, o en streaming. Los archivos «Wal» por norma general ocupan unos 16MB por lo que si esta trabajando en red de área local, no creo que un traspaso de estos ficheros sea una carga excesiva. Pero también se debe saber que el tamaño y la regularidad de creación de estos ficheros se puede re-configurar.
+
+Siempre debe tener en cuenta, que los logs binarios se crean después de cada commit hace que los datos tengan un pequeño retraso, y en una fallida catastrófica siempre cabe que no se haya guardado el ultimo commit. Esto ultimo siempre puede ser compensado con algún sistema de replicación,mirroring o algún sistema raid. Zfs es una de las mejores soluciones para este tipo de clusters.
+
+En el tema del rendimiento de recuperación, es bastante aceptable en muchos ámbitos, ya que no es una tarea complicada pasar del modo de recuperación a modo operativo. Tambien se puede decir que no es del todo un sistema de clusterización si no que un sistema de recuperación por fallas catastróficas. En cambio, con streaming se puede conseguir una tasa de sincronización muchísimo mas elevada, lo que si que puede llamarte clusterización de alta disponibilidad. Consiste en base de lo mismo, solo que los logs se pasan directamente por tcp sin espera de creación de ficheros.
+
+¿Que debo saber?
+----------------
+
+El servidor principal y los «esclavos» que estan en modo recuperacion deberian tener caracteristicas similares o iguales, hablando de hardware como de software. Ademas, es obligatorio que se usen versiones identicas del servidor PostgreSQL, por no decir la arquitectura del procesador. No puedes tener el servidor principal con «x86_64» y los esclavos en «x86».
+«Standby servers» o servidores esclavos de recuperación.
+
+Los servidores de recuperación o esclavos, funcionan continuamente en modo «recovery», es decir, a la espera de nuevos logs «Wal». Tal como lo he comentado mas arriba, puede hacerse a través de sistema de ficheros, o por streaming vía tcp/ip.
+
+El procedimiento teórico del funcionamiento de un servidor esclavo en modo recuperación se basa en pocos pasos: al iniciarse empieza restaurando todos los wall del directorio del backup o archivo, con el comando especificado en la variable «restore_command», cuando este falle, y intentas restaurar todo lo disponible en su directorio local «pg_xlog». Si es te falla, y esta configurada la opción de replicación por streaming, intenta conectarse y obtener todos los datos que sean necesarios. En caso de que no este configurada esta opción, vuelve a empezar con el primer paso. Es una cadena que solo se termina al apagar el servidor o que sea creado un archivo indicador que el servidor tenga que pasar de modo recuperacion a modo activo.
+
+### Replicación basada en sistema de ficheros en red. ###
+
+Tal como lo he comentado anteriormente, la replicación basada en sistema de ficheros compartido tiene un pequeño retraso, ya que siendo que hasta que no se llene el archivo «wal» y no se archive, ese no sera transferido a los esclavos, siendo este el principal problema.
+
+El concepto es muy simple, para que un servidor pueda acceder al directorio de los «wal» archivados, ese debe ser compartido por nfs o cualquier otro sistema de ficheros en red. Consulte la documentación de la distribución o sistema operativo, para realizar esta parte.
+
+Tambien tenemos que modificar ciertas cosas en «postgresql.conf» añadiendo/modificando los siguientes contenidos que explicare mas adelante:
+
+    archive_mode = on 
+    archive_command = 'cp -i %p /mnt/xlog_archive/%f &lt; /dev/null' 
+    archive_timeout = 0
+    hot_standby = on 
+    wal_level = hot_standby
+
+En primer lugar, activamos el proceso que archiva los «wal» en ves de reutilizarlos y asigna un comando, el cual se encarga de copiar el archivo «wal» lleno a otro directorio, que por norma general deberia ser un disco aparte, asi evitaremos dentro de lo que cabe cierta perdida de rendimiento que se pierde.
+
+Con «hot_standby» activado, nos permitirá acceder en modo de solo lectura a un servidor esclavo y «wal_level» indica el nivel de datos que se guardara en los archivos «wal», por defecto esta en minimal, pero para la replicación minimamente se necesita el modo archive, pero para nuestro caso que ademas de eso queremos que los servidores esclavos puedan atender peticiones de solo lectura, ponemos el modo hot_standby.
+
+Antes de arrancar el servidor, realizaremos una copia exacta del directorio, para luego transferirlos a un servidor esclavo, eso es críticamente necesario, ya que la id de la base de datos que se genera con el initdb debe ser la misma tanto en el servidor maestro como en el esclavo.
+
+Puede darse el caso de que, no este partiendo de una instalación desde cero, en este caso necesita hacer una parada y activar las opciones que antes he comentado y realizar un backup consistente. En otro caso, si ya tiene activadas esas opciones puede realizar un backup en caliente tal como lo indica la documentación de PostgreSQL.
+
+Y como ultimo caso, puede usarse uno de los scripts que he publicado, que realiza una sincronización completa con el servidor maestro, sin necesidad de transferir ningún backup adicional.
+
+Una vez tenemos todo listo, los dos últimos pasos consisten en montar el sistema de ficheros compartido con los archivos «wal» del servidor maestro en algún directorio del servidor esclavo, y crear un archivo «recovery.conf» en el directorio root de la base de datos ( en el caso de archlinux es «/var/lib/postgres/data» ) antes de arrancar la base de datos.
+
+El archivo «recovery.conf»:
+
+    standby_mode = 'on' 
+    restore_command = 'cp /mnt/xlog_archive/%f %p' 
+    trigger_file = '/tmp/trigger_file'
+
+
+Arrancamos la base de datos y analizamos el archivo de registro de la misma, nos debe aparecer algo parecido a esto:
+
+    LOG: entering standby mode ... then some time later ... 
+    LOG: consistent recovery state reached LOG: database system is ready to accept read only connections
+
+### Replicación basada en streaming. ###
+
+A diferencia de la anterior, la replicación basada en streaming tiene claras ventajas, el retraso en el que los datos son transferidos desde el servidor maestro al esclavo son mínimos. Para poder arrancar un servidor esclavo en modo streaming, antes deberíamos haber hecho los mismos pasos que he expuesto en el anterior método, con alguna que otra modificación.
+
+Deberiamos añadir o modifcar las siguientes lineas adicionales en «postgresql.conf»:
+
+    max_wal_senders = 20 
+    wal_sender_delay = 200ms
+
+Ademas tenemos que modificar «pg_hba.conf» y añadimos la siguiente line, la cual dice que cualquier ip de la red local pueda y deba acceder como un servidor esclavo y autenticarse mediante un usuario y contraseña:
+
+    host replication all 192.168.1.0/24 md5
+
+El archivo «recovery.conf» para este caso es:
+
+    standby_mode = 'on' 
+    restore_command = 'cp /mnt/xlog_archive/%f %p' 
+    primary_conninfo = 'host=192.168.1.2 port=5432 user=root password=123123'
+    trigger_file = '/tmp/trigger_file'
+
+Todo lo demás es igual o prácticamente igual, por lo que si surge algún problema, revise sus pasos.</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:10:49</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:11:54</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="2" model="niwi.document">
+        <field type="CharField" name="uuid">84da4850-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">linux-freebsd-y-gpt</field>
+        <field type="CharField" name="title">Linux, FreeBSD y GPT</field>
+        <field type="TextField" name="content">Tabla de partición GUID (GPT) es un estándar para la colocación de la tabla de particiones
+en un disco duro físico. Es parte del estándar Extensible Firmware Interface (EFI) propuesto por Intel para reemplazar la vieja BIOS del PC, heredada del IBM PC original. La
+GPT sustituye al Master Boot Record (MBR) usado con la BIOS.
+
+Puede leer mas en el [articulo de Wikipedia](wikipedia)
+
+[wikipedia]: http://es.wikipedia.org/wiki/Tabla_de_partición_GUID
+
+Ventajas y desventajas.
+-----------------------
+
+Actualmente cada vez mas, tenemos discos de tamaños mas elevados, y cada ves se hace mas
+uso de sistemas de ficheros como zfs o agrupando varios discos en un solo volumen,  y esto
+hace mas propenso a que vayamos a necesitar particiones con mas de 2TB. Cosa que con el
+particionamiento antiguo no se puede debido a su limitación a 32 bits.
+
+GPT esta hecho para sistemas 64bits, pero igual puede usarse para sistemas con 32 bits de
+la misma manera. 
+
+Ademas del tamaño de partición, también a veces necesitamos mas particiones de las que nos
+puede permitir el antiguo sistema de particionamiento. En este caso, el numero máximo por
+defecto en GPT son 128, pero puede ser modificado en caso de que sea realmente necesario.
+
+Otro punto a favor, es que en sistemas como freebsd, gpt permite el uso de zfs para todo
+el sistema y con posibilidad de arrancar. Freebsd lo soporta completamente ademas de
+tenerlo todo integrado en el Framework GEOM. 
+
+En linux a diferencia, aparte de la aplicación «GNU Parted», las demás aplicaciones no
+soportan GPT, y en algunas distribuciones ni siquiera esta compilado el soporte del kernel.
+
+Por no hablar que muchas distribuciones, incluyen grub de primer generación, el cual sin
+parches adicionales no es capaz de arrancar de una partición GPT.
+
+El uso de GPT es mas recomendado en sistemas que funcionan como servidores para que puedan
+escalar en el tema de almacenamiento sin ninguna dificultad y contratiempo.
+
+
+FreeBSD y GPT
+-------------
+
+Como he dicho antes, GPT esta perfectamente integrado dentro de GEOM, por lo que crear un
+esquema de particionamiento de este tipo es muy simple.
+
+Supongamos que el disco con el que trabajamos, es «ad4»:
+
+    gpart create -s GPT ad4
+    gpart add -b 34 -s 128 -t freebsd-boot ad4
+    gpart add -b 162 -s 5242880 -t freebsd-swap ad4
+    gpart add -b 5243042 -s 125829120 -t freebsd-ufs ad4
+
+
+Esto asigna 3 particiones:  la primera es para el código de arranque de GPT y es de un
+tamaño de 64K, la segunda es para swap y es de un tamaño de 2.5GB y la ultima es para «/»
+y tiene un tamaño de 60GB.
+
+Una vez creadas las particiones podemos crear el sistema de ficheros y asignar un label:
+
+    newfs -U /dev/ad4p3
+    glabel create raiz ad4p3
+
+Ahora si queremos que el sistema arranque deberíamos ejecutar el siguiente comando:
+
+    gpart bootcode -b /boot/pmbr -p /boot/gptboot -i 1 ad4
+
+
+Instalación de freebsd sobre GPT
+--------------------------------
+
+Supongamos que estamos usando la imagen de freebsd-9-current sobre un pendrive. Arrancamos
+y nos dirigimos a modo «Fixit» y le indicamos que sea desde USB.
+
+Montamos «/dev/label/raiz» a «/mnt» y nos dirigimos a «/dist/9.0-CURRENT-201004/base». Realizamos la instalación con el comando: 
+
+    DESTDIR=/mnt sh install.sh
+
+Una vez realizada la instalación del sistema base, nos dirigimos a «/dist/9.0-CURRENT-201004/kernel» y con el comando que viene a continuación, realizamos la instalación del kernel: 
+
+    DESTDIR=/mnt sh install.sh GENERIC
+
+Una vez instalado, cambiamos al directorio /mnt/boot y re-nombramos GENERIC por «kernel».
+Ahora ya podrá arrancar un sistema base sobre GPT, y no olvídense de crear los siguientes
+archivos: «/mnt/etc/fstab» y «/mnt/etc/rc.conf».
+
+
+GPT y ZFS sobre FreeBSD
+-----------------------
+
+Para empezar son los mismos pasos que para usarlo con UFS, con unas pequeñas variaciones
+que mostrare a continuación:
+
+En vez de ejecutar «gpart add -b 5243042 -s 125829120 -t freebsd-ufs ad4» ejecutamos: 
+
+    gpart add -b 5243042 -s 125829120 -t freebsd-zfs ad4
+
+Y el para que pueda arrancar desde zfs:
+
+    gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ad4
+
+Ahora, procedemos con la configuración de zfs, añadiendo las siguientes lineas a
+«/mnt/boot/loader.conf»:
+
+    zfs_load="YES"
+    vfs.root.mountfrom="zfs:data"
+
+También necesitamos añadir lo siguiente a «/mnt/etc/rc.conf»:
+
+    zfs_enable="YES"
+
+A partir de aquí puede proceder la instalación estándar explicada anteriormente con la
+única diferencia de usar: DESTDIR=/data/
+
+Ahora por ultimo, especificamos que zfs monte las particiones de manera "antigua":
+
+    zfs set mountpoint=legacy data
+    zpool set bootfs=data data
+
+
+GPT sobre linux
+---------------
+
+A diferencia de freebsd, en linux necesitamos que kernel tenga compilado el soporte de
+gpt, en caso contrario deberíamos re compilar el kernel o no podremos usar esta
+característica. Como mencione antes, tampoco tenemos muchas herramientas para trabajar con
+gpt aparte de «gnu parted», que por suerte si se encuentra en el cdrom de «Archlinux».
+
+Una manera basica de crear la misma estructura que con freebsd usando parted:
+
+    parted /dev/sda
+    mklabel gpt
+    mkpart primary 0 2.5G
+    mkpart primary 2.5G 62.5G
+    quit
+
+Otra gran diferencia de freebsd es que en linux se ve que no contamos con nigun sistema
+para arrancar que sea decente, ya que si nos ponemos a mirar grub legacy, incluido en
+muchas distribuciones linux, no tiene soporte para GPT. Grub2 que se ve que es una
+reescritura de grub para mejorar y con todo lo aprendido de grub, no se sabe si tiene
+soporte debido a que esta completamente indocumentado. Por no hablar del soporte de xfs,
+que no lo hay en grub legacy y en grub2 esta "experimental".
+
+Lilo, que esta desmantenido desde el 2007, a diferencia de grub, no tiene esas carencias,
+y es el unico que es capaz de arrancar el computador de este sistema de particionamiento.
+Lastima que fue desmantenido.</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:12:13</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:12:13</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="3" model="niwi.document">
+        <field type="CharField" name="uuid">984b2cba-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">django-debug-toolbar</field>
+        <field type="CharField" name="title">Django Debug Toolbar</field>
+        <field type="TextField" name="content">El otro día curiosamente, navegando por la documentación oficial de django 1.3 me encuentro con un enlace que me lleva a esta magnífica herramienta: [http://robhudson.github.com/django-debug-toolbar/](http://robhudson.github.com/django-debug-toolbar/)
+
+Y realmente me sorprendió con la facilidad que saca toda la información perteneciente a una petición. Justo lo que yo con anterioridad me gastaba un tiempo inmenso para sacar estos datos. En ocasiones, diferentes combinaciones de generar querysets me generaban un sql distinto sin razón aparente, y en su tiempo me hubiera ahorrado muchísimo tiempo.
+
+Recomiendo esta maravillosa herramienta para todo djangero, experimentado y no tanto. No me meto a explicar el como se instala ya que la documentación propia es lo suficientemente clara!</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:12:46</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:12:46</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="4" model="niwi.document">
+        <field type="CharField" name="uuid">b4dec508-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">first-y-last-postgresql-aggregates-y-como-usarlos</field>
+        <field type="CharField" name="title">First y Last postgresql aggregates y como usarlos en django.</field>
+        <field type="TextField" name="content">Muchas veces nos encontramos en la situacion, cuando necesitamos sacar una lista ordenada de ultimos elementos (heterogeneos) agrupado por una "foreign key", y no sere de menos. Investigando y probando sobre el ORM de Django, a ver si se podria hacer algo, y ya perdidas todas la esperanzas me he topado con [este articulo.](http://www.postgresonline.com/journal/archives/68-More-Aggregate-Fun-Whos-on-First-and-Whos-on-Last.html)
+
+Como dice, MS access tiene un particular conjunto de Aggregates, llamadas First y Last, que nos permiten secar primero o el último elemento de una consulta. Como sabemos que Access no es perfecto, veremos de crear nuestro mundo perfecto en PostgreSQL (traducción literal).
+
+### Definicion de funciones y aggregates: ###
+
+&lt;pre&gt;&lt;code&gt;CREATE OR REPLACE FUNCTION first_element_state(anyarray, anyelement)
+    RETURNS anyarray AS
+$$
+    SELECT CASE WHEN array_upper($1,1) IS NULL THEN array_append($1,$2) ELSE $1 END;
+$$
+LANGUAGE 'sql' IMMUTABLE;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE OR REPLACE FUNCTION first_element(anyarray)
+    RETURNS anyelement AS
+$$
+    SELECT ($1)[1] ;
+$$
+LANGUAGE 'sql' IMMUTABLE;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE OR REPLACE FUNCTION last_element(anyelement, anyelement)
+    RETURNS anyelement AS
+$$
+    SELECT $2;
+$$
+LANGUAGE 'sql' IMMUTABLE;&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE AGGREGATE first(anyelement) (
+    SFUNC=first_element_state,
+    STYPE=anyarray,
+    FINALFUNC=first_element
+);&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;CREATE AGGREGATE last(anyelement) (
+    SFUNC=last_element,
+    STYPE=anyelement
+);&lt;/code&gt;&lt;/pre&gt;
+
+### Aplicando a la practica: ###
+
+Ahora suponemos que tenemos Item's u que cada uno pertenece a un Design, ahora queremos sacar el último item insertado por cada Design.
+
+Este seria un ejemplo de sql:
+
+    SELECT first(id) as id FROM (SELECT * FROM items WHERE code LIKE 'XXX%' ORDER BY created_date DESC) 
+    as foo GROUP BY design_id;
+
+
+Y usarlo en django es tan simple como:
+
+    Item.object.raw("SELECT first(id) as id FROM (SELECT * FROM items ORDER BY created_date DESC) as foo GROUP BY design_id")</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:13:34</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:13:34</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="5" model="niwi.document">
+        <field type="CharField" name="uuid">c83c0df4-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">python-pickle-and-json-benchmarks</field>
+        <field type="CharField" name="title">Python pickle and json benchmarks</field>
+        <field type="TextField" name="content">Leyendo twitter un día de estos me encontré con un twit (valga la redundancia) con un par de enlaces sobre la diferencia de rendimiento que había entre diferentes versiones de python en la serialización con json y pickle y distintas implementaciones.
+
+Pero me picó la curiosidad de realizar pruebas propias, esta vez sobre python3 (3.2) y comparar los resultados con python2 (2.7).
+
+Primero pense que la version 2 de python sería la que tendría el mejor rendimiento, sobretodo después de algunas menciones de que python3 era posiblemente más lento que 2 debido al uso de unicode, pero los resultados me sorprendieron bastante.
+
+Un apunte de ultima hora, y es que he notado que en python2 las cadenas unicode (u"foo") son bastante mas rapidas de serializar que las cadenas estandar (str).
+
+Los resultados de las pruebas para python3:
+
+    JSON benchamark...
+    RESULT =&gt; 7.364138126373291
+    PICKLE benchmark...
+    RESULT =&gt; 2.680925130844116
+
+Los resultados de las pruebas para python2:
+
+    JSON benchamark...
+    RESULT =&gt; 8.85393881798
+    PICKLE benchmark...
+    RESULT =&gt; 8.89091897011
+    SPECIAL JSON benchmark (str)...
+    RESULT =&gt; 8.9193341732
+    SPECIAL PICKLE benchmark (str)...
+    RESULT =&gt; 41.0080709457
+
+
+El script usado para realizar las pruebas es valido tanto para python3 como para python2. Puede descargarlo [desde aquí.][1].
+
+[1]: http://www.niwi.be/media/webfiles/2011/04/05/testpy3.py</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:14:06</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:14:06</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="6" model="niwi.document">
+        <field type="CharField" name="uuid">d9790414-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">limitar-el-ancho-de-banda-al-usar-scp</field>
+        <field type="CharField" name="title">Limitar el ancho de banda al usar scp.</field>
+        <field type="TextField" name="content">En muchas ocaciones hay que tener en cuenta que no puedes utilizar el ancho de banda de la red, para uno solo. Sea por que la maquina este en producción y no puedes permitirte perjudicar a los clientes, o estes en una oficina y no quieres dejar sin red a tus compañeros.
+
+Tal como este post va a dedicado al uso de scp, el mismo dispone de un parametro con el que le puedes indicar en KBits/s la maxima velosidad de transferecia que quiere que se use.
+
+El parametro en si es *-l RATE*.Para mas información pueden consultar el [manual.][1]
+
+Ejemplo de uso:
+&gt; &lt;pre&gt;&lt;code&gt;scp -l 16 foo.txt user@host:/path&lt;/code&gt;&lt;/pre&gt;
+ 
+El articulo es una simple copia con mis propias palabras de un [blog][2] que sigo bastante de cerca.
+
+[1]: http://www.freebsd.org/cgi/man.cgi?query=scp&amp;apropos=0&amp;sektion=0&amp;manpath=FreeBSD+8.2-RELEASE&amp;format=html
+[2]: http://systemadmin.es/2011/04/limitar-el-ancho-de-banda-con-scp</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:14:35</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:14:35</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="7" model="niwi.document">
+        <field type="CharField" name="uuid">eaba83b0-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">restauracion-paralelizada-de-copias-de-seguridad-e</field>
+        <field type="CharField" name="title">Restauración paralelizada de copias de seguridad en PostgreSQL 8.4+</field>
+        <field type="TextField" name="content">Una de las características que se han estrenado en PostgreSQL 8.4 es la posibilidad de restaurar copias de seguridad paralelizando la tarea a multiples núcleos, y asi disminuyendo de manera 
+considerable, el tiempo del proceso.
+
+Esto es una gran ventaja frente la recuperación de datos en un solo proceso. Imaginemos 
+que tenemos un "dump" de la base de datos de unos 300GB, esto en un solo procesador 
+tardaría unas 12 horas en restaurarse (relativamente al hardware). Paralelizando la 
+restauración a medida que se pueda, el tiempo puede lograr una mejora de tiempo en unos
+50% en solo aplicar a dos nucleos.
+
+También cabe destacar que como en todos los procesos, si uno depende del otro no existirá 
+realmente una paralelización real, entonces podemos deducir que en las bases de datos es 
+un método semejante. Y si tenemos una base de datos donde cada tabla depende de la otra, 
+no se conseguiría paralelizar el proceso de importación de manera que desearíamos que 
+funcionara.
+
+#### Un ejemplo de uso: ####
+
+Generamos un dump de la base de datos entera:
+&gt; &lt;code&gt;pg_dump -F c -v -f my_db.dump my_database&lt;/code&gt;
+
+Guardamos los roles en caso de que sea necesario:
+&gt; &lt;code&gt;pg_dumpall -g -f my_roles.dump&lt;/code&gt;
+
+Luego pasamos a la fase de importación, insertamos los roles si hace falta:
+&gt; &lt;code&gt;psql -f my_roles.dump postgres&lt;/code&gt;
+
+Usamos el pg_restore para importar la base de datos:
+&gt; &lt;code&gt;pg_restore -F c -j 8 -v -C -f my_db.dump&lt;/code&gt;
+
+
+Se usa -j 8 para generar 8 procesos paralelizados, para aprovechar 8 cores
+en una máquina que obviamente debería tener 8 cores o poder ejecutar 8 hilos separados.</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:15:04</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:15:04</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="8" model="niwi.document">
+        <field type="CharField" name="uuid">fde96762-8f4b-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">maquinas-virtuales-kvm-en-bridge</field>
+        <field type="CharField" name="title">Maquinas virtuales KVM en bridge.</field>
+        <field type="TextField" name="content">Se trata de unos apuntes de orientación para levantar máquinas virtuales kvm y que sean visibles dentro de la red local como si se tratasen de máquinas físicas. Así evitar todo el tema de NAT.
+
+En este caso, los ejemplos que se mostraran en el documento, son realizados sobre archlinux, pero la lógica de las operaciones no debe ser muy distinta en otras distribuciones, a menos que se usen Interfaces gráficas.
+
+Para el caso necesitamos varios paquetes instalados: *bridge-utils* y *uml_utilities*.
+
+Como primer paso, crearemos una interfaz «br0» y luego le añadiremos la interfaz de red actual puesta en modo de promiscuo ya que por así decirlo, actuará de enlace hacia nuestra red local:
+&gt; &lt;pre&gt;&lt;code&gt;brctl addbr br0
+&gt; brctl addif br0 eth0
+&gt; ifconfig eth0 0.0.0.0 promisc up&lt;/code&gt;&lt;/pre&gt;
+
+Una vez hecho esto, nuestra interfaz *eth0* pierde la ip, y como ya dije antes, se pone en modo promiscuo, por lo que de ninguna manera se puede realizar este paso sin tener acceso local, ya que se pierde la conectividad con la red local.
+
+Ahora asignamos una ip, una ruta por defecto a nuestra nueva interfaz:
+&gt; &lt;pre&gt;&lt;code&gt;ifconfig br0 inet 192.168.1.2 up
+&gt; route add default gw 192.168.1.1&lt;/code&gt;&lt;/pre&gt;
+
+Ya esta hecho lo mas importante, a partir de aquí solo hará falta iniciar las máquinas virtuales y de manera automática añadir las interfaces *tapX* al bridge, y para esto necesitaremos precisar de un par de scripts:
+
+#### Script para añadir la interfaz al bridge ####
+&gt; &lt;pre&gt;&lt;code&gt;#!/bin/sh 
+&gt; /sbin/ifconfig $1 0.0.0.0 promisc up 
+&gt; /usr/sbin/brctl addif br0 $1 
+&gt; sleep 2&lt;/code&gt;&lt;/pre&gt;
+
+#### Script para remover la interfaz del bridge ####
+&gt; &lt;pre&gt;&lt;code&gt;#!/bin/sh 
+&gt; /usr/sbin/brctl delif br0 $1 
+&gt; sleep 2&lt;/code&gt;&lt;/pre&gt;
+
+En un principio, qemu crea de manera automática las interfaces de red virtuales *tapX*, pero para los que quieran saber, se puede crear o eliminar de manera manual con:
+
+&gt; &lt;pre&gt;&lt;code&gt;tunctl -t tap0 # crear
+&gt; tunctl -d tap0 # eliminar&lt;/code&gt;&lt;/pre&gt;
+
+Y por ultimo solo nos hace falta arrancar varias máquinas virtuales y comprobar que todo funciona como es debido, un ejemplo de como arrancar una máquina virtual:
+
+&gt; &lt;pre&gt;&lt;code&gt;qemu-kvm -enable-kvm -net nic,vlan=0 -net tap,vlan=0,ifname=tap0 \\
+&gt;    -hda poolserv0.hd  -boot c -m 1024&lt;/code&gt;&lt;/pre&gt;</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:15:36</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:15:36</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="9" model="niwi.document">
+        <field type="CharField" name="uuid">0fc9f6f4-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">clases-como-decoradores-en-python</field>
+        <field type="CharField" name="title">Clases como decoradores en python.</field>
+        <field type="TextField" name="content">Una vez que sabemos como funcionan los decoradores como funciones en python, aqui va la introducción de como realizarlos mediante el uso de clases. 
+
+Para los que no tienen ni idea de lo que son los decoradores, perimero recomendaría leer los excelentes artículos [1][1] y [2][2]; ya que mi artículo no es más que un apunte.
+
+[1]: http://www.juanjoconti.com.ar/2008/07/11/decoradores-en-python-i/
+[2]: http://www.juanjoconti.com.ar/2009/07/16/decoradores-en-python-ii/
+
+#### En primer caso tenemos un decorador sin parámetros: ####
+
+    class foodecorator(object):
+        def __init__(self, func):
+            self.func = func
+        def __call__(self, *args, **kwargs):
+            def _wrapper():
+                return self.func(*args, **kwargs)
+            return _wrapper
+
+
+
+#### Y en segundo caso tenemos un decorador con parámetros: ####
+
+    class foodecorator(object):
+        def __init__(self, *args, **kwargs):
+            # parametros del decorador
+            self.args = args
+            self.kwargs = kwargs
+        def __call__(self, func):
+            def _wrapper(*args, **kwargs):
+                # parametros de la funcion
+                return func(*args, **kwargs)
+            return _wrapper</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:16:06</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:16:10</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="10" model="niwi.document">
+        <field type="CharField" name="uuid">2c422130-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">herencia-multiple-y-super-en-python</field>
+        <field type="CharField" name="title">Herencia multiple y super() en python</field>
+        <field type="TextField" name="content">## Introducción ##
+
+Se que hay mucha polemica y muchos debates respeto a la herencia multiple, algunos 
+estan a favor y otros como lo mas habitual, en contra. Seguramente todos tendran sus 
+razones, todas dignas de ser tomadas en cuenta. La principal critica es que incorpora 
+una complejidad al lenguaje y como tratar las ambiguedades, ademas de que cada lenguaje 
+lo hace a su manera.
+
+Pero en este caso estamos hablando de python, y a mi parecer, no lo hace tan mal, si no 
+al reves, creo que resuelve este tema con bastante elegancia (casi igual que perl). En 
+mi opinion creo que el tema de ambiguedades, diferencias de las clases y la 
+complejidad que comporta, es dependiente del desarrollador, y no 100% de la forma en la 
+que el lenguaje resuelve este tema.
+
+Este articulo en realidad no viene a habalar de la herencia multiple en si, ni generar 
+debates ni polemicas, si no que explicar por encima de como lo tiene implementado python 
+y como aprovecharla mediante la funcion super(). 
+
+#### ¿Como funciona? ###
+
+La herencia multiple en python se define como una lista de superclases, ordenada con una 
+especie de algoritmo por orden de profundidad y ejecuta el primer metodo que encuentra. 
+Para la curiosidad, esta lista se encuentra guardada en la propiedad __mro__ de la clase. 
+
+¿Si ejecuta el primer metodo que encuentra, que pasa con los metodos padres si es que 
+existen?, pues es bastante facil, aqui es donde entra en juego super(). Su funcion 
+principal es ejecutar el metodo padre.
+
+
+#### Ejemplo 1 ####
+
+Para ver el funcionamiento basico de super(), puede observar el ejemplo1, el cual contiene 
+2 clases que imprimen su nombre, y ejecutan el metodo __init__ padre. En la lista de __mro__ 
+como ya dije anteriormente, podemos observar el orden de prioridad/profundidad con las que 
+se va ir ejecutando los metodos de las superclases.
+
+    # -*- coding: utf8 -*-
+    
+    class A(object):
+
+        def __init__(self):
+            print "A"
+            super(A, self).__init__()
+        
+    class B(A):
+        def __init__(self):
+            print "B"
+            super(B, self).__init__()
+    
+    
+    print "__mro__:", [x.__name__ for x in B.__mro__]
+    instance = B()
+
+
+Y la salida de este ejemplo es:
+
+    [3/4.3.11]niwi@vaio:~/doc.herencia.multiple&gt; python2 example1.py
+    __mro__: ['B', 'A', 'object']
+    B
+    A
+
+
+
+#### Ejemplo 2 ####
+
+En este ejemplo veremos un poco mas de complejidad, utilizando ya lo que tenemos del 
+codigo anterior y añadimos 2 clases mas. Una que herede de A que la llamaremos C y 
+otra que herede de B y C que la llamaremos D. Aqui es donde podremos ver en accion 
+de como python maneja la herencia multiple. Como ya mencione en la introduccion, es 
+bastante simple: primero ejecuta todas las superclases de primer nivel de profundidad 
+y luego ejecuta el segundo nivel asi llegando hasta el final que es object.
+
+Esto ultimo que acabo de contar funciona cuando tenemos una especie de rombo de dependencia, 
+en otros casos pasa algo diferente que lo veremos en otros ejemplos.
+
+Una cosa que tenemos que darnos cuenta, y si es que si muchas superclases de primer nivel 
+heredan de una superclase del segundo nivel, solo se ejecutara una vez. Para verlo mas claro, 
+mire ele ejemplo2.
+
+    # -*- coding: utf8 -*-
+    
+    class A(object):
+        def __init__(self):
+            print "A"
+            super(A, self).__init__()
+    
+    class B(A):
+        def __init__(self):
+            print "B"
+            super(B, self).__init__()
+    
+    class C(A):
+        def __init__(self):
+            print "C"
+            super(C, self).__init__()
+    
+    class D(C,B):
+        def __init__(self):
+            print "D"
+            super(D, self).__init__()
+    
+    
+    print "__mro__:", [x.__name__ for x in D.__mro__]
+    instance = D()
+
+
+Y la salida de este ejemplo es:
+
+    [3/4.3.11]{2}niwi@vaio:~/doc.herencia.multiple&gt; python2 example2.py 
+    __mro__: ['D', 'C', 'B', 'A', 'object']
+    D
+    C
+    B
+    A
+
+
+#### Ejemplo 3 ####
+
+Una vez comprendidos los ejemplos anteriores, vamos a ver que pasa cuando a la clase D 
+añadimos otra superclase, pero que esta vez esa superclase herede de otro objeto de 
+segundo nivel, como podria ser el mismo object.
+
+El funcionamiento, se puede deducir a simple vista, pero intentare explicarlo. El algoritmo 
+que usa python, analiza el primer nivel y lo agrupa por la superclase de segundo nivel. 
+Si nos encontramos en el caso del ejemplo 2, vemos que C y B heredan de una sola superclase 
+que es A, entonces, el procedimiento es ejecutar C, B y luego A, pero en el caso de C y B 
+heredaran de una superclase diferente el orden seria por profundidad. Es decir Que ejecutaria 
+el __init__ de la superclase C y luego la superclase de la que hereda C, seguido de __init__ 
+de B que a su vez ejecutaria el __init__ de la superclase de B.
+
+Para ver con claridad, he creado una clase Z que deriba de object y la he añadido como 
+superclase a D, a continuacion puede ver el codigo final y su ejecucion para que pueda ver 
+con mas claridad el funcionamiento:
+
+    # -*- coding: utf8 -*-
+    
+    class A(object):
+        def __init__(self):
+            print "A"
+            super(A, self).__init__()
+    
+    class B(A):
+        def __init__(self):
+            print "B"
+            super(B, self).__init__()
+    
+    class C(A):
+        def __init__(self):
+            print "C"
+            super(C, self).__init__()
+    
+    class Z(object):
+        def __init__(self):
+            print "Z"
+            super(Z, self).__init__()
+    
+    class D(C,B,Z):
+        def __init__(self):
+            print "D"
+            super(D, self).__init__()
+    
+    print "__mro__:", [x.__name__ for x in D.__mro__]
+    instance = D()
+
+Y la salida de este ejemplo es:
+
+    [3/4.3.11]niwi@vaio:~/doc.herencia.multiple&gt; python2 example3.py 
+    __mro__: ['D', 'C', 'B', 'A', 'Z', 'object']
+    D
+    C
+    B
+    A
+    Z</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:16:54</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:16:58</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="11" model="niwi.document">
+        <field type="CharField" name="uuid">43d8a5a8-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">etag-y-class-view-de-django</field>
+        <field type="CharField" name="title">Etag y Class-View de django 1.3</field>
+        <field type="TextField" name="content">Ya como mencione en la noticia general, he reescrito la parte de contenido para que use Class-Views de django 1.3, pero me encontre con un problema y es que no podia activar la opcion de usar ETAG, ya que por defecto esas vistas usan TemplateResponse como respuesta a render_to_response.
+
+Mire un poco el código fuente de como lo tenían hecho en django, y me di cuenta que la solución es bastante simple, si no quieres usar *TemplateResponse*, defines tu MixIn con el método *render_to_response* y usas el response de toda la vida: *HttpResponse*.
+
+Aquí el codigo del MixIn:
+
+    class GenericResponseMixIn(object):
+        template_name = None
+        def render_to_response(self, context, **response_kwargs):
+            return render_to_response(self.get_template_names(), context,
+                context_instance = RequestContext(self.request))
+
+
+Para usarlo solo que hay que ponerlo como primera superclase de tu Class-View, como con el ejemplo:
+
+
+    class TestingView(GenericResponseMixIn, TemplateView):
+        template_name = 'base.html'</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:17:33</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:17:38</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="12" model="niwi.document">
+        <field type="CharField" name="uuid">7e481fd4-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">django-form-charfield-jquery-validator-friendly</field>
+        <field type="CharField" name="title">Django-Form CharField jQuery-Validator friendly</field>
+        <field type="TextField" name="content">En un proyecto personal, me he topado con la necesidad de usar *jquery-validator*, y también me he topado con que escribir formularios de django para que sean friendly con *jquery-validator* es una pesadilla! Ya que te obliga por así decirlo a definir cada field con su correspondiente widget con sus correspondientes attrs.
+
+E aquí una posible solución a este tema, aun que solo aplica a *CharField*:
+
+    from django.forms.fields import CharField as DjangoCharField
+    
+    class CharField(DjangoCharField):
+        """ jQuery-validator friendly charfield """
+        def __init__(self, *args, **kwargs):
+            self._widget_type = kwargs.pop('type', 'text')
+            super(CharField, self).__init__(*args, **kwargs)
+
+        def widget_attrs(self, widget):
+            attrs = super(CharField, self).widget_attrs(widget)
+            if self.min_length:
+                attrs.update({'minlength':self.min_length})
+            
+            if "class" not in attrs:
+                attrs['class'] = ''
+
+            current_clases = attrs['class'].split()
+            if self.required:
+                if "required" not in current_clases:
+                    current_clases.append('required')
+        
+            if self._widget_type:
+                widget.input_type = self._widget_type
+
+            attrs['class'] = ' '.join(current_clases)
+            return attrs
+
+
+Y se usa de la misma forma que un CharField normal y corriente de Django, solo que acepta unos parametros de mas y mejora la gestion de otros a nivel de Widget:
+
+    class LoginForm(forms.Form):
+       username = CharField(max_length=200, min_length=4, required=True, type='email')
+       password = CharField(max_length=200, min_length=8, required=True, type='password')
+
+Y esto tiene como resultado:
+
+    &lt;input name="username" maxlength="200" minlength="4" type="email" class="required" id="id_username" /&gt;
+    &lt;input name="password" maxlength="200" minlength="8" type="password" class="required" id="id_password" /&gt;</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:19:12</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:19:12</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="13" model="niwi.document">
+        <field type="CharField" name="uuid">8fedf09c-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">deploy-django-projects-with-virtualenv-and-supervi</field>
+        <field type="CharField" name="title">Deploy Django projects with virtualenv and supervisord</field>
+        <field type="TextField" name="content">## Introducción ##
+
+Dado que continuamente estoy trabajando con proyectos django, y cada uno con distintos requerimientos, intentare explicar de manera simple como tener una sola maquina sirviendo muchos djangos.
+
+Ademas de esto, veremos distintas soluciones para servir aplicaciones django: pasando por apache/mod_wsgi, geventserver y gunicorn en conjunto a supervisord.
+
+Para todo el documento, hare servir de ejemplo el proyecto de esta misma web y para comensar, iniciamos un virtualenv de ejemplo:
+
+    [3/4.3.11]{127}niwi@vaio:~/work&gt; pwd
+    /home/niwi/work
+    [3/4.3.11]niwi@vaio:~/work&gt; virtualenv --no-site-packages testvirtual
+    New python executable in testvirtual/bin/python2
+    Also creating executable in testvirtual/bin/python
+    Installing setuptools............done.
+    Installing pip...............done.
+    [3/4.3.11]niwi@vaio:~/work&gt; cp ../devel/niwi-web testvirtual/
+
+## Apache/mod_wsgi &amp; virtualenv ##
+
+En primer paso, explicare como de manera sencilla, montar un apache virtualhost para que pueda usar el entorno virtualenv en vez del de por defecto de python.
+
+Todo se basa en el parametro __WSGIPythonHome__ con el cual le indicamos la raiz a partir del cual vamos a servir el proyecto. En nuestro caso seria asi:
+
+    WSGIPythonHome /home/niwi/work/testvirtual/
+
+Para que tenga una vision mas global, aqui va un ejemplo completo de un virtualhost de apache:
+
+    &lt;VirtualHost *:80&gt;
+        &lt;Directory /home/niwi/work/testvirtual/niwi-web/&gt;
+            Order allow,deny
+            Allow from all
+        &lt;/Directory&gt;
+    
+        ServerAdmin niwi@niwi.be
+        DocumentRoot "/srv/www/htdocs/"
+        ServerName www.niwi.be
+        ErrorLog "/var/log/httpd/www.niwi.be-error_log"
+        CustomLog "/var/log/httpd/www.niwi.be-access_log" common
+        
+        WSGIPythonHome /home/niwi/work/testvirtual/
+        WSGIScriptAlias / /home/niwi/work/testvirtual/niwi-web/django.wsgi
+        
+        Alias /static/ /home/niwi/work/testvirtual/niwi-web/niwi/static/
+        Alias /media/ /home/niwi/work/testvirtual/niwi-web/niwi/media/
+    &lt;/VirtualHost&gt;
+
+Hay que tener en cuenta de tener el archivo __django.wsgi__ en la raiz del repositorio de control de versiones, vaya, justo en el mismo directorio donde tengamos nuestro proyecto django. En nuestro caso tenemos:
+
+    Raiz virtualenv: /home/niwi/work/testvirtual/
+    Raiz mercurial:  /home/niwi/work/testvirtual/niwi-web/
+    Raiz django:     /home/niwi/work/testvirtual/niwi-web/niwi/
+
+Aquí el contenido de *django.wsgi*:
+
+    import sys, os
+    current_path = os.path.dirname(os.path.realpath(__file__))
+    sys.path.append(current_path)
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'niwi.settings'
+    
+    import django.core.handlers.wsgi
+    application = django.core.handlers.wsgi.WSGIHandler()
+
+
+Con esto ya tendríamos suficiente para poder arrancar nuestro proyecto, sin olvidarnos de instalar django y todas las dependencias de nuestro proyecto, que en este caso, lo he omitido.
+
+
+## geventserver, nginx &amp; supervisor ##
+
+Ahora pasamos a explicar como levantar un proyecto django sobre geventserver. Pero antes de nada haria falta explicar que es exactamente [geventserver][1].
+
+[1]: http://hg.niwi.be/py-niwi-web/file/e6bc001d7e80/scripts/geventserver.py
+
+En realidad es un simple script hecho en python (¿como no?) que puede ser descargado desde el respositorio de mercurial de esta misma web y trata de ser una ayuda para poder arrancar un proyecto django sobre stack wsgi de gevent. En muchos casos ha demostrado ser mas eficiente tanto en memoria como en rendimiento frente otras alternativas como pueden ser: gunicorn, mod_wsgi, tornado, etc...
+
+Una manera simple de arrancar un servidor wsgi sobre gevent y obviamente en nuestro repositorio virtualenv es tan simple como ejecutar:
+
+    [3/4.3.11]niwi@vaio:~/work/testvirtual&gt; source bin/activate
+    (testvirtual)[3/4.3.11]niwi@vaio:~/work/testvirtual&gt; python niwi-web/scripts/geventserver.py \
+         --port 9000 --settings='niwi.settings' --root='niwi-web'
+    Serving on 0.0.0.0:9000
+
+O de otra manera, sin tener que activar el virtualenv:
+
+    [3/4.3.11]niwi@vaio:~/work/testvirtual&gt; ./bin/python niwi-web/scripts/geventserver.py --port 9000 \
+        --settings='niwi.settings' --root='niwi-web'
+
+Todo esto teniendo en cuenta que geventserver.py lo tenemos localizado desde ahí donde lo ejecutamos, pero sin ningún problema podríamos tener un único geventserver.py para todos los proyectos sin tener que incluirlo en el repo.
+
+Ahora que ya tenemos arrancado el servidor de aplicaciones wsgi, toca la parte de nginx. No entrare mucho en detalle de como se configura nginx ya que esto va por otro largo post que tengo en cola. Un ejemplo de virtualhost para este caso tenemos:
+
+    server {
+        listen    80;
+        server_name www.niwi.be
+        charset utf-8;
+
+        location ^~ /static/ {
+            alias /home/niwi/work/testvirtual/niwi-web/niwi/static/;
+        }
+        location ^~ /media/ {
+            alias /home/niwi/work/testvirtual/niwi-web/niwi/media/;
+        }
+        location / {
+            proxy_pass_header Server;
+            proxy_set_header Host $http_host;
+            proxy_redirect off;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Scheme $scheme;
+            proxy_pass http://localhost:9000;
+        }
+    }
+
+
+Pero una vez terminado, nos encontramos con la situación de que gestionar con scripts rc, muchos proyectos de esta manera, es bastante horrible; sobretodo si los tenemos que escribir nosotros. Aquí es donde entra en juego supervisor. 
+
+Es de la familia de aplicaciones al estilo: launchd, daemontools, and runit; pero en este caso escritos 100% en python. La gran diferencia es que no esta escrito para substituir a init, si no para gestionar multiples procesos para proyectos. Ideal para nuestro caso.
+
+La manera basica para instalarlo es __pip install supervisor__ y en este caso lo instalamos en el sistema. Luego generamos un archivo de configuracion por defecto y lo colocamos en /etc (como usuario root):
+
+    3/4.3.11]niwi@vaio:~/work&gt; sudo echo_supervisord_conf &gt; /etc/supervisord.conf
+    3/4.3.11]niwi@vaio:~/work&gt; sudo supervisord # con esto lo dejamos ejecutando
+
+Ahora es tan simple como añadir un trocito de configuración para nuestro proyecto:
+
+    [program:niwiweb]
+    command=/home/niwi/work/testvirtual/bin/python2 scripts/geventserver.py --settings=niwi.settings  -p 9000
+    directory=/home/niwi/work/testvirtual/niwi-web
+    stdout_logfile=/tmp/mercurial.log
+    stdout_logfile_maxbytes=1MB
+    autostart=true
+    autorestart=true
+    redirect_stderr=true 
+
+Ahora entramos en la consola de administracion __supervisorctl__ y recargamos la configuración, y vemos como nuestro proyecto arranca automaticamente:
+
+    [4.3.11]root@vaio:~# supervisorctl
+    supervisor&gt; reload
+    Really restart the remote supervisord process y/N? y
+    Restarted supervisord
+    supervisor&gt; status
+    niwiweb                          RUNNING    pid 25374, uptime 0:00:01
+
+Si luego queremos parar o reiniciar solo un proceso en concreto usar los comandos: stop, start, restart. En nuestro caso para reiniciar el servicio seria __restart niwiweb__:
+
+    supervisor&gt; restart niwiweb
+    niwiweb: stopped
+    niwiweb: started
+
+
+## gunicorn &amp; supervisor ##
+
+Gunicorn es un servidor wsgi escrito 100% en python y funciona en un modelo bastante parecido a apache (pre-fork workers) pero la gran diferencia, es que puede correr sobre workers de gevent, lo que hace que sea una opción bastante interesante para aplicaciones "non-blocking".
+
+La instalacion es igual de simple que el resto de bibliotecas python, con un __pip install gunicorn__ dentro del entorno virtual nos bastaría. Esto nos instalaría 2 scripts dentro del directorio bin: gunicorn y gunicorn_django. El primero nos permitiría arrancar el servicio para cualquier aplicación WSGI, y el segundo es especifico para django, al cual con indicar el path del settings y el puerto de escucha nos bastaría.
+
+Vamos a ver un ejemplo de configuración para supervisor usando gunicorn_django:
+
+    [program:niwiweb]
+    command=/home/niwi/work/testvirtual/bin/gunicorn_django -k gevent --max-requests=1000 -b 0.0.0.0:9000 niwi/settings.py
+    directory=/home/niwi/work/testvirtual/niwi-web
+    stdout_logfile=/tmp/mercurial.log
+    stdout_logfile_maxbytes=1MB
+    autostart=true
+    autorestart=true
+    redirect_stderr=true
+
+## Enlaces ##
+
++ &lt;http://code.google.com/p/modwsgi/wiki/VirtualEnvironments&gt;
++ &lt;http://gunicorn.org/&gt;
++ &lt;http://supervisord.org/&gt;
++ &lt;http://www.gevent.org/&gt;</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:19:41</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:19:41</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="14" model="niwi.document">
+        <field type="CharField" name="uuid">9de42432-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">apunte-sobre-branches-en-mercurial</field>
+        <field type="CharField" name="title">Apunte sobre branches en mercurial</field>
+        <field type="TextField" name="content">Un interesante apunte, que no siempre se encuentra bien ubicado en la mente sobre como gestionar branches en la situación de que ya has hecho un par de commits.
+
+Nos damos cuenta que rollback no nos sirve, debido que solo tiene memoria de un cambio, vaya que solo deshace el ultimo cambio hecho.
+
+Suponemos que tenemos los siguientes commits: 0,1,2,3,4 pero resulta que el commit 3 y 4 no estan hechas pero no están lo suficientemente probados (los cambios). Ademas no hemos pensando de antemano de crear un branch a parte y commitearlos ahí.
+
+En esta situación, tenemos que actualizar nuestro espacio de trabajo a la revisión 2, crear un branch nuevo y commitearlo. Ejemplo:
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg update 2
+    resolving manifests
+    getting file.txt
+    1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg branch devel
+    marked working directory as branch devel
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg ci -m "Create new branch named devel"
+    committed changeset 5:dd667cd5d262
+
+Ahora tenemos que tenemos creado el branch, solo nos hace falta importar los cambios que hicimos en la revisión 3 y 4. Ejemplo:
+
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg merge 4
+    resolving manifests
+    getting file.txt
+    1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+    (branch merge, don't forget to commit)
+
+    [3/4.3.11]{255}niwi@vaio:/tmp/dummy&gt; hg commit -m "Merging"               
+    file.txt
+    committed changeset 6:911d904bb02d
+
+Y por ultimo, ahora que tenemos los cambios que queríamos en el branch adecuado, tenemos que eliminarlos de la branch principal. Nos actualizamos a la revisión 2 que es la base de los cambios a partir de los cuales quiero que continue el branch __default__. 
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg branch default
+    marked working directory as branch default
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg update 2
+    resolving manifests
+    getting file.txt
+    1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; echo " " &gt;&gt; file.txt
+    
+    [3/4.3.11]niwi@vaio:/tmp/dummy&gt; hg commit -m "New head for default branch"
+    file.txt
+    created new head
+    committed changeset 7:e5ec98c49dbf</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:20:05</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:20:08</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="15" model="niwi.document">
+        <field type="CharField" name="uuid">ab9721d8-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">tipado-estatico-en-python</field>
+        <field type="CharField" name="title">Tipado estatico en python.</field>
+        <field type="TextField" name="content">Hoy me encontré con una curiosidad! Y una vez vista la idea sabia que se podría hacer, pero no se me había ocurrido la necesidad de hacerlo.
+
+Se trata de implementar una especie de tipado estático o control de tipos para una clase, y eso es gracias a los descriptores de las nuevas clases de python, las que derivan de __object__.
+
+El articulo original es de [Crysol][1], que por cierto, recomendó seguir este blog por que suele publicar cosas bastante interesantes.
+
+[1]: http://crysol.org/es/node/1500
+
+El ejemplo que presentan es:
+
+    :::python
+    class TypedAttr(object):
+        def __init__(self, name, cls):
+            self.name = name
+            self.cls = cls 
+    
+        def __get__(self, obj, objtype):
+            if (obj is None):
+                raise AttributeError()
+
+            try:
+                return obj.__dict__[self.name]
+            except KeyError:
+                raise AttributeError
+
+        def __set__(self, obj, val):
+            if not isinstance(val, self.cls):
+                raise TypeError("'%s' given but '%s' expected" % \
+                  (val.__class__.__name__, self.cls.__name__))
+
+            obj.__dict__[self.name] = val
+
+
+¿Y que es lo que hace esta clase? Lo que realmente hace es implementar el los métodos &lt;code&gt;__get__&lt;/code&gt;
+y &lt;code&gt;__set__&lt;/code&gt; y cada uno de ellos recibe 2 argumentos.
+
+En caso del &lt;code&gt;__set__&lt;/code&gt; el primer parámetro **obj** es el objeto al que esta asociado, y el segundo es el valor que quiere asignarle. Y en el caso de &lt;code&gt;__get__&lt;/code&gt; nos pasa el objeto al que esta asociado y la clase de la que se instancia.
+
+Gracias a esto podemos por así decirlo recuperar información interna guardada en el objeto anfitrión que contendría este atributo para controlar el tipo de dato.
+
+No creo que esta explicación quede algo clara, pero creo que con un ejemplo con los mensajes de debug descomentados podríamos ver que es lo que realmente pasa. Este es el script de ejemplo que he usado:
+
+    :::python
+    class A(object):
+        a = TypedAttr("__a", str)
+
+    A1 = A() 
+    A1.a = "hola"
+
+    print A1.a
+    A1.a = 1 
+
+
+Y esta es la salida de debug que nos pinta en la terminal:
+
+    debug2 &lt;__main__.A object at 0x1373650&gt; hola
+    debug &lt;__main__.A object at 0x1373650&gt; &lt;class '__main__.A'&gt;
+    hola
+    debug2 &lt;__main__.A object at 0x1373650&gt; 1
+    Traceback (most recent call last):
+      File "test2.py", line 32, in &lt;module&gt;
+        A1.a = 1
+      File "test2.py", line 19, in __set__
+        raise TypeError("'%s' given but '%s' expected" % (val.__class__.__name__, self.cls.__name__))
+    TypeError: 'int' given but 'str' expected
+
+
+Vemos que cuando intentamos asignar un entero, nos salta un error diciendo que solo podemos asignar strings. 
+
+Este articulo es una mera copia del articulo de crysol con alguna que otra palabra mía por medio. Todos los méritos se lo lleva el autor original del articulo enlazado en la parte superior.</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:20:28</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 12:34:43</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="16" model="niwi.document">
+        <field type="CharField" name="uuid">bc158f2c-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">como-python-administra-la-memoria-al-usar-list</field>
+        <field type="CharField" name="title">Como python administra la memoria al usar list()</field>
+        <field type="TextField" name="content">En python, tenemos varios contenedores de variables, y en este caso hablaremos de tuplas y listas. Y aveces nos surgen las dudas de como administra python la memoria a la hora de conversión de una tupla a una lista. O mejor dicho, que cuando convertimos de una tupla a una lista, los objetos que los contienen también son instancias nuevas?
+
+Con unos ejemplos claros veré de presentar varias situaciones de conversión y vemos lo que hace python en realidad.
+
+En python existe una función que permite saber el identificador actual del objeto ( **id(obj)** ) y es el que voy a usar para identificar si los objetos son instancias nuevas o no.
+
+En primer caso vemos una tupla y sus identificadores:
+
+    :::python
+    &gt;&gt;&gt; var = ('hola', 'mundo')
+    &gt;&gt;&gt; id(var), [id(x) for x in var]
+    (17316752, [17381008, 17381056])
+
+
+Ahora convertimos este objeto tupla **var** a una lista y observamos que nos muestra la salida:
+
+    :::python
+    &gt;&gt;&gt; varlist = list(var)
+    &gt;&gt;&gt; id(varlist), [id(x) for x in varlist]
+    (17344920, [17381008, 17381056])
+
+
+Vemos que el objeto contenedor cambia, pero los objetos que estaban dentro simplemente se han utilizado sin realizar ninguna copia. Y esto como creo que ya es mas que obvio pasa con cualquier tipo de objeto, sea string o sea cualquiera que hayamos definido nosotros.</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:20:55</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 12:35:36</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="17" model="niwi.document">
+        <field type="CharField" name="uuid">ce0fa80c-8f4c-11e0-981d-0024d654ffc6</field>
+        <field type="SlugField" name="slug">estadisticas-de-memcached-sobre-django</field>
+        <field type="CharField" name="title">Estadisticas de memcached sobre django 1.3+</field>
+        <field type="TextField" name="content">Estoy seguro que muchos de los que desarrollamos sobre django, usamos memcached como sistema de cache, y a muchos nos interesaria saber las estadisticas del demonio de memcached.
+
+Desde luego que es bastante simple obtener estas estadísticas mediante la ejecución en la linea de comandos **memcached-tool stats 127.0.0.1:11211**, pero hay veces que no podemos acceder a la shell o simplemente en este momento no nos es comodo. Cualquier escusa vale aquí ;)
+
+Navegando por la red me encontré con un [articulo][1] que hacia ver las estadísticas de memcached creando una __view__. Pero el articulo es del 2007 y la versión de django usada es bastante antigua.
+
+He decidido tomar la idea y crear una Class-View sobre django 1.3, que nos permitirá visualizar las estadísticas de nuesto servidor o servidores de memcached.
+
+A continuación tenemos la Implementación de la vista, template. Solo faltaría incluir la vista en las urls y probar que todo funciona perfectamente.
+
+[1]: http://effbot.org/zone/django-memcached-view.htm
+
+#### Implementación de la vista: ####
+
+    from django.views.generic import View
+    from django.shortcuts import render_to_response
+    from django.http import HttpResponseNotFound, HttpResponseForbidden
+    from django.conf import settings
+    
+    class MemcacheStatusView(View):
+        template_name = "memcache_status.html"
+        
+        def get(self, request, *args, **kwargs):
+            try:
+                import memcache
+            except ImportError:
+                return HttpResponseNotFound()
+                
+            if not request.user.is_authenticated() and request.user.is_staff:
+                return HttpResponseForbidden()
+                
+            if settings.CACHES['default']['BACKEND'] != 'django.core.cache.backends.memcached.MemcachedCache':
+                return HttpResponseNotFound()
+                
+            context = {'stats': self.make_stats()}
+            return self.render_to_response(context)
+            
+        def make_stats(self):
+            cache_location =  settings.CACHES['default']['LOCATION']
+            if not isinstance(cache_location, list):
+                cache_location = [cache_location]
+                
+            import memcache
+            mc = memcache.Client(cache_location, debug=0)
+            return dict(mc.get_stats())
+            
+        def render_to_response(self, context):
+            return render_to_response(self.template_name, context, mimetype="text/html")
+
+
+#### Implementación de la template: ####
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8" /&gt;
+        &lt;title&gt;Memcached status&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;style type="text/css"&gt;
+        body { font-size: 12px; font-family: monospace; }
+        .stat-item { overflow: hidden }
+        .stat-key, .stat-val { float: left; width: 200px; }
+        .server-name { font-weight: bold; font-size: 14px; }
+        .server-stats { padding-left: 20px; }
+        .stat-key { border-bottom: 1px dotted #aaa; }
+        &lt;/style&gt;
+        &lt;div class="stats"&gt;
+            {% for k,v in stats.items %}
+            &lt;div class="server"&gt;
+                &lt;div class="server-name"&gt;{{ k }}&lt;/div&gt;
+                &lt;div class="server-stats"&gt;
+                    {% for statkey, statvalue in v.items %}
+                    &lt;div class="stat-item"&gt;
+                        &lt;div class="stat-key"&gt;{{ statkey }}&lt;/div&gt;
+                        &lt;div class="stat-val"&gt;{{ statvalue }}&lt;/div&gt;
+                    &lt;/div&gt;
+                    {% endfor %}
+                &lt;/div&gt;
+            &lt;/div&gt;
+            {% endfor %}
+        &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:21:25</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:21:29</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="18" model="niwi.document">
+        <field type="CharField" name="uuid">27619fe8-8f50-11e0-95ab-0024d654ffc6</field>
+        <field type="SlugField" name="slug">home-page</field>
+        <field type="CharField" name="title">Home page</field>
+        <field type="TextField" name="content">Niwi.Be es una especie de web/blog que utilizo como plataforma para publicar datos de mi interes, como pueden ser enlaces, snippets, noticias, etc... El codigo fuente de esta web esta disponible bajo lisencia BSD (para acceder al repositorio vease pie de pagina).&lt;br /&gt;
+Puede obtener mas información sobre mi en la sección «[About][0]»
+
+&lt;img src="/static/res/destacado.logo.png" class="destacados-title"&gt;&lt;/img&gt;
+
+ * 19/05/2011: Fotos y videos de la [**#acampadasol**][7]
+ * 14/05/2011: www.niwi.be migrado a Amazon EC2 (micro) ([web-benchmarks][6])
+ * 10/05/2011: Versión 0.4 de [geventserver][3], [cherrypyserver][4] y [tornadoserver][5]
+ * 25/04/2011: Nueva versión de [geventserver][1] (0.3)
+ * 24/04/2011: Vídeo de una [melodía de arpa][2] tocada en la plaza de oriente, Madrid.
+ * 23/04/2011: Re escritura de toda la parte de web relacionada con el contenido con Class-Based Generic-Views, y a falta de alguna que otra optimización, fue una experiencia bastante interesante.
+
+[0]: http://www.niwi.be/page/about/
+[1]: http://hg.niwi.be/py-niwi-web/file/41d13082525c/scripts/geventserver.py
+[2]: http://www.niwi.be/page/melodia-de-arpa-en-la-plaza-de-oriente-video-madrid/
+[3]: http://hg.niwi.be/py-niwi-web/file/75cccc15e773/scripts/geventserver.py
+[4]: http://hg.niwi.be/py-niwi-web/file/75cccc15e773/scripts/cherrypyserver.py
+[5]: http://hg.niwi.be/py-niwi-web/file/75cccc15e773/scripts/tornadoserver.py
+[6]: http://www.niwi.be/paste/19/
+[7]: http://www.niwi.be/page/acampadasol-fotos-y-videos/</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">public</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:45:24</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:45:24</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>page</natural></field>
+    </object>
+    <object pk="19" model="niwi.document">
+        <field type="CharField" name="uuid">b9f25576-8f6b-11e0-a94a-0024d654ffc6</field>
+        <field type="SlugField" name="slug">couchdb-session-backend-for-django</field>
+        <field type="CharField" name="title">CouchDB session backend for django 1.3</field>
+        <field type="TextField" name="content">Session engine sobre couchdb. Probado sobre django 1.2 y 1.3. Es mas que nada un experimento, por cuestiones de rendimiento es recomendable usar memcached, esto solo es un experimento.
+
+    ::: python
+    # -*- coding: utf-8 -*-
+    # Copyright (c) 2011 Andrei Antoukh &lt;niwi@niwi.be&gt;
+    # 
+    # Put this on settings.py
+    #
+    # COUCHDB = {
+    #    'session': {
+    #        'HOST': 'http://localhost:5984/',
+    #        'NAME': 'session',
+    #    }
+    # }
+    # SESSION_ENGINE='path.to.couch.session'
+    
+    import datetime
+    
+    from django.conf import settings
+    from django.contrib.sessions.backends.base import SessionBase
+    from django.utils.encoding import force_unicode
+    
+    from couchdb import Server
+    from couchdb.client import validate_dbname
+    from couchdb.http import ResourceNotFound
+    
+    class DBError(Exception):
+        pass
+    
+    class SettingsError(Exception):
+        pass
+    
+    def get_db(using='default'):
+        if not hasattr(settings, 'COUCHDB'):
+            raise SettingsError("COUCHDB dict is mandatory in settings.py")
+    
+        DATABASES = settings.COUCHDB
+        if using not in DATABASES:
+            raise DBError("no databse %s found" % (using))
+    
+        database_dict = DATABASES[using]
+        if "HOST" not in database_dict and "NAME" not in database_dict:
+            raise DBError("HOST and NAME vars are mandatory")
+        
+        server = Server(database_dict['HOST'])
+        if database_dict['NAME'] in server:
+            database = server[database_dict['NAME']]
+        else:
+            database = server.create(database_dict['NAME'])
+    
+        return database
+    
+    
+    class SessionStore(SessionBase):
+        """
+            Implements CouchDB session store.
+        """
+        def __init__(self, session_key=None):
+            self._db = get_db('session')
+            self._format = "%Y-%m-%dT%H:%M:%S.%f"
+            super(SessionStore, self).__init__(session_key)
+    
+        def load(self):
+            try:      
+                session_doc = self._db[self.session_key]
+                session_date = datetime.datetime.strptime(session_doc['expire_date'], self._format)
+                if session_date &gt; datetime.datetime.now():
+                    return self.decode(force_unicode(session_doc['session_data']))
+            except ResourceNotFound:   
+                pass
+    
+            self.create()
+            return {}
+    
+        def exists(self, session_key):
+            return session_key in self._db
+    
+        def create(self):
+            while True:
+                self.session_key = self._get_new_session_key()
+                if self.session_key in self._db:
+                    continue
+                else:
+                    self.save(must_create=True)
+                    self.modified = True
+                    self._session_cache = {}
+                    return 
+    
+        def save(self, must_create=False):
+            if self.session_key in self._db:
+                doc = self._db[self.session_key]
+            else:
+                doc = dict(_id=self.session_key)
+    
+            doc['session_data'] = self.encode(self._get_session(no_load=must_create))
+            doc['expire_date'] = self.get_expiry_date().isoformat()
+    
+            self._db.save(doc)
+    
+        def delete(self, session_key=None):
+            if session_key is None:
+                if self._session_key is None:
+                    return
+                session_key = self._session_key
+        
+            if session_key in self._db:
+                del self._db[session_key]</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">draft</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 14:02:46</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 14:03:54</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="20" model="niwi.document">
+        <field type="CharField" name="uuid">5b6ad630-8f6c-11e0-a94a-0024d654ffc6</field>
+        <field type="SlugField" name="slug">random-filenames-with-python</field>
+        <field type="CharField" name="title">Random filenames with python</field>
+        <field type="TextField" name="content">Una simple función compatible con python3 con pocas o nulas modificaciones, que genera nombres aleatorios, con posibilidad de especificar:
+
+* tamaño total
+* que letras usar
+* tener prefijo y sufijo
+
+Implementación:
+
+    ::: python
+    # -*- coding: utf-8 -*-
+    # Copyright (c) 2011 Andrei Antoukh &lt;niwi@niwi.be&gt;
+    # License: BSD-3 
+    
+    import os.path, random, string
+    
+    def random_filename(chars=string.ascii_lowercase, length=16, prefix='',suffix=''):
+        """ Examples:
+        &gt;&gt;&gt; random_filename(length=20)
+        'nlxplmqmkgppdraokpbc'
+        &gt;&gt;&gt; random_filename(length=20, prefix="foo-")
+        'foo-fjqaqpcfgosamrdk'
+        &gt;&gt;&gt; random_filename(length=20, prefix="foo-", suffix=".txt")
+        'foo-yppuoaltkjfz.txt'
+        &gt;&gt;&gt; random_filename(chars="xc", length=20, prefix="foo-", suffix=".txt")
+        'foo-xcxxxxcccxxx.txt'
+        """
+    
+        if length - len(prefix)-len(suffix) &lt; 0:
+            raise ValueError("length - len(prefix)-len(suffix) is &lt; 0")
+    
+        filename = ''.join([random.choice(chars) for i in range(length-len(prefix)-len(suffix))])
+        filename = prefix + filename + suffix
+        return filename
+    
+    
+    if __name__ == '__main__':
+        # test
+        from __future__ import print_function
+        rname = random_filename(length=4, prefix="hola-")
+        print("{0} {1}".format(len(rname), rname))</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">draft</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 14:07:17</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 14:08:57</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="21" model="niwi.document">
+        <field type="CharField" name="uuid">13d4972e-8f6d-11e0-a94a-0024d654ffc6</field>
+        <field type="SlugField" name="slug">facebookconnect-django-13-middleware-example</field>
+        <field type="CharField" name="title">FacebookConnect django 1.3 middleware (example)</field>
+        <field type="TextField" name="content">Hay bastantes "social"-plugins en la red, pero la gran mayoría que había visto, estaban hechos para el sistema de autenticacion de django, cosa que en mi caso quería evitar. Aqui es un ejemplo simple de como podemos tener un sistema de autenticacion con facebook-connect independiente de django.
+
+El funcionamiento es simple:
+
+* Si estas logado en facebook y nos autorizaste, detectamos tu cookie, si existes en nuestro sistema, te logeamos, en caso contrario te creamos el usuario automaticamente y te dejamos logeado.
+* En caso que no estés logueado, pues simplemente asignamos un usuario anónimo al request.
+
+Implementación de ejemplo:
+
+    :::python
+    # -*- coding: utf-8 -*-
+    # Copyright (c) 2011 Andrei Antoukh &lt;niwi@niwi.be&gt;
+    # License: BSD-3
+    # Desc:  Django 1.3 middleware class
+    
+    from django.db import transaction, IntegrityError, IntegrityError
+    from django.http import HttpResponseRedirect, HttpResponse
+    from django.conf import settings
+    from django.utils import simplejson
+    
+    from project.models import Contact, AnonimousAccount
+    
+    import datetime
+    import facebook # https://github.com/facebook/python-sdk 
+    
+    class FacebookConnectMiddleware(object):
+        def process_request(self, request):
+            cookie = facebook.get_user_from_cookie(request.COOKIES, settings.FCBK_APPID, settings.FCBK_SECRET)
+            if cookie:
+                try:
+                    contact_obj = Contact.objects.get(facebook_id=cookie['uid'])
+                    if contact_obj.facebook_access_token != cookie["access_token"]:
+                        graph = facebook.GraphAPI(cookie["access_token"])
+                        profile = graph.request(u'/me', {'fields':u',picture,email,name,first_name,last_name,friends,likes,birthday'})
+                        contact_obj.friends = simplejson.dumps([obj[u'id'] for obj in profile['friends']['data']])
+                        contact_obj.likes = len(profile['likes']['data'])
+                        contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                        contact_obj.facebook_access_token = cookie["access_token"]
+                        contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                        contact_obj.picture = profile['picture']
+                        contact_obj.save()
+                    
+                    request.contact = contact_obj
+    
+                except Contact.DoesNotExist:
+                    graph = facebook.GraphAPI(cookie["access_token"])
+                    profile = graph.request(u'/me', {'fields':u',picture,email,name,first_name,last_name,friends,likes,birthday'})
+                  
+                    sid = transaction.savepoint()
+                    try:
+                        if Contact.objects.filter(email = profile['email']):
+                            contact_obj = Contact.objects.get(email = profile['email'])
+                            contact_obj.facebook_id = profile['id']
+                            contact_obj.facebook_access_token = cookie['access_token']
+                            
+                        else:
+                            contact_obj = Contact(
+                                facebook_id = profile['id'],
+                                facebook_access_token = cookie['access_token'],
+                                firstname = profile['first_name'],
+                                lastname = profile['last_name'],
+                                email = profile['email'],   
+                            )
+                       
+                        contact_obj.friends = simplejson.dumps([obj[u'id'] for obj in profile['friends']['data']])
+                        contact_obj.likes = len(profile['likes']['data'])
+                        contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                        contact_obj.picture = profile['picture']
+                        contact_obj.save()
+                        transaction.savepoint_commit(sid)
+                        request.contact = contact_obj
+                        return HttpResponseRedirect(request.META['PATH_INFO'])
+                                
+                    except IntegrityError:
+                        transaction.savepoint_rollback(sid)
+                        request.contact = AnonimousAccount()
+    
+            else:
+                request.contact = AnonimousAccount()</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">draft</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 14:12:26</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 14:12:26</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>post</natural></field>
+    </object>
+    <object pk="22" model="niwi.document">
+        <field type="CharField" name="uuid">4632914e-8f6d-11e0-a94a-0024d654ffc6</field>
+        <field type="SlugField" name="slug">py-s3backup</field>
+        <field type="CharField" name="title">py-s3backup</field>
+        <field type="TextField" name="content">Es un pequeño script, que permite de una manera muy parecida a rsync, sincronizar un directorio local con un directorio en Amazon S3 y a la inversa. Contiene bastantes opciones para poder integrarlo de manera simple en scripts de copias de seguridad por ejemplo.
+
+### Referencia de parametros: ###
+
+* *--download*: Indica al script que quieres descargar contenido de S3.
+* *--upload*: Hace la operacion inversa, y se utiliza para cargar datos locales a S3.
+* *--local-prefix*: Especificas el directorio local.
+* *--remote-prefix*: Especificas el directorio remoto.
+* *--bucket*: especificas el nombre del bucket a usar.
+* *--overwrite*: indicas al script si quieres que se sobrescriban los ficheros si esos existen.
+* *--diferential*: opción para cargar archivos que solo se han modificado.
+* *--access-key*: Indicas al script tu clave de acceso.
+* *--secret-key*: Indicas al script tu clave secreta.
+
+### Autenticación: ###
+
+Si ya esta familiarizado con S3, sabra que para realizar las operaciones, el script necesita sus credenciales. Los cuales pueden indicarse con los parametros que ya describi en el apartado anterior, o definiendo las variables de entorno *AWS_ACCESS_KEY* y *AWS_SECRET_KEY*.
+
+h3. Ejemplo de uso:
+
+&gt; &lt;pre&gt;s3backup.py --upload --local-prefix=/home/user/foodir \
+&gt;  --remote-prefix=foodirbackup \
+&gt;  --access-key=ACCESSKEY \
+&gt;  --secret-key=SECRETKEY \
+&gt;  --bucket="bucket-name" \
+&gt;  --overwirte
+&gt; &lt;/pre&gt;
+
+### Dependencias: ###
+
+Este script utiliza la biblioteca "boto":http://boto.cloudhackers.com/ para acceder a la api de amazon, y el total de las dependencias suman:
+
+* Python 2.6+
+* boto 2.0+
+* Linux/BSD
+
+### Descargar: ###
+
+El codigo fuente esta disponible en el [repositorio mercurial.](http://hg.niwi.be/py-s3backup/)</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">draft</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 14:13:51</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 14:13:51</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>project</natural></field>
+    </object>
+    <object pk="23" model="niwi.document">
+        <field type="CharField" name="uuid">5c373ed6-8f6d-11e0-a94a-0024d654ffc6</field>
+        <field type="SlugField" name="slug">py-s3put</field>
+        <field type="CharField" name="title">py-s3put</field>
+        <field type="TextField" name="content">Es un pequeño script, que permite de una manera muy parecida a scp, cargar varios archivos a un bucket de Amazon S3. 
+Y a igual que [py-s3backup](http://www.niwi.be/projects/py-s3backup/) también tiene bastantes opciones para poder integrarlo de manera simple en scripts de copias de seguridad por ejemplo.
+
+### Referencia de parámetros: ###
+
+* *--prefix*: Especificas el directorio remoto.
+* *--bucket*: especificas el nombre del bucket a usar.
+* *--overwrite*: indicas al script si quieres que se sobrescriban los ficheros si esos existen.
+* *--diferential:* opción para cargar archivos que solo se han modificado.
+* *--access-key*: Indicas al script tu clave de acceso.
+* *--secret-key*: Indicas al script tu clave secreta.
+
+### Autenticación: ###
+
+Si ya esta familiarizado con S3, sabra que para realizar las operaciones, el script necesita sus credenciales. Los cuales pueden indicarse con los parametros que ya describi en el apartado anterior, o definiendo las variables de entorno *AWS_ACCESS_KEY* y *AWS_SECRET_KEY*.
+
+### Ejemplo de uso: ###
+
+&gt; &lt;pre&gt;s3put.py --prefix=foodirbackup \
+&gt;  --access-key=ACCESSKEY \
+&gt;  --secret-key=SECRETKEY \
+&gt;  --bucket="bucket-name" \
+&gt;  --overwirte /home/user/foo.tar.bz2@
+&gt; &lt;/pre&gt;
+
+### Dependencias: ###
+
+Este script utiliza la biblioteca [boto](http://boto.cloudhackers.com/) para acceder a la api de amazon, y el total de las dependencias suman:
+
+* Python 2.6+
+* boto 2.0+
+* Linux/BSD
+
+### Descargar: ###
+
+El codigo fuente esta disponible en el [repositorio mercurial.](http://hg.niwi.be/py-s3put/)</field>
+        <field type="BooleanField" name="markup">True</field>
+        <field type="CharField" name="status">draft</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 14:14:28</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 14:14:28</field>
+        <field type="IntegerField" name="current_version">1</field>
+        <field type="IntegerField" name="parent_version"><None></None></field>
+        <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel"><natural>niwi</natural><natural>project</natural></field>
+    </object>
+    <object pk="18" model="niwi.page">
+    </object>
+    <object pk="1" model="niwi.post">
+    </object>
+    <object pk="2" model="niwi.post">
+    </object>
+    <object pk="3" model="niwi.post">
+    </object>
+    <object pk="4" model="niwi.post">
+    </object>
+    <object pk="5" model="niwi.post">
+    </object>
+    <object pk="6" model="niwi.post">
+    </object>
+    <object pk="7" model="niwi.post">
+    </object>
+    <object pk="8" model="niwi.post">
+    </object>
+    <object pk="9" model="niwi.post">
+    </object>
+    <object pk="10" model="niwi.post">
+    </object>
+    <object pk="11" model="niwi.post">
+    </object>
+    <object pk="12" model="niwi.post">
+    </object>
+    <object pk="13" model="niwi.post">
+    </object>
+    <object pk="14" model="niwi.post">
+    </object>
+    <object pk="15" model="niwi.post">
+    </object>
+    <object pk="16" model="niwi.post">
+    </object>
+    <object pk="17" model="niwi.post">
+    </object>
+    <object pk="19" model="niwi.post">
+    </object>
+    <object pk="20" model="niwi.post">
+    </object>
+    <object pk="21" model="niwi.post">
+    </object>
+    <object pk="22" model="niwi.project">
+    </object>
+    <object pk="23" model="niwi.project">
+    </object>
+    <object pk="1" model="niwi.link">
+        <field type="CharField" name="title">Django and Postgresql Performance at WooMe</field>
+        <field type="SlugField" name="slug">django-and-postgresql-performance-at-woome-i-am-seb</field>
+        <field type="CharField" name="url">http://iamseb.com/seb/2010/11/django-and-postgresq-performance/</field>
+        <field type="DateTimeField" name="created_date">2011-04-03 00:00:00</field>
+        <field type="DateTimeField" name="modified_date">2011-04-03 19:35:28</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="2" model="niwi.link">
+        <field type="CharField" name="title">Watch This Space: Quick and Dirty Database Pooling in Django and MySQL using SQLAlchemy</field>
+        <field type="SlugField" name="slug">watch-this-space-quick-and-dirty-database-pooling-in-django-and-mysql-using-sqlalchemy</field>
+        <field type="CharField" name="url">http://jasonrubenstein.blogspot.com/2008/02/quick-and-dirty-database-pooling-in.html</field>
+        <field type="DateTimeField" name="created_date">2011-04-03 00:00:00</field>
+        <field type="DateTimeField" name="modified_date">2011-04-03 19:35:16</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="3" model="niwi.link">
+        <field type="CharField" name="title">Las 35 abreviaturas para microbloggear que deberías conocer</field>
+        <field type="SlugField" name="slug">las-35-abreviaturas-para-microbloggear-que-deberias-conocer-en-soy-gik-sg</field>
+        <field type="CharField" name="url">http://www.soygik.com/las-35-abreviaturas-de-micrbloggin-que-deberias-conocer/</field>
+        <field type="DateTimeField" name="created_date">2011-04-03 00:00:00</field>
+        <field type="DateTimeField" name="modified_date">2011-04-03 19:35:00</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="4" model="niwi.link">
+        <field type="CharField" name="title">SaaS with Django and PostgreSQL - tidbids's posterous</field>
+        <field type="SlugField" name="slug">saas-with-django-and-postgresql-tidbidss-posterous</field>
+        <field type="CharField" name="url">http://tidbids.posterous.com/saas-with-django-and-postgresql</field>
+        <field type="DateTimeField" name="created_date">2011-04-05 10:00:57</field>
+        <field type="DateTimeField" name="modified_date">2011-04-05 10:00:57</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="5" model="niwi.link">
+        <field type="CharField" name="title">Code Like a Pythonista: Idiomatic Python</field>
+        <field type="SlugField" name="slug">code-like-a-pythonista-idiomatic-python</field>
+        <field type="CharField" name="url">http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html</field>
+        <field type="DateTimeField" name="created_date">2011-04-05 20:40:13</field>
+        <field type="DateTimeField" name="modified_date">2011-04-05 20:40:13</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="6" model="niwi.link">
+        <field type="CharField" name="title">Python’s list implementation | Laurent Luce's Blog</field>
+        <field type="SlugField" name="slug">pythons-list-implementation-laurent-luces-blog</field>
+        <field type="CharField" name="url">http://www.laurentluce.com/?p=271</field>
+        <field type="DateTimeField" name="created_date">2011-04-05 23:54:13</field>
+        <field type="DateTimeField" name="modified_date">2011-04-05 23:54:13</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="7" model="niwi.link">
+        <field type="CharField" name="title">How Digg is Built | Digg About</field>
+        <field type="SlugField" name="slug">how-digg-is-built-digg-about</field>
+        <field type="CharField" name="url">http://about.digg.com/blog/how-digg-is-built</field>
+        <field type="DateTimeField" name="created_date">2011-04-06 00:10:16</field>
+        <field type="DateTimeField" name="modified_date">2011-04-06 00:10:16</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="8" model="niwi.link">
+        <field type="CharField" name="title">Decoradores en Python (I) – Introducción</field>
+        <field type="SlugField" name="slug">decoradores-en-python-i-introduccion-en-borrador-permanente</field>
+        <field type="CharField" name="url">http://www.juanjoconti.com.ar/2008/07/11/decoradores-en-python-i/</field>
+        <field type="DateTimeField" name="created_date">2011-04-09 00:52:36</field>
+        <field type="DateTimeField" name="modified_date">2011-04-09 00:53:05</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="9" model="niwi.link">
+        <field type="CharField" name="title">Decoradores en Python (II) – Decoradores con parametros</field>
+        <field type="SlugField" name="slug">decoradores-en-python-ii-decoradores-con-parametros-en-borrador-permanente</field>
+        <field type="CharField" name="url">http://www.juanjoconti.com.ar/2009/07/16/decoradores-en-python-ii/</field>
+        <field type="DateTimeField" name="created_date">2011-04-09 00:53:25</field>
+        <field type="DateTimeField" name="modified_date">2011-04-09 00:53:48</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="10" model="niwi.link">
+        <field type="CharField" name="title">FUSE y python: crea tu propio sistema de ficheros fácilmente | CRySoL</field>
+        <field type="SlugField" name="slug">fuse-y-python-crea-tu-propio-sistema-de-ficheros-facilmente-crysol</field>
+        <field type="CharField" name="url">http://crysol.org/es/node/1491</field>
+        <field type="DateTimeField" name="created_date">2011-04-09 01:09:51</field>
+        <field type="DateTimeField" name="modified_date">2011-04-09 01:09:51</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="11" model="niwi.link">
+        <field type="CharField" name="title">HTML5 and Server-Sent Events</field>
+        <field type="SlugField" name="slug">html5-and-server-sent-events</field>
+        <field type="CharField" name="url">http://dsheiko.com/weblog/html5-and-server-sent-events</field>
+        <field type="DateTimeField" name="created_date">2011-04-10 19:32:44</field>
+        <field type="DateTimeField" name="modified_date">2011-04-10 19:32:44</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="12" model="niwi.link">
+        <field type="CharField" name="title">Decoradores en Python (III) – Clases decoradoras</field>
+        <field type="SlugField" name="slug">decoradores-en-python-iii-clases-decoradoras-en-borrador-permanente</field>
+        <field type="CharField" name="url">http://www.juanjoconti.com.ar/2009/12/30/decoradores-en-python-iii/</field>
+        <field type="DateTimeField" name="created_date">2011-04-10 21:02:06</field>
+        <field type="DateTimeField" name="modified_date">2011-04-10 21:02:16</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="13" model="niwi.link">
+        <field type="CharField" name="title">ec2 + FreeBSD + Nginx + uWSGI + django</field>
+        <field type="SlugField" name="slug">ec2-freebsd-nginx-uwsgi-django</field>
+        <field type="CharField" name="url">http://tenderlovingcode.com/blog/uncategorized/ec2-freebsd-nginx-uwsgi-django/?utm_source=twitterfeed&amp;utm_medium=twitter</field>
+        <field type="DateTimeField" name="created_date">2011-04-11 01:02:45</field>
+        <field type="DateTimeField" name="modified_date">2011-04-11 01:03:54</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="14" model="niwi.link">
+        <field type="CharField" name="title">Django snippets: Full-Text Searchable Models</field>
+        <field type="SlugField" name="slug">django-snippets-full-text-searchable-models</field>
+        <field type="CharField" name="url">http://djangosnippets.org/snippets/1328/</field>
+        <field type="DateTimeField" name="created_date">2011-04-12 00:56:56</field>
+        <field type="DateTimeField" name="modified_date">2011-04-12 00:56:56</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="15" model="niwi.link">
+        <field type="CharField" name="title">Evaluating Django Caching Options</field>
+        <field type="SlugField" name="slug">evaluating-django-caching-options-codysoylandcom</field>
+        <field type="CharField" name="url">http://codysoyland.com/2010/jan/17/evaluating-django-caching-options/</field>
+        <field type="DateTimeField" name="created_date">2011-04-23 22:56:33</field>
+        <field type="DateTimeField" name="modified_date">2011-04-23 22:56:43</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="16" model="niwi.link">
+        <field type="CharField" name="title">Django Template Tag Namespaces Now Possible</field>
+        <field type="SlugField" name="slug">django-template-tag-namespaces-now-possible-codysoylandcom</field>
+        <field type="CharField" name="url">http://codysoyland.com/2010/aug/9/django-template-tag-namespaces-now-possible/</field>
+        <field type="DateTimeField" name="created_date">2011-04-23 23:12:27</field>
+        <field type="DateTimeField" name="modified_date">2011-04-23 23:12:32</field>
+        <field type="BooleanField" name="public">True</field>
+    </object>
+    <object pk="1" model="niwi.config">
+        <field type="CharField" name="path">core.homepage</field>
+        <field type="CharField" name="value">27619fe8-8f50-11e0-95ab-0024d654ffc6</field>
+        <field type="DateTimeField" name="created_date">2011-06-05 10:43:00</field>
+        <field type="DateTimeField" name="modified_date">2011-06-05 10:45:36</field>
+    </object>
+    <object pk="1" model="paste.paste">
+        <field type="TextField" name="text">import functools
+
+m = [1, ['a', 'b'], 2, [ [ 1, 2, [3]]], 'c']
+
+def myreduce(x, y):
+    if isinstance(y, list): return x + functools.reduce(myreduce, y, [])
+    else: return x+[y]
+
+functools.reduce(myreduce, m, [])</field>
+        <field type="CharField" name="lexer">py3</field>
+        <field type="CharField" name="title"></field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-24 00:14:08</field>
+    </object>
+    <object pk="5" model="paste.paste">
+        <field type="TextField" name="text">from functools import reduce as rdc 
+lmb = lambda x, y: x+rdc(lmb, y, []) if isinstance(y, list) else x + [y] 
+rdc(lmb,[1,['a','b'],2,[[1,2, [3]]],'c'], [])</field>
+        <field type="CharField" name="lexer">py3</field>
+        <field type="CharField" name="title"></field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-24 09:59:28</field>
+    </object>
+    <object pk="9" model="paste.paste">
+        <field type="TextField" name="text">def should_equal_def(self, value):
+    if self != value:
+        raise ValueError, "%r should equal %r" % (self, value)
+
+class MyPatchedInt(int):
+    should_equal=should_equal_def
+
+class MyPatchedStr(str):
+    should_equal=should_equal_def
+
+import __builtin__
+__builtin__.str = MyPatchedStr
+__builtin__.int = MyPatchedInt
+
+int(1).should_equal(1)
+str("44").should_equal("44")</field>
+        <field type="CharField" name="lexer">py</field>
+        <field type="CharField" name="title">python2 monky patching</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-28 00:56:14</field>
+    </object>
+    <object pk="10" model="paste.paste">
+        <field type="TextField" name="text">import builtins
+
+class MyPatchedInt(int):
+    should_equal = lambda self,value: True if self == value else False
+
+builtins.int = MyPatchedInt
+print(int(1).should_equal(1))</field>
+        <field type="CharField" name="lexer">py3</field>
+        <field type="CharField" name="title">python3 monky patching</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-28 00:59:15</field>
+    </object>
+    <object pk="11" model="paste.paste">
+        <field type="TextField" name="text">&gt;&gt;&gt; import builtins
+&gt;&gt;&gt; class MyStr(str):
+...     __sub__ = lambda self,value: "".join(self.split(str(value))) if isinstance(self,str) else None
+... 
+&gt;&gt;&gt; builtins.str = MyStr
+&gt;&gt;&gt; 
+&gt;&gt;&gt; str("hola") - "a"
+'hol'</field>
+        <field type="CharField" name="lexer">py3</field>
+        <field type="CharField" name="title">str reimplementation</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-28 02:52:42</field>
+    </object>
+    <object pk="12" model="paste.paste">
+        <field type="TextField" name="text">from django.core.cache import cache
+
+def cacheable(cache_key, timeout=3600):
+    def paramed_decorator(func):
+        def decorated(self):
+            key = cache_key % self.__dict__
+            res = cache.get(key)
+            if res == None:
+                res = func(self)
+                cache.set(key, res, timeout)
+            return res
+        decorated.__doc__ = func.__doc__
+        decorated.__dict__ = func.__dict__
+        return decorated 
+    return paramed_decorator
+
+# Usage:
+
+class SomeClass(models.Model):
+    # fields [id, name etc]
+
+    @cacheable("SomeClass_get_some_result_%(id)s")
+    def get_some_result(self):
+        # do some heavy calculations
+        return heavy_calculations()
+
+    @cacheable("SomeClass_get_something_else_%(name)s")
+        return something_else_calculator(self)</field>
+        <field type="CharField" name="lexer">py</field>
+        <field type="CharField" name="title">Cachable Class Method Decorator</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-28 03:06:01</field>
+    </object>
+    <object pk="13" model="paste.paste">
+        <field type="TextField" name="text">&gt;&gt;&gt; class AutoSuper(type):
+...     def __call__(cls, *args, **kw):
+...         obj = type.__call__(cls, *args, **kw)
+...         for i in cls.__bases__:
+...             i.__init__(obj, *args, **kw)
+...         return obj 
+... 
+&gt;&gt;&gt; class MyObject(object, metaclass=AutoSuper):
+...     pass
+... 
+&gt;&gt;&gt; builtins.object = MyObject
+&gt;&gt;&gt;
+&gt;&gt;&gt; class A(object):
+...     def __init__(self):
+...         print("A")
+... 
+&gt;&gt;&gt; class B(A):
+...     def __init__(self):
+...         print("B")
+... 
+&gt;&gt;&gt; b = B()
+B
+A</field>
+        <field type="CharField" name="lexer">py3</field>
+        <field type="CharField" name="title">Python AutoSuper Metaclass</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-03-28 03:17:07</field>
+    </object>
+    <object pk="14" model="paste.paste">
+        <field type="TextField" name="text">199.59.149.52 - "HEAD /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 0 "-" "Twitterbot/0.1"
+50.18.61.104 - "HEAD /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 0 "-" "UnwindFetchor/1.0 (+http://www.gnip.com/)"
+50.18.45.155 - "HEAD /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 0 "-" "Mozilla/5.0 (X11; U; Mac OSX; it; rv:1.9.0.7) Gecko/2009030422 Firefox/3.0.7"
+38.113.234.181 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "Voyager/1.0"
+66.249.66.162 - "GET /robots.txt HTTP/1.1" 200 32 "-" "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+66.249.66.162 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 1575 "-" "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+84.49.220.197 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6"
+184.73.126.115 - "HEAD /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 0 "-" "PostRank/2.0 (postrank.com)"
+84.49.220.197 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6"
+65.52.4.133 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 1575 "-" "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)"
+216.52.242.14 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/3.1 +http://www.linkedin.com)"
+89.151.116.52 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4417 "-" "Mozilla/5.0 (compatible; MSIE 6.0b; Windows NT 5.0) Gecko/2009011913 Firefox/3.0.6 TweetmemeBot"
+89.151.116.52 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4417 "-" "Mozilla/5.0 (compatible; MSIE 6.0b; Windows NT 5.0) Gecko/2009011913 Firefox/3.0.6 TweetmemeBot"
+184.73.108.194 - "HEAD /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 0 "-" "MetaURI API/2.0 +metauri.com"
+184.73.108.194 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "MetaURI API/2.0 +metauri.com"
+69.28.149.32 - "GET /post/clases-como-decoradores-en-python/ HTTP/1.1" 200 4416 "-" "LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/3.1 +http://www.linkedin.com)"
+</field>
+        <field type="CharField" name="lexer">text</field>
+        <field type="CharField" name="title">Http request on tweet post url</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-04-10 20:29:18</field>
+    </object>
+    <object pk="15" model="paste.paste">
+        <field type="TextField" name="text"># -*- coding: utf-8 -*-
+
+from django.db import IntegrityError
+from django.conf import settings
+from django.contrib import messages
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction, IntegrityError
+from django.utils import simplejson
+
+from project.models import Contact, AnonimousAccount
+import datetime
+import facebook 
+
+class FacebookConnectMiddleware(object):
+    def process_request(self, request):
+        """
+            Check bassed on the cookie if the user is authenticated in facebook and create a local contact if needed.
+            If the user is authenticated it also updates the facebook_access_token value.            
+        """
+        cookie = facebook.get_user_from_cookie(request.COOKIES, settings.FCBK_APPID, settings.FCBK_SECRET)
+        if cookie:
+            try:
+                contact_obj = Contact.objects.get(facebook_id=cookie['uid'])
+                if contact_obj.facebook_access_token != cookie["access_token"]:
+                    graph = facebook.GraphAPI(cookie["access_token"])
+                    profile = graph.request(u'/me', {'fields':u',picture,email,name,first_name,last_name,friends,likes,birthday'})
+                    
+                    contact_obj.friends = simplejson.dumps([obj[u'id'] for obj in profile['friends']['data']])
+                    contact_obj.likes = len(profile['likes']['data'])
+                    contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                    contact_obj.facebook_access_token = cookie["access_token"]
+                    contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                    contact_obj.picture = profile['picture']
+                    contact_obj.save()
+                
+                request.contact = contact_obj
+
+            except ObjectDoesNotExist:
+                graph = facebook.GraphAPI(cookie["access_token"])
+                profile = graph.request(u'/me', {'fields':u',picture,email,name,first_name,last_name,friends,likes,birthday'})
+              
+                sid = transaction.savepoint()
+                try:
+                    if Contact.objects.filter(email = profile['email']):
+                        contact_obj = Contact.objects.get(email = profile['email'])
+                        contact_obj.facebook_id = profile['id']
+                        contact_obj.facebook_access_token = cookie['access_token']
+                        
+                    else:
+                        contact_obj = Contact(
+                            facebook_id = profile['id'],
+                            facebook_access_token = cookie['access_token'],
+                            firstname = profile['first_name'],
+                            lastname = profile['last_name'],
+                            email = profile['email'],   
+                        )
+                   
+                    # Save data from facebook.
+                    contact_obj.friends = simplejson.dumps([obj[u'id'] for obj in profile['friends']['data']])
+                    contact_obj.likes = len(profile['likes']['data'])
+                    contact_obj.birthdate = datetime.datetime.strptime(profile['birthday'], '%m/%d/%Y')
+                    contact_obj.account = account_obj
+                    contact_obj.picture = profile['picture']
+                    contact_obj.save()
+
+                    transaction.savepoint_commit(sid)
+                    request.contact = contact_obj
+                    return HttpResponseRedirect(request.META['PATH_INFO'])
+                            
+                except IntegrityError:
+                    transaction.savepoint_rollback(sid)
+                    request.contact = AnonimousAccount()
+
+
+        else:
+            request.contact = AnonimousAccount()
+
+</field>
+        <field type="CharField" name="lexer">py</field>
+        <field type="CharField" name="title">Facebook Middleware</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-04-15 18:04:42</field>
+    </object>
+    <object pk="17" model="paste.paste">
+        <field type="TextField" name="text"># -*- coding: utf-8 -*-
+
+from gevent import monkey
+monkey.patch_all()
+
+from gevent.pool import Group
+import urllib2
+
+# Estos urls estan en una lista, pero podrias leerlos de un archivo o obtenerlos de cualquier lado
+urllist = [
+    'http://stackoverflow.com/questions/2397804/java-string-searching-ignoring-accents',
+    'http://django.es/blog/lista-de-paises-django-countries/',
+    'http://www.ip2location.com/flagsoftheworld.aspx',
+]
+
+workers_group = Group()
+
+def save_callback(param):
+    print "save_callback -&gt;", "Aqui se guardaria lo que haga falta:", type(param)
+
+def worker(url):
+    data = urllib2.urlopen(url)
+    print "Worker:", url
+    workers_group.spawn(save_callback, data)
+
+
+for url in urllist:
+    workers_group.spawn(worker, url)
+
+workers_group.join()
+</field>
+        <field type="CharField" name="lexer">py</field>
+        <field type="CharField" name="title">gevent-example</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-04-26 14:18:40</field>
+    </object>
+    <object pk="18" model="paste.paste">
+        <field type="TextField" name="text">lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:187 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:187 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:19312 (18.8 KiB)  TX bytes:19312 (18.8 KiB)
+
+</field>
+        <field type="CharField" name="lexer">text</field>
+        <field type="CharField" name="title">lo</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-04-27 00:45:31</field>
+    </object>
+    <object pk="19" model="paste.paste">
+        <field type="TextField" name="text">[4.3.11]root@vaio:/etc/nginx/conf# ab -n 1000 -c 100 http://www.niwi.be/
+This is ApacheBench, Version 2.3 &lt;$Revision: 655654 $&gt;
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking www.niwi.be (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        www.niwi.be
+Server Port:            80
+
+Document Path:          /
+Document Length:        17151 bytes
+
+Concurrency Level:      100
+Time taken for tests:   12.528 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      17796360 bytes
+HTML transferred:       17421744 bytes
+Requests per second:    79.82 [#/sec] (mean)
+Time per request:       1252.756 [ms] (mean)
+Time per request:       12.528 [ms] (mean, across all concurrent requests)
+Transfer rate:          1387.28 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       74  325 849.8    166    7552
+Processing:   266  839 490.2    694    4648
+Waiting:       57  220 270.1    158    2493
+Total:        435 1164 964.2    879    8390
+
+Percentage of the requests served within a certain time (ms)
+  50%    879
+  66%   1006
+  75%   1125
+  80%   1346
+  90%   1888
+  95%   2844
+  98%   4014
+  99%   7060
+ 100%   8390 (longest request)
+</field>
+        <field type="CharField" name="lexer">text</field>
+        <field type="CharField" name="title">Ab benchmark niwi.be on amazon micro instance</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-05-14 02:38:54</field>
+    </object>
+    <object pk="20" model="paste.paste">
+        <field type="TextField" name="text">INFO:profile:proc29134:2011-05-24 13:41:14,184 El usuario andrey-antoukh-1 esta visualizando /me/shipment/data/
+DEBUG:salesforce:proc29134:2011-05-24 13:41:16,557 Ready... (SfClientManager)
+DEBUG:salesforce:proc29134:2011-05-24 13:41:16,557 SfClientManager.__get_web_client -&gt; current web client pool size 0
+DEBUG:salesforce:proc29134:2011-05-24 13:41:16,557 SfClientManager.__get_web_client -&gt; current size is 0, creating client on demand.
+INFO:salesforce:proc29134:2011-05-24 13:41:18,720 login with salesforce (SfClientManager)
+DEBUG:salesforce:proc29134:2011-05-24 13:41:20,360 making salesforce request... (updateContact)
+DEBUG:salesforce:proc29134:2011-05-24 13:41:20,360 SfClientManager.__put_web_client -&gt; current web client pool size 0
+DEBUG:salesforce:proc29134:2011-05-24 13:41:20,360 SfClientManager.__put_web_client -&gt; normal operation, put client to pool.
+INFO:profile:proc29134:2011-05-24 13:41:20,429 El usuario andrey-antoukh-1 esta visualizando /me/shipment/data/
+
+
+
+
+INFO:profile:proc29134:2011-05-24 13:41:26,583 El usuario andrey-antoukh-1 esta visualizando /me/shipment/data/
+DEBUG:salesforce:proc29134:2011-05-24 13:41:26,586 SfClientManager.__get_web_client -&gt; current web client pool size 1
+DEBUG:salesforce:proc29134:2011-05-24 13:41:26,586 SfClientManager.__get_web_client -&gt; normal operation, returning one client from pool
+DEBUG:salesforce:proc29134:2011-05-24 13:41:27,434 making salesforce request... (updateContact)
+DEBUG:salesforce:proc29134:2011-05-24 13:41:27,434 SfClientManager.__put_web_client -&gt; current web client pool size 0
+DEBUG:salesforce:proc29134:2011-05-24 13:41:27,434 SfClientManager.__put_web_client -&gt; normal operation, put client to pool.
+INFO:profile:proc29134:2011-05-24 13:41:27,507 El usuario andrey-antoukh-1 esta visualizando /me/shipment/data/
+</field>
+        <field type="CharField" name="lexer">text</field>
+        <field type="CharField" name="title">debug pool</field>
+        <field type="CharField" name="group"></field>
+        <field type="DateTimeField" name="created">2011-05-24 13:42:43</field>
+    </object>
+</django-objects>

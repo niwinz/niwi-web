@@ -1,0 +1,11 @@
+*.pyc
+*.sqlite
+*.pid
+*.log
+src/media*
+src/backup.*
+src/settings.py
+src/settings_logserver.py
+migrations*
+src/niwi/contrib/logging/devel.py
+src/static*

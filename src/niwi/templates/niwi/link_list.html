@@ -1,0 +1,38 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load utils %}
+
+{% block title %}- Links {% endblock %}
+
+{% block opengraph %}
+<meta property="og:title" content="Niwi.Be Latest links"/>
+<meta property="og:type" content="blog"/>
+<meta property="og:url" content="{{ full_host_url }}" />
+<meta property="og:image" content="{{ host }}/static/logo.png"/>
+{% endblock %}
+
+{% block html-head %}
+<meta name="Keywords" content="links, enlaces, ulrs de interes, wtfs, todo" />
+<meta name="Description" content="Colleccion de enlaces de interes." />
+{% endblock %}
+
+{% block body %}
+<div class="submodule-content">
+    <h2>{% trans "Enlaces de interes publicos:" %}</h2>
+    <div class="link-list">
+        {% for link in page_obj.object_list %}
+        <div class="link">
+            <div class="link-head">
+                <a target="_blank" class="link-title" href="{{ link.get_absolute_url }}">{{ link.title }}</a>
+                <div class="link-meta">
+                    <span class="fecha">{{ link.modified_date }}</span> // 
+                    <span class="tags">{{ link.tags|tags_parser }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include "utils/share.block.html" %}
+    {% include "utils/pagination.html" %}
+</div>
+{% endblock %}

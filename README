@@ -1,0 +1,19 @@
+NIWI_LOGGING FEATURES
+=====================
+ * Opcion para servir a varias entidades desde un solo servidor.
+ * Recepcion y biblioteca de envio de logs sin buffer (de uno a uno) [casi completo]
+ * Recepcion y biblioteca de envio de logs con buffer. (de n a n) [no disponible]
+ * Recepcion y biblioteca de envio de backup de ficheros de logs completos. [no disponible]
+
+
+NIWI_WEB FEATURES
+=================
+ * Sistema de blog.
+ * Sistema de paginas.
+ * Lista de enlaces.
+ * Coloreado de sintaxis.
+ * Markdown2 como sintaxys de texto.
+ * Feeds.
+ * Servicio pastebin.
+ * Paginas de proyectos.
+ * Social plugins.

@@ -1,0 +1,39 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% csrf_token %}
+{% block main %}
+<div class="post-form">
+  <table>
+    <tr>
+      <td>
+        <form action="" method="get">
+          <input type="text" name="group" placeholder="Group Name" />
+          <input type="submit" value="{% trans "Search" %}" />
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {% if pastes %}
+        <table id="pastes_list">
+          <tr>
+            <th class="group-name">{% trans "Group name" %}</th>
+            <th class="title-name">{% trans "Title" %}</th>
+            <th class="title-name">{% trans "Created" %}</th>
+          </tr>
+          {% for obj in pastes %}
+          <tr>
+            <td>{{ obj.group }}</td>
+            <td><a href="/{{ obj.id }}/">{{ obj.title }}</a></td>
+            <td>{{ obj.created }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

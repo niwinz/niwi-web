@@ -1,0 +1,37 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load utils %}
+
+{% block title %}- Posts {% endblock %}
+
+{% block opengraph %}
+<meta property="og:title" content="Niwi.Be Latest posts"/>
+<meta property="og:type" content="blog"/>
+<meta property="og:url" content="{{ full_host_url }}" />
+<meta property="og:image" content="{{ host }}/static/logo.png"/>
+{% endblock %}
+
+{% block html-head %}
+<meta name="Keywords" content="niwi posts, posts, articles, articulos, software libre, opensource, open source" />
+<meta name="Description" content="Colleccion de articulos mayoritariamente escritos por mi con alguna que otra excepción." />
+{% endblock %}
+
+
+{% block body %}
+<div class="submodule-content">
+    <h2>{% trans "Articulos publicos:" %}</h2>
+    <div class="post-list">
+        {% for post in page_obj.object_list %}
+        <div class="post">
+            <div class="post-head">
+                <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <div class="post-meta"><span class="fecha">{{ post.modified_date }}</span></div>
+            </div>
+            <div class="post-content">{{ post.content|truncatewords:30 }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include "utils/share.block.html" %}
+    {% include "utils/pagination.html" %}
+</div>
+{% endblock %}

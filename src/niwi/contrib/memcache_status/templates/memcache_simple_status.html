@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Memcached status</title>
+</head>
+<body>
+    <style type="text/css">
+    body { font-size: 12px; font-family: monospace; }
+    .stat-item { overflow: hidden }
+    .stat-key, .stat-val { float: left; width: 200px; }
+    .server-name { font-weight: bold; font-size: 14px; }
+    .server-stats { padding-left: 20px; }
+    .stat-key { border-bottom: 1px dotted #aaa; }
+    </style>
+    <div class="stats">
+        {% for k,v in stats.items %}
+        <div class="server">
+            <div class="server-name">{{ k }}</div>
+            <div class="server-stats">
+                <div class="stat-item">
+                    <div class="stat-key">Memory usage:</div>
+                    <div class="stat-val">{{ v.bytes|filesizeformat }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-key">Keys in cache:</div>
+                    <div class="stat-val">{{ v.curr_items }} of {{ v.total_items }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-key">Cache traffic:</div>
+                    <div class="stat-val">{{ v.bytes_read|filesizeformat }}in, {{ v.bytes_written|filesizeformat }}out</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-key">Current connections:</div>
+                    <div class="stat-val">{{ v.curr_connections }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-key">Total conecctions:</div>
+                    <div class="stat-val">{{ v.total_connections }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-key">Version:</div>
+                    <div class="stat-val">{{ v.version }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

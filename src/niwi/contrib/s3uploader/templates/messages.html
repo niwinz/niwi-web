@@ -1,0 +1,11 @@
+{% load i18n %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="{{ message.tags }}">{{ message|safe }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+

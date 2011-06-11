@@ -1,0 +1,31 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Memcached status</title>
+</head>
+<body>
+    <style type="text/css">
+    body { font-size: 12px; font-family: monospace; }
+    .stat-item { overflow: hidden }
+    .stat-key, .stat-val { float: left; width: 200px; }
+    .server-name { font-weight: bold; font-size: 14px; }
+    .server-stats { padding-left: 20px; }
+    .stat-key { border-bottom: 1px dotted #aaa; }
+    </style>
+    <div class="stats">
+        {% for k,v in stats.items %}
+        <div class="server">
+            <div class="server-name">{{ k }}</div>
+            <div class="server-stats">
+                {% for statkey, statvalue in v.items %}
+                <div class="stat-item">
+                    <div class="stat-key">{{ statkey }}</div>
+                    <div class="stat-val">{{ statvalue }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

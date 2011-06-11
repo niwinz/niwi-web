@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block body %}
+<div class="uploaded-file">
+    <div class="uploaded-delete-information">
+        <p>{% trans "Confirm this deletion!" %}</p>
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="submit" class="button" name="d" value="{% trans "Ok" %}"></input>
+            <a href="{{ obj.get_absolute_url }}" class="button">{% trans "Cancel" %}</a>
+        </form>
+    </div>
+    <div class="uploaded-preview">
+        <img src="{{ obj.full_url }}"></img>
+    </div>
+</div>
+{% endblock %}

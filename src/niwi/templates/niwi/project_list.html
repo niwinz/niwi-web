@@ -1,0 +1,24 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+
+{% block title %}- Projects {% endblock %}
+
+{% block body %}
+<div class="submodule-content">
+    <h2>{% trans "My public project list:" %}</h2>
+    <div class="project-list">
+        {% for project in projects %}
+        <div class="project">
+            <div class="project-head">
+                <a class="project-title" href="{{ project.get_absolute_url }}">{{ project.title }}</a>
+                <div class="project-meta">
+                    <span class="fecha">{{ project.modified_date }}</span>
+                </div>
+            </div>
+            <div class="project-content">{{ project.content|truncatewords:30 }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include "utils/share.block.html" %}
+</div>
+{% endblock %}

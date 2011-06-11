@@ -1,0 +1,156 @@
+@font-face {
+    font-family: 'GentiumBasicRegular';
+    src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBasR-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBasR-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBasR-webfont.svg#webfont4ccSQ5RX') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBasicItalic';
+    src: url('/static/fonts/gentium-basic/GenBasI-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBasI-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBasI-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBasI-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBasI-webfont.svg#webfontOciXtJo7') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBasicBold';
+    src: url('/static/fonts/gentium-basic/GenBasB-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBasB-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBasB-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBasB-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBasB-webfont.svg#webfontktfEaL63') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBasicBoldItalic';
+    src: url('/static/fonts/gentium-basic/GenBasBI-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBasBI-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBasBI-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBasBI-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBasBI-webfont.svg#webfontIzYr0UY2') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBookBasicRegular';
+    src: url('/static/fonts/gentium-basic/GenBkBasR-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBkBasR-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBkBasR-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBkBasR-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBkBasR-webfont.svg#webfont8L8sHSdL') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBookBasicItalic';
+    src: url('/static/fonts/gentium-basic/GenBkBasI-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBkBasI-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBkBasI-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBkBasI-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBkBasI-webfont.svg#webfontlgNv1MjC') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBookBasicBold';
+    src: url('/static/fonts/gentium-basic/GenBkBasB-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBkBasB-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBkBasB-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBkBasB-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBkBasB-webfont.svg#webfonttIW6Xv9u') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'GentiumBookBasicBoldItalic';
+    src: url('/static/fonts/gentium-basic/GenBkBasBI-webfont.eot');
+    src: url('/static/fonts/gentium-basic/GenBkBasBI-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/gentium-basic/GenBkBasBI-webfont.woff') format('woff'),
+         url('/static/fonts/gentium-basic/GenBkBasBI-webfont.ttf') format('truetype'),
+         url('/static/fonts/gentium-basic/GenBkBasBI-webfont.svg#webfontlU3b2sYR') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'ganix';
+    src: url('/static/fonts/ganix/ganix.apec-webfont.eot');
+    src: url('/static/fonts/ganix/ganix.apec-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/ganix/ganix.apec-webfont.woff') format('woff'),
+         url('/static/fonts/ganix/ganix.apec-webfont.ttf') format('truetype'),
+         url('/static/fonts/ganix/ganix.apec-webfont.svg#webfontNXT9D49x') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'AnonymousProRegular';
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot');
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.woff') format('woff'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.ttf') format('truetype'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.svg#webfonty8871YFO') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'AnonymousProItalic';
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.eot');
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.woff') format('woff'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.ttf') format('truetype'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.svg#webfonta1j7ljaH') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'AnonymousProBold';
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.eot');
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.woff') format('woff'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.ttf') format('truetype'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.svg#webfontmRrndzEO') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'AnonymousProBoldItalic';
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.eot');
+    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.eot?#iefix') format('eot'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.woff') format('woff'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.ttf') format('truetype'),
+         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.svg#webfontFb6d25dM') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}

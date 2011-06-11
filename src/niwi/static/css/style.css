@@ -1,0 +1,436 @@
+body {
+    font-family: Georgia, serif;
+    font-family: "GentiumBasicRegular";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: normal;
+    text-transform: normal;
+    letter-spacing: normal;
+    line-height: 1.4em;
+    background: #1B1C1E url(/static/res/body_bg.png) 50% 0 repeat-y;
+    text-shadow: black 1px 1px 1px;
+    color: #AAA;
+}
+a {
+    text-decoration: none;
+}
+.module-main {
+    margin: 0 auto;
+    width: 800px;
+}
+.module-main p,
+.module-main ul,
+.module-main ol {
+    color: #AAA;
+}
+.module-main h1, .module-main h2 {
+    font-family: "GentiumBasicBold";
+    font-weight: normal;
+    line-height: 35px;
+}
+.module-main pre, .module-main code {
+    font-family: "AnonymousProRegular";
+    font-size: 12px;
+    line-height: 1.1em;
+}
+.module-main b, .module-main strong { 
+    color: white;
+    font-family: "GentiumBasicBold";
+    font-weight: normal;
+}
+.module-main a {
+    color: #004B6B;
+}
+
+.submodule-head {
+    text-align: center;
+    overflow:hidden;
+}
+.submodule-head .title .titular {
+    font-family: "GentiumBasicBold";
+    font-size: 100px;
+    line-height: 120px;
+    vertical-align: middle;
+    color: #eee;
+}
+.submodule-head .menu {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-family: "GentiumBookBasicRegular";
+}
+.submodule-head .menu li { 
+    list-style: none;
+    display: inline;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+.submodule-head .menu li a{
+    color: #004B6B;
+    text-decoration: none;
+}
+
+.links-block .link,
+.news-block .post {
+    margin-bottom: 10px;
+}
+
+.links-block .link .link-head .link-title,
+.news-block .post .post-head .post-title { 
+    color: #BBB; font-size: 20px;
+    display: block; text-decoration: none;
+}
+
+.links-block .link .link-head .link-title:before,
+.news-block .post .post-head .post-title:before {
+    content: "\00BB \0020";
+}
+
+.description-block {
+    padding-bottom: 20px;
+}
+.description-block .destacados-title {
+    margin-top: 20px;
+    margin-left: 15px;
+}
+.description-block ul li {
+    list-style-image: url("/static/res/arrow-list.gif");
+}
+.description-block .page-date-block h3 {
+    margin-bottom: 5px;
+}
+.description-block .page-date-block .page-date-items { 
+    padding-left: 20px;
+}
+.description-block .page-date-block .page-date-item-title {
+    color: #333; font-size: 18px;
+    display: block; text-decoration: none;
+}
+.description-block .page-date-block .page-date-item-title:before {
+    content: "\00BB \0020";
+}
+
+.news-block {
+    margin-right: 20px;
+}
+.links-block {
+    margin-left: 7px;
+}
+
+
+
+.links-block .link .link-head .link-meta,
+.news-block .post .post-head .post-meta {
+    font-family: "GentiumBasicItalic";
+    font-size: 13px; color: #777;
+    padding-left: 20px;
+}
+
+
+.news-block .post .post-content {
+    color: #444;
+    font-size: 16px;
+    padding-left: 20px;
+}
+.project-entity,
+.post-entity {
+    margin-top: 35px;
+}
+.project-entity .title,
+.post-entity .title { 
+    margin-bottom: 20px; 
+}
+
+.submodule-footer {
+    font-family: "GentiumBasicItalic";
+    text-align: center;
+    font-size: 13px; color: #777;
+    margin-top: 30px;
+}
+.submodule-footer a {
+    text-decoration: none;
+    color: #444;
+}
+
+.snippet-entity .snippet-view-box,
+.submodule-paste-view {
+    padding: 10px;
+    margin-top: 20px;
+    line-height: 1em;
+}
+.submodule-paste-view .viewer-menu{
+    text-align: right;
+    line-height: 1em;
+    font-size: 12px;
+    padding-bottom: 2px;
+}
+.submodule-paste-view .viewer-menu a {
+    color: black;
+    text-decoration: none;
+}
+.snippet-entity .snippet-view-box,
+.submodule-paste-view .viewer-content {
+    border: 1px solid #ddd;
+    background-color: #eee;
+    padding-left: 8px;
+    text-shadow: black 0px 0px 0px;
+    color: #444;
+}
+
+
+.submodule-paste {
+    padding: 10px;
+    margin: auto;
+    margin-top: 20px;
+}
+.submodule-paste form textarea { 
+    font-family: "AnonymousProRegular";
+    width: 750px; 
+    height: 400px;
+    border: 1px solid #666;
+    outline: 1px solid #CCC;
+}
+
+.submodule-paste form select, .submodule-paste form input[type='text'] {
+    font-family: "GentiumBasicBold";
+    border: 1px solid #666;
+    outline: 1px solid #CCC;
+    width: 200px;
+    padding: 3px;
+}
+.submodule-paste form input[type='submit'] {
+    font-family: "GentiumBasicBold";
+    margin-top: 15px;
+    border: 1px solid #666;
+    outline: 1px solid #CCC;
+    background-color: #eee;
+    width: 150px;
+    height: 35px;
+}
+ul.errorlist {
+    font-family:"GentiumBookBasicBoldItalic";
+    font-size: 12px;
+    color: red;
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+}
+
+.linenodiv { 
+    border-right: 1px dotted #ddd;
+    color: #999;
+}
+
+.paste-list {
+    margin-top: 40px;
+}
+.paste-list table.lister {
+    width: 100%;
+}
+.paste-list table.lister td.lexer { width: 80px; }
+.paste-list table.lister td.created { width:300px; }
+
+/* Projects and albums */
+.link-list .link,
+.post-list .post,
+.photo-list .photo,
+.album-list .album,
+.snippet-list .snippet,
+.project-list .project {
+    margin-bottom: 15px;
+}
+
+.link-list .link .link-head .link-title,
+.post-list .post .post-head .post-title,
+.photo-list .photo .photo-head .photo-title,
+.album-list .album .album-head .album-title,
+.snippet-list .snippet .snippet-head .snippet-title,
+.project-list .project .project-head .project-title { 
+    color: #BBB; font-size: 22px;
+    display: block; text-decoration: none;
+}
+
+.link-list .link .link-head .link-title:before,
+.post-list .post .post-head .post-title:before,
+.photo-list .photo .photo-head .photo-title:before,
+.album-list .album .album-head .album-title:before,
+.snippet-list .snippet .snippet-head .snippet-title:before,
+.project-list .project .project-head .project-title:before {
+    content: "\00BB \0020";
+}
+
+.album-one .album-meta,
+.link-list .link .link-head .link-meta,
+.post-list .post .post-head .post-meta,
+.photo-list .photo .photo-head .photo-meta,
+.album-list .album .album-head .album-meta,
+.snippet-list .snippet .snippet-head .snippet-meta, 
+.project-list .project .project-head .project-meta {
+    font-family: "GentiumBasicItalic";
+    font-size: 13px; color: #777;
+    padding-left: 20px;
+}
+
+.post-list .post .post-content,
+.snippet-list .snippet .snippet-content,
+.project-list .project .project-content {
+    color: #444;
+    font-size: 16px;
+    padding-left: 20px;
+}
+
+.photo-list .photo .photo-description { 
+    padding-left: 20px;
+    color: #555; 
+    font-size: 14px;
+}
+.photo-list .photo .photo-content {
+    padding-left: 20px;
+    height: 200px; overflow: hidden;
+    padding: 2px;
+    border:1px solid #777;
+    outline:1px solid #bbb;
+}
+.photo-list .photo .photo-content img {
+    max-width: 794px;
+}
+.album-list .album .album-content {
+    padding-left: 20px;
+}
+.album-list .album .album-preview {
+    padding-left: 20px;
+}
+
+
+
+.album-list .album .album-preview .preview-item { display: inline; padding-right: 5px; }
+.album-list .album .album-preview .preview-item img { max-width: 80px; max-height: 53px; }
+
+.album-one .album-preview {
+    text-align:justify;
+}
+.album-one .album-preview .preview-item {
+    display: inline;
+    padding-right: 5px;
+    text-align:justify;
+}
+.album-one .album-preview .preview-item img {
+    max-width: 100px;
+    max-height: 67px;
+    border: 6px solid #aaa;
+}
+
+.album-photo .photo {
+    margin-bottom: 15px;
+}
+
+.album-photo .photo .photo-head .photo-title {
+    color: black; font-size: 22px;
+    display: block; text-decoration: none;
+}
+
+.album-photo .photo .photo-head .photo-title:before {
+    content: "\00BB \0020";
+}
+
+.album-photo .photo .photo-head .photo-meta {
+    font-size: 13px; color: #777;
+    padding-left: 20px;
+}
+
+.album-photo .project .project-content {
+    color: #444;
+    font-size: 16px;
+    padding-left: 20px;
+}
+
+.album-photo .photo .photo-description { 
+    padding-left: 20px;
+    color: #555; 
+    font-size: 14px;
+}
+.album-photo .photo .photo-content {
+    padding-left: 20px;
+    padding: 2px;
+    border:1px solid #777;
+    outline:1px solid #bbb;
+}
+.album-photo .photo .photo-content img {
+    max-width: 794px;
+}
+
+
+
+
+
+
+
+
+
+
+
+.share-options-block {
+    margin-top: 20px;
+}
+
+
+
+.submodule-photo {
+    margin: auto;
+}
+
+.album-photo {
+    margin: 0 auto;
+    margin-top: 30px;
+}
+.album-photo h3:before, 
+.album-photo h2:before {
+    content: "\00BB \0020";
+}
+.album-photo img { 
+    display: block; 
+    max-width: 800px;
+}
+.album-photo span {
+    color: #555;
+    font-size: 13px;
+}
+.submodule-photo .maps {
+}
+
+div.pagination {
+    margin-top: 30px;
+    font-size: 13px;
+}
+div.pagination span.prev-button {
+    padding-right: 7px;
+}
+div.pagination span.next-button {
+    padding-left: 7px;
+}
+
+.snippet-entity .title small { padding-left: 20px;  color: #666; }
+.snippet-entity .title small > span { padding-right: 20px; }
+
+
+/* PASTE */
+.code .highlight .nc,
+.code .highlight .nf,
+.code .highlight .k,
+.code .highlight .o,
+.code .highlight .kn, 
+.code .highlight .ne {
+    font-family: "AnonymousProBold";
+    font-weight: normal;
+}
+
+div.show-more {
+    font-size: 14px; 
+}
+
+div.block404 {
+    text-align: center;
+    height: 200px;
+    padding-top: 50px;
+    font-size: 28px;
+}

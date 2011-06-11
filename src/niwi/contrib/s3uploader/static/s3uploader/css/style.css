@@ -1,0 +1,101 @@
+body {
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1em;
+}
+.page { 
+    width: 800px;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+.uploader-block,
+.uploads-list {
+    padding: 10px;
+    border: 1px solid #ccc;
+    outline: 1px solid #eee;
+    margin-bottom: 20px;
+}
+.uploads-list .uploads-title,
+.uploader-block .uploader-title {
+    padding: 10px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+}
+.uploader-block form input[type='file'] {
+    width: 98%;
+    border: 1px solid #888;
+    outline: 1px solid #ccc;
+    padding: 2px;
+    margin-bottom: 2px;
+}
+.uploader-block form .inputs-options {
+    font-size: 12px;
+    font-style: italic;
+}
+
+.button { 
+    border: 1px solid #888;
+    outline: 1px solid #CCC;
+    width: 120px;
+    font-weight: bold;
+}
+.submit-block {
+    margin-top: 20px;
+}
+
+.uploads-list .uploads-container {
+    padding: 10px;
+}
+
+.uploads-list .upload-item {
+    font-size: 11px;
+    font-family: monospace;
+    border-bottom: 1px dotted #ddd;
+    padding-top: 4px;
+}
+
+.uploads-list .upload-item div.name {
+    width: 550px;
+}
+.uploads-list .upload-item div.name a {
+    text-decoration: none;
+    font-weight: bold;
+}
+.uploads-list .upload-item div.date {
+    font-style: italic; 
+    color: #666;
+}
+
+div.messages {
+    padding: 5px;
+    background-color: #ddd;
+    color: black;
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+}
+
+.uploaded-file {
+    font-size: 10px;
+}
+
+.uploaded-file .uploaded-description {
+    padding: 5px;
+    border: 1px solid #999;
+    outline: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+.uploaded-file .uploaded-delete-information {
+    padding: 5px;
+    border: 1px solid #999;
+    outline: 1px solid red;
+    margin-bottom: 10px;
+}
+.uploaded-file .uploaded-preview img {
+    max-height: 500px;
+    max-width: 800px;
+    border: 1px solid #999;
+    outline: 1px solid #ccc;
+}
