@@ -477,3 +477,8 @@ div.block404 {
     padding-top: 50px;
     font-size: 28px;
 }
+
+div.codehilite pre {
+    background-color: white;
+    padding-left: 3px;
+}
