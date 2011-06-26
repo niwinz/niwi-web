@@ -481,4 +481,5 @@ div.block404 {
 div.codehilite pre {
     background-color: white;
     padding-left: 3px;
+    border: 1px solid #ccc;
 }
