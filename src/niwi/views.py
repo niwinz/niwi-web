@@ -53,8 +53,8 @@ class HomePageView(ResponseMixIn, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(HomePageView, self).get_context_data(*args, **kwargs)
-        context['posts'] = Post.objects.order_by('-modified_date')[:4]
-        context['links'] = Link.objects.order_by('-created_date')[:8]
+        context['posts'] = Post.objects.filter(status='public').order_by('-modified_date')[:4]
+        context['links'] = Link.objects.filter(public=True).order_by('-created_date')[:8]
 
         try:
             config = Config.objects.get(path='core.homepage')
