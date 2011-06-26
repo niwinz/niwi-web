@@ -57,11 +57,11 @@ a {
 }
 .submodule-head .menu {
     font-family: 'QuicksandBook',Verdana,Tahoma,sans-serif;
-    color: #202020;
+    color: #111;
     font-size: 1.5em;
     font-weight: bolder;
     font-style: normal;
-    letter-spacing: -3px;
+    letter-spacing: -1px;
     margin-bottom: 5px;
 }
 .submodule-head .menu li { 
