@@ -33,6 +33,7 @@ class ResponseMixIn(object):
     template_name = None
     
     def dispatch(self, *args, **kwargs):
+        logger.debug("hola")
         self.head = self.get
         return super(ResponseMixIn, self).dispatch(*args, **kwargs)
 

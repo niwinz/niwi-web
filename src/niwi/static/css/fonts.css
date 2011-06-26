@@ -1,4 +1,16 @@
 @font-face {
+    font-family: 'QuicksandBook';
+    src: url('/static/fonts/quicksand/Quicksand_Book-webfont.eot');
+    src: local('☺'), 
+        url('/static/fonts/quicksand/Quicksand_Book-webfont.woff') format('woff'), 
+        url('/static/fonts/quicksand/Quicksand_Book-webfont.ttf') format('truetype'), 
+        url('/static/fonts/quicksand/Quicksand_Book-webfont.svg#webfontql8zHAcQ') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+@font-face {
     font-family: 'GentiumBasicRegular';
     src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot');
     src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot?#iefix') format('eot'),

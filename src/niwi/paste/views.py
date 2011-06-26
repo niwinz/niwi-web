@@ -35,7 +35,7 @@ def paste(request):
                 title = form.cleaned_data.get('title'),
                 group = form.cleaned_data.get('group'),
             )
-            return HttpResponseRedirect(reverse('paste-view', args=[paste_obj.id]))
+            return HttpResponseRedirect(reverse('web:paste-view', args=[paste_obj.id]))
       
     else:
         form = PasteForm(request=request.META)
