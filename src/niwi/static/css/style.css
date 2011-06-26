@@ -7,16 +7,25 @@ body {
     text-transform: normal;
     letter-spacing: normal;
     line-height: 1.4em;
-    background: #1B1C1E url("/static/img/bg.jpg") 0 0 repeat;
+    background: white;
     color: #111;
 }
 a {
     text-decoration: none;
 }
-.module-main {
+.module-container {
+    padding: 5px;
+    background-color: #999;
     margin: 0 auto;
-    width: 800px;
+    width: 900px;
 }
+
+.module-main {
+    background-color: #EEE;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .module-main p,
 .module-main ul,
 .module-main ol {
@@ -47,6 +56,7 @@ a {
     text-align: center;
     overflow:hidden;
 }
+
 .submodule-head .title .titular {
     font-family: "GentiumBasicBold";
     font-size: 100px;
@@ -55,13 +65,13 @@ a {
     color: #111;
 }
 .submodule-head .menu {
-    font-family: 'QuicksandBook',Verdana,Tahoma,sans-serif;
     color: #111;
-    font-size: 1.5em;
-    font-weight: bolder;
+    font-size: 1em;
     font-style: normal;
-    letter-spacing: -1px;
     margin-bottom: 5px;
+    background-color: white;
+    border: 1px solid #DDD;
+    outline: 1px solid #CCC;
 }
 .submodule-head .menu li { 
     list-style: none;

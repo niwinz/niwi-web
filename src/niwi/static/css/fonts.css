@@ -1,16 +1,4 @@
 @font-face {
-    font-family: 'QuicksandBook';
-    src: url('/static/fonts/quicksand/Quicksand_Book-webfont.eot');
-    src: local('☺'), 
-        url('/static/fonts/quicksand/Quicksand_Book-webfont.woff') format('woff'), 
-        url('/static/fonts/quicksand/Quicksand_Book-webfont.ttf') format('truetype'), 
-        url('/static/fonts/quicksand/Quicksand_Book-webfont.svg#webfontql8zHAcQ') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-
-@font-face {
     font-family: 'GentiumBasicRegular';
     src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot');
     src: url('/static/fonts/gentium-basic/GenBasR-webfont.eot?#iefix') format('eot'),
@@ -114,54 +102,6 @@
          url('/static/fonts/ganix/ganix.apec-webfont.woff') format('woff'),
          url('/static/fonts/ganix/ganix.apec-webfont.ttf') format('truetype'),
          url('/static/fonts/ganix/ganix.apec-webfont.svg#webfontNXT9D49x') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'AnonymousProRegular';
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot');
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.eot?#iefix') format('eot'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.woff') format('woff'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.ttf') format('truetype'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro-webfont.svg#webfonty8871YFO') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'AnonymousProItalic';
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.eot');
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.eot?#iefix') format('eot'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.woff') format('woff'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.ttf') format('truetype'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_I-webfont.svg#webfonta1j7ljaH') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'AnonymousProBold';
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.eot');
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.eot?#iefix') format('eot'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.woff') format('woff'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.ttf') format('truetype'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_B-webfont.svg#webfontmRrndzEO') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'AnonymousProBoldItalic';
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.eot');
-    src: url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.eot?#iefix') format('eot'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.woff') format('woff'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.ttf') format('truetype'),
-         url('/static/fonts/anonimous-pro/Anonymous_Pro_BI-webfont.svg#webfontFb6d25dM') format('svg');
     font-weight: normal;
     font-style: normal;
 

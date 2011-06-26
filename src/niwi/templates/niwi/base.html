@@ -19,51 +19,55 @@
         <meta property="fb:app_id" content="{{ fcbk_app_id }}"/>
     </head>
     <body>
-        <div class="module-main module">
-            <div class="submodule-head">
-                <div class="title">
-                    <div class="titular">Niwi.Be</div>
-                </div>
-                <div class="menu">
-                    <!-- TODO: make menu block on future -->
-                    <li><a href="{% url "web:show-home" %}">{% trans "Home" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:posts" %}">{% trans "Posts" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:links" %}">{% trans "Links" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:show-page" "projects" %}">{% trans "Projects" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:paste-home" %}">{% trans "Paste" %}</a></li><span> // </span>
-                    <li><a href="{% url "web:show-page" "about" %}">{% trans "About" %}</a></li>
+        <div class="module-container">
+            <div class="module-main module">
+                <div class="submodule-head">
+                    <div class="title">
+                        <div class="titular">Niwi.Be</div>
+                    </div>
+                    <div class="menu">
+                        <!-- TODO: make menu block on future -->
+                        <li><a href="{% url "web:show-home" %}">{% trans "Home" %}</a></li><span> // </span>
+                        <li><a href="{% url "web:posts" %}">{% trans "Posts" %}</a></li><span> // </span>
+                        <li><a href="{% url "web:links" %}">{% trans "Links" %}</a></li><span> // </span>
+                        <li><a href="{% url "web:show-page" "projects" %}">{% trans "Projects" %}</a></li><span> // </span>
+                        <li><a href="{% url "web:paste-home" %}">{% trans "Paste" %}</a></li><span> // </span>
+                        <li><a href="{% url "web:show-page" "about" %}">{% trans "About" %}</a></li>
+                    </div>
+
                 </div>
 
-            </div>
-            {% block body %}
-            <div class="submodule-content">
-                <div class="description-block">
-                    {% if homepage %}
-                        {% if homepage.markup %}{{ homepage.content|markdown }}
-                        {% else %}{{ homepage.content|safe }}
+                {% block body %}
+                <div class="submodule-content">
+                    <div class="description-block">
+                        {% if homepage %}
+                            {% if homepage.markup %}{{ homepage.content|markdown }}
+                            {% else %}{{ homepage.content|safe }}
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    </div>
+                    {% block main %}{% endblock %}
                 </div>
-                {% block main %}{% endblock %}
-            </div>
-            {% endblock %}
-            <div class="submodule-footer">
-                <p>{% trans "OpenSource software used for make this site:" %} <br />
-                    <a target="_blank" href="http://www.python.org">Python,</a>
-                    <a target="_blank" href="http://www.djangoproject.com/">Django,</a>
-                    <a target="_blank" href="http://www.sqlite.org/index.html">SQlite,</a>
-                    <a target="_blank" href="http://pygments.org/">Pygments,</a>
-                    <a target="_blank" href="http://www.gevent.org/">Gevent</a><span> y </span>
-                    <a target="_blank" href="http://nginx.org/en/">Nginx.</a>
-                </p>
-                <p>
-                    {% for code, name in LANGUAGES %}
-                    <span class="langcode" rel="{{ code }}">{{ code|language_name_local|capfirst }}</span> 
-                    {% endfor %}
-                </p>
+                {% endblock %}
 
-                <p>This web application is open source, and you can download the sources from 
-                    <a href="https://github.com/niwibe/niwi-web/">here.</a><br />py-niwi-web version 1.0 Alpha</p>
+                <div class="submodule-footer">
+                    <p>{% trans "OpenSource software used for make this site:" %} <br />
+                        <a target="_blank" href="http://www.python.org">Python,</a>
+                        <a target="_blank" href="http://www.djangoproject.com/">Django,</a>
+                        <a target="_blank" href="http://www.sqlite.org/index.html">SQlite,</a>
+                        <a target="_blank" href="http://pygments.org/">Pygments,</a>
+                        <a target="_blank" href="http://www.gevent.org/">Gevent</a><span> y </span>
+                        <a target="_blank" href="http://nginx.org/en/">Nginx.</a>
+                    </p>
+                    <p>
+                        {% for code, name in LANGUAGES %}
+                        <span class="langcode" rel="{{ code }}">{{ code|language_name_local|capfirst }}</span> 
+                        {% endfor %}
+                    </p>
+
+                    <p>This web application is open source, and you can download the sources from 
+                        <a href="https://github.com/niwibe/niwi-web/">here.</a><br />py-niwi-web version 1.0 Alpha</p>
+                </div>
             </div>
         </div>
         {% if not debug %}
