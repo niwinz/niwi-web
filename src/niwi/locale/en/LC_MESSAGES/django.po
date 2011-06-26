@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 23:24+0200\n"
+"POT-Creation-Date: 2011-06-26 17:13+0200\n"
 "PO-Revision-Date: 2011-06-11 17:41+0200\n"
 "Last-Translator: Andrei Antoukh <niwi@niwi.be>\n"
 "Language-Team: en\n"
@@ -73,31 +73,31 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
-#: templates/niwi/base.html:29
+#: templates/niwi/base.html:30
 msgid "Home"
 msgstr ""
 
-#: templates/niwi/base.html:30
+#: templates/niwi/base.html:31
 msgid "Posts"
 msgstr ""
 
-#: templates/niwi/base.html:31
+#: templates/niwi/base.html:32
 msgid "Links"
 msgstr ""
 
-#: templates/niwi/base.html:32
+#: templates/niwi/base.html:33
 msgid "Projects"
 msgstr ""
 
-#: templates/niwi/base.html:33
+#: templates/niwi/base.html:34
 msgid "Paste"
 msgstr ""
 
-#: templates/niwi/base.html:34
+#: templates/niwi/base.html:35
 msgid "About"
 msgstr ""
 
-#: templates/niwi/base.html:51
+#: templates/niwi/base.html:54
 msgid "OpenSource software used for make this site:"
 msgstr ""
 
@@ -121,7 +121,7 @@ msgstr ""
 msgid "Latest links:"
 msgstr ""
 
-#: templates/niwi/index.html:58
+#: templates/niwi/index.html:57
 msgid "See all links..."
 msgstr ""
 
@@ -161,10 +161,10 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
-#: templates/paste/view.html:13
-msgid "[Raw]"
+#: templates/paste/view.html:11
+msgid "Raw"
 msgstr ""
 
-#: templates/paste/view.html:14
-msgid "[New paste]"
+#: templates/paste/view.html:12
+msgid "New paste"
 msgstr ""

@@ -188,29 +188,36 @@ a {
     cursor: pointer;
 }
 
-.snippet-entity .snippet-view-box,
 .submodule-paste-view {
     padding: 10px;
     margin-top: 20px;
     line-height: 1em;
 }
-.submodule-paste-view .viewer-menu{
+.submodule-paste-view .viewer-menu {
     text-align: right;
     line-height: 1em;
     font-size: 12px;
     padding-bottom: 2px;
+    overflow: hidden;
 }
 .submodule-paste-view .viewer-menu a {
     color: black;
+    font-weight: normal;
+    display: block;
+    float: right;
     text-decoration: none;
+    border: 1px solid #ddd;
+    outline: 1px solid #ccc;
+    background-color: white;
+    margin-left: 5px;
 }
-.snippet-entity .snippet-view-box,
 .submodule-paste-view .viewer-content {
     border: 1px solid #ddd;
-    background-color: #eee;
+    background-color: white;
     padding-left: 8px;
     text-shadow: black 0px 0px 0px;
     color: #444;
+    overflow: auto;
 }
 
 
