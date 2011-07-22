@@ -1,13 +1,3 @@
-NIWI_LOGGING FEATURES
-=====================
-This is a internal project.
- 
- * Support multiple organizations logging with one instance.
- * Handlers for send almost inmediately (testing)
- * Buffered async handlers (not implemented)
- * Backup like async handlers (not implemented)
-
-
 NIWI_WEB FEATURES
 =================
  
