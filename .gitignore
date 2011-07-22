@@ -4,8 +4,7 @@
 *.log
 src/media*
 src/backup.*
-src/settings.py
-src/settings_logserver.py
+src/settings/local.py
 migrations*
 src/niwi/contrib/logging/devel.py
 src/niwi/_design

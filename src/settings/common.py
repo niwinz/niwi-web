@@ -3,16 +3,12 @@
 from django.utils.translation import ugettext_lazy as _
 import os.path, sys
 
-PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = (
     ('Andrei Antoukh', 'niwi@niwi.be'),
 )
-
 MANAGERS = ADMINS
+
+PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
 FCBK_APP_ID = ''
 FCBK_APP_SECRET = ''
@@ -39,7 +35,7 @@ CACHES = {
 }
 
 # ETAGS Feature for good cache. (true only for production)
-USE_ETAGS=True
+USE_ETAGS=False
 
 #SESSION BACKEND
 SESSION_ENGINE='django.contrib.sessions.backends.db'
@@ -97,34 +93,30 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', 
     'django.middleware.csrf.CsrfResponseMiddleware',
-    'django.middleware.http.ConditionalGetMiddleware',
-    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'niwi.middleware.FacebookMiddleware',
-)
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
+TEMPLATE_CONTEXT_PROCESSORS = [
     "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     'django.core.context_processors.static',
     "django.contrib.messages.context_processors.messages",
     "niwi.context.main",
-)
+]
 
 
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    #os.path.join(PROJECT_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
