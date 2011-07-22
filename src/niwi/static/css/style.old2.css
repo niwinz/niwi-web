@@ -15,12 +15,9 @@ a {
 }
 .module-container {
     padding: 5px;
-    /*background-color: #999;*/
+    background-color: #999;
     margin: 0 auto;
     width: 900px;
-    border: 1px solid #999;
-    border-radius: 3px;
-    -webkit-box-shadow: 0px 0px 5px #616FE6;
 }
 
 .module-main {
@@ -62,23 +59,19 @@ a {
 
 .submodule-head .title .titular {
     font-family: "GentiumBasicBold";
-    font-size: 80px;
+    font-size: 100px;
     line-height: 120px;
     vertical-align: middle;
     color: #111;
 }
-.submodule-head .title .titular span.one {
-    color: #004B6B;
-}
-.submodule-head .title .titular span.two {
-    color: black;
-}
 .submodule-head .menu {
-    color: black;
+    color: #111;
     font-size: 1em;
     font-style: normal;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     background-color: white;
+    border: 1px solid #DDD;
+    outline: 1px solid #CCC;
 }
 .submodule-head .menu li { 
     list-style: none;
@@ -87,18 +80,12 @@ a {
     margin-left: 5px;
 }
 .submodule-head .menu li a{
-    color: black;
+    /*color: #004B6B; */
+    color: #202020;
     text-decoration: none;
 }
 .submodule-head .menu li a:hover {
     color: #004B6B;
-}
-
-.links-block .block-content,
-.news-block .block-content,
-.links-block .show-more,
-.news-block .show-more {
-    padding-left: 10px;
 }
 
 .links-block .link,

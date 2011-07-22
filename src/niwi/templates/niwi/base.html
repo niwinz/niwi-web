@@ -11,8 +11,12 @@
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/fonts.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/friendly.css" />
-        <link rel="alternate" type="application/atom+xml" title="Niwi.Be posts" href="{% url "web:posts-feed" %}" />
-        <meta name="google-site-verification" content="hZuPj_2t_b3iojLxqEU6vxr346t-_7VXCg9tD3SEweg" />
+        <link rel="alternate" type="application/atom+xml" title="Niwi.Be posts" 
+            href="{% url "web:posts-feed" %}" />
+
+        <meta name="google-site-verification" 
+            content="hZuPj_2t_b3iojLxqEU6vxr346t-_7VXCg9tD3SEweg" />
+
         {% block html-head %}{% endblock %}
         {% block opengraph %}{% endblock %}
         <meta property="fb:admins" content="{{ fcbk_admin }}" />
@@ -23,7 +27,12 @@
             <div class="module-main module">
                 <div class="submodule-head">
                     <div class="title">
-                        <div class="titular">Niwi.Be</div>
+                        <div class="titular">
+                            <span class="one">«</span>
+                            <span class="two">Niwi</span>
+                            <span class="one">»</span>
+                            <span class="two">Be</span>
+                        </div>
                     </div>
                     <div class="menu">
                         <!-- TODO: make menu block on future -->
