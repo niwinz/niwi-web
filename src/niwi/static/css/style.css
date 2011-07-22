@@ -73,6 +73,9 @@ a {
 .submodule-head .title .titular span.two {
     color: black;
 }
+.submodule-head .title .titular span.small {
+    font-size: 50px;
+}
 .submodule-head .menu {
     color: black;
     font-size: 1em;
@@ -219,11 +222,11 @@ a {
     display: block;
     float: right;
     text-decoration: none;
-    border: 1px solid #ddd;
-    outline: 1px solid #ccc;
-    background-color: white;
     margin-left: 5px;
+    padding-right: 10px;
+    font-weight: bold;
 }
+
 .submodule-paste-view .viewer-content {
     border: 1px solid #ddd;
     background-color: white;
@@ -232,7 +235,6 @@ a {
     color: #444;
     overflow: auto;
 }
-
 
 .submodule-paste {
     padding: 10px;
