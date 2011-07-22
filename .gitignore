@@ -8,4 +8,5 @@ src/settings.py
 src/settings_logserver.py
 migrations*
 src/niwi/contrib/logging/devel.py
+src/niwi/_design
 src/static*
