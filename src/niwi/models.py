@@ -54,11 +54,6 @@ class Document(models.Model):
         else:
             return model.objects.get(pk=self.id)
 
-
-    def delete(self, *args, **kwargs):
-        self.status = 'deleted'
-        self.save()
-
     def __unicode__(self):
         return self.title
 
