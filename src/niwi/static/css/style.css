@@ -34,6 +34,8 @@ a {
     border: 1px solid #ddd;
 }
 
+a.img-item img { max-width: 875px; margin-bottom: 25px; }
+
 .module-main p,
 .module-main ul,
 .module-main ol {
