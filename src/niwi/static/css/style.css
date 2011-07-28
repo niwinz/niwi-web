@@ -54,11 +54,10 @@ a {
     font-family: "GentiumBasicBold";
     font-weight: normal;
 }
-/*.module-main a {
-    font-weight: bolder;
+.module-main a {
     color: #004B6B;
     color: black;
-}*/
+}
 
 .submodule-head {
     text-align: center;
