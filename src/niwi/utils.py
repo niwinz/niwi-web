@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from lxml.html import parse, tostring
+import requests
 
 class Singleton(type):
     """ Singleton metaclass. """
@@ -15,7 +15,14 @@ class Singleton(type):
         return cls.__instance
 
 
+import re
+rx = re.compile(r'\s*<title>(.+)</title>\s*', flags=re.U+re.I)
+
 def get_url_data(url):
-    element = parse(url)
-    title_obj = element.getroot().cssselect('title')[0]
-    return (title_obj.text_content(), tostring(title_obj.body))
+    response = requests.get(url)
+    if response.status_code == 200:
+        pos = rx.findall(response.content)
+        if len(pos) > 0:
+            return pos[0], url
+    
+    return url, url

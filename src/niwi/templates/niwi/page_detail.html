@@ -2,19 +2,19 @@
 {% load i18n %}
 {% load utils %}
 
-{% block title %}- {{ page.title }} {% endblock %}
+{% block title %}- {{ object.title }} {% endblock %}
 
 {% block html-head %}
-<meta name="Keywords" content="{{ page.title }}" />
-<meta name="Description" content="{{ page.content|truncatewords:30 }}" />
+<meta name="Keywords" content="{{ object.title }}" />
+<meta name="Description" content="{{ object.content|truncatewords:30 }}" />
 {% endblock %}
 
 {% block body %}
 <div class="submodule-content">
     <div class="project-entity">
         <div class="content">
-            {% if page.markup %}{{ page.content|markdown }}
-            {% else %} {{ page.content|safe }}
+            {% if object.markup %}{{ object.content|markdown }}
+            {% else %} {{ object.content|safe }}
             {% endif %}
         </div>
     </div>

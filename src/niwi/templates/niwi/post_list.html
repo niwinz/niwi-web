@@ -21,7 +21,7 @@
 <div class="submodule-content">
     <h2>{% trans "All public posts:" %}</h2>
     <div class="post-list">
-        {% for post in page_obj.object_list %}
+        {% for post in page.object_list %}
         <div class="post">
             <div class="post-head">
                 <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>

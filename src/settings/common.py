@@ -104,6 +104,13 @@ MIDDLEWARE_CLASSES = [
     'niwi.middleware.FacebookMiddleware',
 ]
 
+import django
+# django 1.4 compatibility layer
+if django.VERSION[:2] > (1,3):
+    i = MIDDLEWARE_CLASSES.index("django.middleware.csrf.CsrfResponseMiddleware")
+    del MIDDLEWARE_CLASSES[i]
+ 
+
 TEMPLATE_CONTEXT_PROCESSORS = [
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.i18n",
@@ -128,7 +135,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.webdesign',
     'niwi',
-    'niwi.paste',
 )
 
 LOGGING = {

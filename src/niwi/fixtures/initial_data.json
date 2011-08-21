@@ -3,30 +3,9 @@
         "pk": 1, 
         "model": "niwi.config", 
         "fields": {
-            "path": "core.homepage", 
-            "modified_date": "2011-06-05 10:45:36", 
-            "value": "27619fe8-8f50-11e0-95ab-0024d654ffc6", 
-            "created_date": "2011-06-05 10:43:00"
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "niwi.config", 
-        "fields": {
-            "path": "contrib.google.analytics.domain", 
-            "modified_date": "2011-06-12 01:26:12", 
-            "value": "NaN", 
-            "created_date": "2011-06-12 01:26:12"
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "niwi.config", 
-        "fields": {
-            "path": "contrib.google.analytics.code", 
-            "modified_date": "2011-06-12 01:27:11", 
-            "value": "NaN", 
-            "created_date": "2011-06-12 01:27:11"
+            "core_homepage": "1", 
+            "google_analytics_domain": "NaN",
+            "google_analytics_code": "NaN"
         }
     }, 
     {

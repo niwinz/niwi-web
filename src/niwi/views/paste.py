@@ -16,7 +16,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
-from ..models.paste import Paste
+from ..models import Paste
 from ..forms.paste import PasteForm
 from .generic import GenericView
 

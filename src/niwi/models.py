@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.template.defaultfilters import slugify
+from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
 from niwi.utils import get_url_data
-from niwi.paste.forms import LEXER_CHOICES
-from niwi.contrib.db.fields import UUIDField, CreationDateTimeField, \
-    ModificationDateTimeField, AutoSlugField
-
-from django.contrib.contenttypes import generic
-from django.contrib.contenttypes.models import ContentType
+from niwi.forms.paste import LEXER_CHOICES
+from niwi.contrib.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 import datetime, uuid
 
@@ -34,21 +31,16 @@ def slugify_uniquely(value, model, slugfield="slug"):
         suffix += 1
 
 
-class Page(models.model):
+class Page(models.Model):
     slug  = models.SlugField(unique=True, db_index=True, editable=True)
-    #slug = AutoSlugField(populate_from='title', unique=True, db_index=True, editable=True)
     title = models.CharField(max_length=500, db_index=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
-    lang = models.CharField(max_length=10, choices=settings.LANGUAGES)
 
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
-    current_version = models.IntegerField(default=1)
-    parent_version = models.IntegerField(null=True, default=None, blank=True)
-    content_type = models.ForeignKey(ContentType, null=True, default=None)
     class Meta:
         db_table = 'pages'
 
@@ -65,19 +57,14 @@ class Page(models.model):
 
 class Post(models.Model):
     slug  = models.SlugField(unique=True, db_index=True, editable=True)
-    #slug = AutoSlugField(populate_from='title', unique=True, db_index=True, editable=True)
-    title = models.CharField(max_length=500, db_index=True)
+    title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
 
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
-
-    current_version = models.IntegerField(default=1)
-    parent_version = models.IntegerField(null=True, default=None, blank=True)
-    content_type = models.ForeignKey(ContentType, null=True, default=None)
-
+    
     class Meta:
         db_table = 'posts'
 
@@ -94,7 +81,7 @@ class Post(models.Model):
 
 class Link(models.Model):
     title = models.CharField(max_length=500, blank=True)
-    slug = AutoSlugField(populate_from='title', unique=True)
+    slug = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
     url = models.CharField(max_length=1000)
     
     created_date = models.DateTimeField(auto_now_add=True)
@@ -108,7 +95,10 @@ class Link(models.Model):
     def save(self, *args, **kwargs):
         if not self.title:
             self.title, body = get_url_data(self.url)
-        
+
+        if not self.slug:
+            self.slug = slugify_uniquely(self.title, self.__class__)
+
         super(Link, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -120,11 +110,20 @@ class Link(models.Model):
 
 
 class Config(models.Model):
-    path = models.CharField(max_length=200, unique=True, db_index=True)
-    value = models.CharField(max_length=500, blank=True)
-
-    created_date = CreationDateTimeField()
-    modified_date = ModificationDateTimeField()
+    google_analytics_domain = models.CharField(max_length=200, blank=True)
+    google_analytics_code = models.CharField(max_length=200, blank=True)
+    core_homepage = models.CharField(max_length=200, blank=True)
 
     class Meta:
         db_table = 'config'
+
+
+class Paste(models.Model):
+    text = models.TextField()
+    lexer = models.CharField(max_length=5)
+    title = models.CharField(max_length=100, blank=True)
+    group = models.CharField(max_length=100, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'paste'

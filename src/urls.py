@@ -11,7 +11,7 @@ urlpatterns = patterns('',
 )
 
 from django.views.generic import RedirectView
-from niwi.views import Sitemap, Robots
+from niwi.views.main import Sitemap, Robots
 
 urlpatterns += patterns('',
     #url(r'^$', RedirectView.as_view(url="/w/"), name="root"),

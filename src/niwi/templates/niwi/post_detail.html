@@ -30,19 +30,6 @@
             {{ object.content|safe }}
             {% endif %}
         </div>
-    
-        {% with postfiles=object.files.all %}
-        {% if postfiles.count > 0 %}
-        <div class="asociated-files">
-            <h3>{% trans "Asociated files:" %}</h3>
-            <ul>
-                {% for fobj in postfiles %}
-                <li><a target="_blank" href="{{ fobj.file.url }}">{{ fobj.file.name|fixname }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-        {% endwith %}
     </div>
     {% include "utils/share.block.html" %}
     {% include "utils/disqus-post.html" %}

@@ -35,9 +35,12 @@ class AnalyticsNode(template.Node):
     def __init__(self):
         self.enabled = None
         try:
-            self.analytics_code = Config.objects.get(path="contrib.google.analytics.code").value
-            self.analytics_domain = Config.objects.get(path="contrib.google.analytics.domain").value
+            config_object = Config.objects.get()
+
+            self.analytics_code = config_object.google_analytics_code
+            self.analytics_domain = config_object.google_analytics_domain
             self.enabled = True
+
         except Config.DoesNotExist:
             self.enabled = False
 
@@ -47,6 +50,7 @@ class AnalyticsNode(template.Node):
             return template.loader.render_to_string("utils/analytics.html", context)
         else:
             return ''
+
 
 @register.tag(name="analytics")
 def analytics_tag(parser, token):

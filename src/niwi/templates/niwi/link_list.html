@@ -20,7 +20,7 @@
 <div class="submodule-content">
     <h2>{% trans "My shared links:" %}</h2>
     <div class="link-list">
-        {% for link in page_obj.object_list %}
+        {% for link in page.object_list %}
         <div class="link">
             <div class="link-head">
                 <a target="_blank" class="link-title" href="{{ link.get_absolute_url }}">{{ link.title }}</a>

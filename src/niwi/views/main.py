@@ -17,7 +17,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
-from ..models.main import *
+from ..models import *
 from .generic import GenericView
 
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
@@ -37,7 +37,7 @@ class HomePageView(GenericView):
         }
         try:
             config = Config.objects.get()
-            context['homepage'] = Page.objects.get(uuid=config.core_homepage)
+            context['homepage'] = Page.objects.get(pk=config.core_homepage)
         except (Page.DoesNotExist, Config.DoesNotExist):
             context['homepage'] = None
         return self.render_to_response(self.template_name, context)
