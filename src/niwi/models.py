@@ -82,7 +82,7 @@ class Post(models.Model):
 class Link(models.Model):
     title = models.CharField(max_length=500, blank=True)
     slug = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
-    url = models.CharField(max_length=1000)
+    url = models.CharField(max_length=1000, unique=True, db_index=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)

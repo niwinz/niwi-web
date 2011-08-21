@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from gevent import monkey; monkey.patch_all()
+#from gevent import monkey; monkey.patch_all()
 from django.core.management import execute_manager
 import settings.local as settings
 

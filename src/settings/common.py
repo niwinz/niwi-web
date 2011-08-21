@@ -135,6 +135,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.webdesign',
     'niwi',
+    'djcelery',
 )
 
 LOGGING = {
