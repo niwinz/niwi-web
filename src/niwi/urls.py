@@ -8,6 +8,7 @@ from .feeds import LatestPostsFeed
 from .views import DocumentView, PageView,  HomePageView, \
     PostsView, PostView, LinksView, LinkView, LangChangeView
 
+from .views.paste import PasteHomeView, PasteDetailView, PasteDetailRawView
 
 urlpatterns = patterns('',
     url(r'^$', HomePageView.as_view(), name='show-home'),
@@ -21,14 +22,11 @@ urlpatterns = patterns('',
     url(r'^link/(?P<slug>[\w\d\-]+)/$', LinkView.as_view(), name='show-link'),
     
     url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
-    url(r'^doc/(?P<slug>[\w\d\-]+)/$', DocumentView.as_view(), name="show-doc"),
-
     url(r'^set/lang/$', LangChangeView.as_view(), name="set-lang"),
     
-    # Old style views
-    url(r'^paste/$', 'niwi.paste.views.paste', name='paste-home'),
-    url(r'^paste/(?P<pasteid>\d+)/$', 'niwi.paste.views.paste_view', name='paste-view'),
-    url(r'^paste/(?P<pasteid>\d+)/raw/$', 'niwi.paste.views.paste_view_raw', name='paste-view-raw'),
+    url(r'^paste/$', PasteHomeView.as_view(), name='paste-home'),
+    url(r'^paste/(?P<pasteid>\d+)/$', PasteDetailView.as_view(), name='paste-view'),
+    url(r'^paste/(?P<pasteid>\d+)/raw/$', PasteDetailRawView.as_view(), name='paste-view-raw'),
 )
 
 
