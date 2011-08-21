@@ -26,7 +26,7 @@ logger = logging.getLogger("niwi")
 
 class PasteHomeView(GenericView):
     def get_pastes(self):
-        return Paste.objects.order_by('-created_date')[:20]
+        return Paste.objects.order_by('-created')[:20]
 
     def get(self, request):
         form = PasteForm(request=request)
