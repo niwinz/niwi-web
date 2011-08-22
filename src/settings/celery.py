@@ -16,16 +16,17 @@ CELERY_IGNORE_RESULT = True
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_DISABLE_RATE_LIMITS = True
 
-CELERY_IMPORTS = ("niwi_proc.twitter_filter",)
+CELERY_IMPORTS = ("niwi_apps.twitter_filter",)
 CELERYD_MAX_TASKS_PER_CHILD = 1000
 
-from datetime import timedelta
-
-CELERYBEAT_SCHEDULE = {
-    "runs-every-30-seconds": {
-        "task": "filter-twitter-links",
-        "schedule": timedelta(seconds=30),
-    }
-}
+#from datetime import timedelta
+#
+#CELERYBEAT_SCHEDULE = {
+#    "runs-every-30-seconds": {
+#        "task": "filter-twitter-links",
+#        "schedule": timedelta(seconds=30),
+#    }
+#}
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 djcelery.setup_loader()

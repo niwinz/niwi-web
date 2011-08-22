@@ -8,5 +8,5 @@ src/backup.*
 src/settings/local.py
 migrations*
 src/niwi/contrib/logging/devel.py
-src/niwi/_design
+src/celerybeat-schedule.db
 src/static*
