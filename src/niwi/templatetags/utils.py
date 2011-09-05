@@ -36,7 +36,6 @@ class AnalyticsNode(template.Node):
         self.enabled = None
         try:
             config_object = Config.objects.get()
-
             self.analytics_code = config_object.google_analytics_code
             self.analytics_domain = config_object.google_analytics_domain
             self.enabled = True
@@ -55,6 +54,37 @@ class AnalyticsNode(template.Node):
 @register.tag(name="analytics")
 def analytics_tag(parser, token):
     return AnalyticsNode()
+
+
+class ShowPageNode(template.Node):
+    """ Show and render page. """
+
+    def __init__(self, pagename):
+        self.pagename = pagename
+
+    def render(self, context):
+        from niwi.models import Page
+        try:
+            page = Page.objects.get(slug=self.pagename)
+        except Page.DoesNotExist:
+            return mark_safe('')
+        
+        t = template.Template(page.content)
+        result = t.render(context)
+        return mark_safe(result)
+
+
+@register.tag(name="show_page")
+def show_page(parser, token):
+    try:
+        tag_name, page_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag requires a single argument" % token.contents.split()[0])
+
+    if not (page_name[0] == page_name[-1] and page_name[0] in ('"', "'")):
+        raise template.TemplateSyntaxError("%r tag's argument should be in quotes" % tag_name)
+
+    return ShowPageNode(page_name[1:-1])
 
 
 

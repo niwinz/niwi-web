@@ -4,12 +4,9 @@ from django.conf.urls.defaults import *
 from django.core.urlresolvers import reverse
 from django.views.generic import TemplateView, RedirectView
 
-from .feeds import LatestPostsFeed 
-
-from .views.main import PageView,  HomePageView, PostListView, PostView, \
-    LinkListView, LinkView, LangChangeView
-
-from .views.paste import PasteHomeView, PasteDetailView, PasteDetailRawView
+from .feeds import *
+from .views.main import *
+from .views.paste import *
 
 urlpatterns = patterns('',
     url(r'^$', HomePageView.as_view(), name='show-home'),
@@ -21,8 +18,8 @@ urlpatterns = patterns('',
     url(r'^posts/feed/$', LatestPostsFeed(), name='posts-feed'),
     url(r'^post/(?P<slug>[\w\d\-]+)/$', PostView.as_view(), name='show-post'),
 
-    url(r'^links/$', LinkListView.as_view(), name='links'),
-    url(r'^link/(?P<slug>[\w\d\-]+)/$', LinkView.as_view(), name='show-link'),
+    url(r'^bookmarks/$', BookmarkListView.as_view(), name='bookmarks'),
+    url(r'^bookmark/(?P<slug>[\w\d\-]+)/$', BookmarkView.as_view(), name='show-bookmark'),
     
     url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
     url(r'^set/lang/$', LangChangeView.as_view(), name="set-lang"),

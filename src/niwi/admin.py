@@ -45,13 +45,21 @@ class GenericPostModelAdmin(GenericModelAdmin):
     )
     actions = [make_published, make_private]
 
+    def save_model(self, request, obj, form, change):
+        obj.owner = request.user
+        super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
-class LinkModelAdmin(GenericModelAdmin):
+
+class BookmarkModelAdmin(GenericModelAdmin):
     search_fields = ('title',)
     list_display = ('id','title', 'public',)
     list_display_links = list_display
     list_filter = ('created_date', 'modified_date', 'public',)
     actions = [make_published, make_private]
+
+    def save_model(self, request, obj, form, change):
+        obj.owner = request.user
+        super(BookmarkModelAdmin, self).save_model(request, obj, form, change)
 
 
 class PasteModelAdmin(GenericModelAdmin):
@@ -62,7 +70,7 @@ class PasteModelAdmin(GenericModelAdmin):
 
 
 admin.site.register(Post, GenericPostModelAdmin)
-admin.site.register(Link, LinkModelAdmin)
+admin.site.register(Bookmark, BookmarkModelAdmin)
 admin.site.register(Paste, PasteModelAdmin)
 admin.site.register(Page, GenericPostModelAdmin)
 admin.site.register(Config)

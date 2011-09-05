@@ -54,18 +54,18 @@ class PostListView(GenericView):
         return self.render_to_response("niwi/post_list.html", context)
 
 
-class LinkListView(GenericView):
+class BookmarkListView(GenericView):
     def get(self, request, year=None):
         if not year:
-            links = Link.objects.filter(public=True).order_by('-created_date')[:25]
+            bookmarks = Bookmark.objects.filter(public=True).order_by('-created_date')[:25]
         else:
-            links = Link.objects.filter(public=True, created_date__year=year).order_by('-created_date')
+            bookmarks = Bookmark.objects.filter(public=True, created_date__year=year).order_by('-created_date')
 
-        years = [x.year for x in Link.objects.filter(public=True).dates('created_date','year')]
-        months = links.dates('created_date', 'month')
+        years = [x.year for x in Bookmark.objects.filter(public=True).dates('created_date','year')]
+        months = bookmarks.dates('created_date', 'month')
 
-        context = {'links': links, 'months': months, 'years': years}
-        return self.render_to_response("niwi/link_list.html", context)
+        context = {'bookmarks': bookmarks, 'months': months, 'years': years}
+        return self.render_to_response("niwi/bookmark_list.html", context)
 
 
 class PageView(GenericView):
@@ -82,10 +82,10 @@ class PostView(GenericView):
         return self.render_to_response("niwi/post_detail.html", context)
 
 
-class LinkView(GenericView):
+class BookmarkView(GenericView):
     def get(self, request, slug):
-        link = get_object_or_404(Link, slug=slug)
-        return HttpResponseRedirect(link.url)
+        bookmark = get_object_or_404(Bookmark, slug=slug)
+        return HttpResponseRedirect(bookmark.url)
 
 
 class LangChangeView(View):

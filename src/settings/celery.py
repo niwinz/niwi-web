@@ -29,4 +29,6 @@ CELERYD_MAX_TASKS_PER_CHILD = 1000
 #}
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
+INSTALLED_APPS += ['djcelery']
+
 djcelery.setup_loader()

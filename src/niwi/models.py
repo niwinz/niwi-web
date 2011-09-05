@@ -37,7 +37,7 @@ class Page(models.Model):
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
-    #owner = models.ForeignKey('auth.User', related_name='pages')
+    owner = models.ForeignKey('auth.User', related_name='pages')
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -60,7 +60,7 @@ class Post(models.Model):
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
-    #owner = models.ForeignKey('auth.User', related_name='pages')
+    owner = models.ForeignKey('auth.User', related_name='posts')
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
 
     created_date = CreationDateTimeField(editable=True)
@@ -80,11 +80,12 @@ class Post(models.Model):
         return ('web:show-post', (), {'slug': self.slug})
 
 
-class Link(models.Model):
+class Bookmark(models.Model):
     title = models.CharField(max_length=500, blank=True)
     slug = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
     url = models.CharField(max_length=1000, unique=True, db_index=True)
-    #tags = models.CharField(max_length=1000, db_index=True, blank=True, default='')
+    tags = models.CharField(max_length=1000, db_index=True, blank=True, default='')
+    owner = models.ForeignKey('auth.User', related_name='bookmarks')
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
@@ -92,21 +93,21 @@ class Link(models.Model):
     public = models.BooleanField(default=True)
 
     class Meta:
-        db_table = 'links'
+        db_table = 'bookmarks'
 
     def save(self, *args, **kwargs):
         if not self.title:
             self.title, body = get_url_data(self.url)
         if not self.slug:
             self.slug = slugify_uniquely(self.title, self.__class__)
-        super(Link, self).save(*args, **kwargs)
+        super(Bookmark, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.slug
 
     @models.permalink
     def get_absolute_url(self):
-        return ('web:show-link', (), {'slug': self.slug})
+        return ('web:show-bookmark', (), {'slug': self.slug})
 
 
 class Config(models.Model):

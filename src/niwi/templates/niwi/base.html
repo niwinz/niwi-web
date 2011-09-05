@@ -30,12 +30,15 @@
             {% endblock %}
             {% block foother %}
             <footer>
+                {% show_page "nav" %}
+                {% comment %}
                 <span>Nav: </span><nav>
                     <li><a href="">Home</a></li>
                     <li><a href="">Bookmarks</a></li>
                     <li><a href="">Paste</a></li>
                     <li><a href="">Admin</a></li>
                 </nav>
+                {% endcomment %}
                 <p>This web application is open source, and you can download the sources from 
                     <a href="https://github.com/niwibe/niwi-web/">here.</a></p>
                 <p>Software: niwi-web v2</p>

@@ -3,7 +3,7 @@
 from celery.decorators import task
 from django.utils import simplejson
 
-from niwi.models import Link
+from niwi.models import Bookmark
 from .models import TwitterFilterConfig
 
 import requests
@@ -11,8 +11,8 @@ import requests
 API_URL = 'http://api.twitter.com/1/statuses/user_timeline.json'
 
 
-@task(name="filter-twitter-links")
-def filter_links():
+@task(name="filter-twitter-bookmarks")
+def filter_bookmarks():
     counter = 0
     
     for filter in TwitterFilterConfig.objects.filter(active=True):
@@ -57,10 +57,10 @@ def filter_links():
 
             counter = 0
             for url in urls_list:
-                if Link.objects.filter(url=url).exists():
+                if Bookmark.objects.filter(url=url).exists():
                     continue
                 
-                Link.objects.create(url=url)
+                Bookmark.objects.create(url=url)
                 counter += 1
 
     return counter
