@@ -4,19 +4,21 @@
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.contrib.markup.templatetags.markup import markdown
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Post, Page
 
 class LatestPostsFeed(Feed):
     feed_type = Atom1Feed
-    title = 'Ultimas entradas en Niwi.Be'
+    title = _(u'Ultimas entradas')
     link = '/'
 
     def items(self):
-        return Post.objects.exclude(status="public").order_by('-created_date')[:10]
+        return Post.objects.filter(status="public").order_by('-created_date')[:10]
 
     def item_title(self, item):
         return item.title
 
     def item_description(self, item):
+        # TODO: fix this
         return markdown(item.content)

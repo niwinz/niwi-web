@@ -95,10 +95,8 @@ class Link(models.Model):
     def save(self, *args, **kwargs):
         if not self.title:
             self.title, body = get_url_data(self.url)
-
         if not self.slug:
             self.slug = slugify_uniquely(self.title, self.__class__)
-
         super(Link, self).save(*args, **kwargs)
 
     def __unicode__(self):

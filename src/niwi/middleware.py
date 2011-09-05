@@ -38,7 +38,6 @@ def parse_signed_request(signed_request):
         return data
 
 
-
 class FacebookMiddleware(object):
     def process_request(self, request):
         if "signed_request" in request.POST:

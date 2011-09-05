@@ -24,7 +24,7 @@ class GenericModelAdmin(admin.ModelAdmin):
         super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
 
-class GenericDocumentModelAdmin(GenericModelAdmin):
+class GenericPostModelAdmin(GenericModelAdmin):
     save_on_top = True
     search_fields = ('title', 'slug', 'uuid')
     list_display = ('id', 'title', 'created_date', 'modified_date', 'status',)
@@ -61,8 +61,8 @@ class PasteModelAdmin(GenericModelAdmin):
     list_filter = ('lexer', 'created')
 
 
-admin.site.register(Post, GenericDocumentModelAdmin)
+admin.site.register(Post, GenericPostModelAdmin)
 admin.site.register(Link, LinkModelAdmin)
 admin.site.register(Paste, PasteModelAdmin)
-admin.site.register(Page, GenericDocumentModelAdmin)
+admin.site.register(Page, GenericPostModelAdmin)
 admin.site.register(Config)
