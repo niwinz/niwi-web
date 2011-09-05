@@ -64,7 +64,7 @@ class BookmarkListView(GenericView):
             bookmarks = Bookmark.objects.filter(public=True, created_date__year=year).order_by('-created_date')
 
         years = [x.year for x in Bookmark.objects.filter(public=True).dates('created_date','year')]
-        months = bookmarks.dates('created_date', 'month')
+        months = list(bookmarks.dates('created_date', 'month'))
         months.reverse()
 
         month_result = []
