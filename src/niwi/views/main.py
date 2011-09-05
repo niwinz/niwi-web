@@ -56,11 +56,10 @@ class PostListView(GenericView):
 
 class LinkListView(GenericView):
     def get(self, request, year=None):
-        if not year
+        if not year:
             links = Link.objects.filter(public=True).order_by('-created_date')[:25]
         else:
             links = Link.objects.filter(public=True, created_date__year=year).order_by('-created_date')
-
 
         years = [x.year for x in Link.objects.filter(public=True).dates('created_date','year')]
         months = links.dates('created_date', 'month')

@@ -17,21 +17,16 @@
 <meta name="Description" content="{{ object.content|truncatewords:20 }}" />
 {% endblock %}
 
-{% block body %}
-<div class="submodule-content">
-    <div class="post-entity">
-        <div class="title">
-            <h1>{{ object.title }}</h1>
-        </div>
-        <div class="content">
-            {% if object.markup %}
-            {{ object.content|markdown }}
-            {% else %}
-            {{ object.content|safe }}
-            {% endif %}
-        </div>
-    </div>
-    {% include "utils/share.block.html" %}
-    {% include "utils/disqus-post.html" %}
-</div>
+{% block main %}
+<article>
+    <h1>{{ object.title }}</h1>
+    {% if object.markup %}
+    {{ object.content|markdown }}
+    {% else %}
+    {{ object.content|safe }}
+    {% endif %}
+
+</article>
+{% include "niwi/utils/share.block.html" %}
+{% include "niwi/utils/disqus-post.html" %}
 {% endblock %}
