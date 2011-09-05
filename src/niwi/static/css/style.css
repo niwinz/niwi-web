@@ -196,3 +196,6 @@ section ul {
 section.page img {
     max-width: 40em;
 }
+section.month {
+    margin-bottom: 30px;
+}
