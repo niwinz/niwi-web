@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     url(r'^404/$', TemplateView.as_view(template_name="404.html"), name="404"),
 
     url(r'^posts/$', PostListView.as_view(), name='posts'),
+    url(r'^posts/year/(?P<year>\d+)/$', PostListView.as_view(), name='posts'),
+
     url(r'^posts/feed/$', LatestPostsFeed(), name='posts-feed'),
     url(r'^post/(?P<slug>[\w\d\-]+)/$', PostView.as_view(), name='show-post'),
 

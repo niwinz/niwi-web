@@ -33,7 +33,6 @@ class HomePageView(GenericView):
     def get(self, request):
         context = {
             'posts': Post.objects.filter(status='public').order_by('-modified_date')[:3],
-            'links': Link.objects.filter(public=True).order_by('-created_date')[:6]
         }
         try:
             config = Config.objects.get()
@@ -44,37 +43,30 @@ class HomePageView(GenericView):
         
 
 class PostListView(GenericView):
-    def get(self, request):
-        posts = Post.objects.filter(status='public').order_by('-created_date')
-        paginator = Paginator(posts, 25)
-
-        try:
-            page = int(request.GET.get('page', '1'))
-        except ValueError:
-            page = 1
-
-        try:
-            posts_page = paginator.page(page)
-        except (EmptyPage, InvalidPage):
-            posts_page = paginator.page(paginator.num_pages)
-        return self.render_to_response("niwi/post_list.html", {'page':posts_page})
+    def get(self, request, year=None):
+        if not year:
+            posts = Post.objects.filter(status='public').order_by('-created_date')[:20]
+        else:
+            posts = Post.objects.filter(created_date__year=year, status='public').order_by('-created_date')
+        
+        years = [x.year for x in Post.objects.filter(status='public').dates('created_date','year')]
+        context = {'posts': posts, 'years': years}
+        return self.render_to_response("niwi/post_list.html", context)
 
 
 class LinkListView(GenericView):
-    def get(self, request):
-        links = Link.objects.filter(public=True).order_by('-created_date')
-        paginator = Paginator(links, 25)
+    def get(self, request, year=None):
+        if not year
+            links = Link.objects.filter(public=True).order_by('-created_date')[:25]
+        else:
+            links = Link.objects.filter(public=True, created_date__year=year).order_by('-created_date')
 
-        try:
-            page = int(request.GET.get('page', '1'))
-        except ValueError:
-            page = 1
 
-        try:
-            links_page = paginator.page(page)
-        except (EmptyPage, InvalidPage):
-            links_page = paginator.page(paginator.num_pages)
-        return self.render_to_response("niwi/link_list.html", {'page':links_page})
+        years = [x.year for x in Link.objects.filter(public=True).dates('created_date','year')]
+        months = links.dates('created_date', 'month')
+
+        context = {'links': links, 'months': months, 'years': years}
+        return self.render_to_response("niwi/link_list.html", context)
 
 
 class PageView(GenericView):

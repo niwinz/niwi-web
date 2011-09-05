@@ -1,6 +1,7 @@
 {% extends "niwi/base.html" %}
 {% load i18n %}
 {% load utils %}
+{% load url from future %}
 
 {% block title %}- Posts {% endblock %}
 
@@ -16,19 +17,19 @@
 <meta name="Description" content="Collection of articles, mostly written by me." />
 {% endblock %}
 
-
 {% block main %}
 <header>
     <h2>{% trans "Latest Entries" %}</h2>
     <nav>
-        <p class="intro">See all entries published by <a href="http://www.westphahl.net/">Simon Westphahl</a> in
-            <a href="/blog/2010/">2010</a> or
-            <a href="/blog/2009/">2009</a>.
+        <p class="intro">See all entries published by in
+            {% for year in years %}
+            <a href="{% url 'web:posts' year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}.
         </p>
     </nav>
 </header>
 <section>
-    {% for post in page.object_list %}
+    {% for post in posts %}
     <article lang="es">
         <h3>{{ post.title }}</h3>
         <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>

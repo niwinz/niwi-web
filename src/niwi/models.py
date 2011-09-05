@@ -37,7 +37,7 @@ class Page(models.Model):
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
-
+    #owner = models.ForeignKey('auth.User', related_name='pages')
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -60,6 +60,7 @@ class Post(models.Model):
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
+    #owner = models.ForeignKey('auth.User', related_name='pages')
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
 
     created_date = CreationDateTimeField(editable=True)
@@ -83,6 +84,7 @@ class Link(models.Model):
     title = models.CharField(max_length=500, blank=True)
     slug = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
     url = models.CharField(max_length=1000, unique=True, db_index=True)
+    #tags = models.CharField(max_length=1000, db_index=True, blank=True, default='')
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
