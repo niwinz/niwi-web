@@ -17,8 +17,8 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
-from ..models import *
-from .generic import GenericView
+from niwi.models import *
+from niwi.views.generic import GenericView
 
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 from django.views.decorators.cache import cache_control
@@ -32,7 +32,7 @@ class HomePageView(GenericView):
 
     def get(self, request):
         context = {
-            'posts': Post.objects.filter(status='public').order_by('-modified_date')[:6],
+            'posts': Post.objects.filter(status='public').order_by('-modified_date')[:3],
             'links': Link.objects.filter(public=True).order_by('-created_date')[:6]
         }
         try:

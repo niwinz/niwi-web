@@ -12,48 +12,26 @@
 <meta property="og:image" content="{{ host }}/static/logo.png"/>
 {% endblock %}
 
-
 {% block html-head %}
+<!-- TODO: set this on settings -->
 <meta name="Keywords" content="niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux" />
 <meta name="Description" content="My personal blog, dedicated to my small contribution to the opensource world." />
 {% endblock %}
 
-{% block main %}
-<div class="news-block box-posts">
-    <h2>{% trans "Latest posts:" %}</h2>
-    <div class="block-content">
-        {% for post in posts %}
-        <div class="post">
-            <div class="post-head">
-                <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-                <div class="post-meta">
-                    <span class="fecha">{{ post.modified_date }}</span>
-                </div>
-            </div>
-            <div class="post-content">{{ post.intro|safe }}</div>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="show-more"><a href="{% url "web:posts" %}">{% trans "See all posts..." %}</a></div>
-</div>
 
-{% if links|length > 0 %}
-<div class="links-block box-links">
-    <h2>{% trans "Latest links:" %}</h2>
-    <div class="block-content">
-        {% for link in links %}
-        <div class="link">
-            <div class="link-head">
-                <a  target="_blank" class="link-title" href="{{ link.get_absolute_url }}">{{ link.title }}</a>
-                <div class="link-meta">
-                    <span class="fecha">{{ link.modified_date }}</span>
-                </div>
-            </div>
-            <div class="link-content"></div>
-       </div>
-       {% endfor %}
-    </div>
-    <div class="show-more"><a href="{% url "web:links" %}">{% trans "See all links..." %}</a></div>
-</div>
-{% endif %}
+{% block main %}
+{{ block.super }}
+<section>
+    <h2>{% trans "Recent Entries" %}</h2>
+    <hr />
+    {% for post in posts %}
+    <article>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>
+        <p><span class="meta">Published on {{ post.created_date }}</span> | 
+            <a class="navigation" href="{{ post.get_absolute_url }}">Read full entry</a> ↵</p>
+    </article>
+    {% endfor %}
+    <p class="navigation bottom tright"><a href="{% url "web:posts" %}">See more entries</a> →</p>
+</section>
 {% endblock %}

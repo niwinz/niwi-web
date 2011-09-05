@@ -47,7 +47,7 @@ class AnalyticsNode(template.Node):
     def render(self, context):
         if self.enabled:
             context.update({'code': self.analytics_code, 'domain': self.analytics_domain})
-            return template.loader.render_to_string("utils/analytics.html", context)
+            return template.loader.render_to_string("niwi/utils/analytics.html", context)
         else:
             return ''
 
