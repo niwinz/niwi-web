@@ -185,3 +185,8 @@ select, input {
     background-color: white;
     border: 1px solid #aaa;
 }
+footer  nav, footer nav li {
+    display: inline;
+    list-style: none;
+    padding: 5px;
+}
