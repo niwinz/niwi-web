@@ -5,54 +5,45 @@
 
 {% block title %} {% trans "- Paste" %}{% endblock %}
 
-{% block html-head %}
-<meta name="Keywords" content="pastebin, niwi-paste, niwi, python, python3, snippets" />
-<meta name="Description" content="Simple collaborative debugging tool allowing you to share code snippets." />
-{% endblock %}
-
-{% block title-extension %}
-<span class="one small">~</span>
-<span class="two small">Paste</span>
-{% endblock %}
-
-{% block body %}
-<div class="submodule-paste">
-    <div class="paste-description">
+{% block main %}
+<section class="submodule-paste">
+    <section class="paste-description">
         <p>Copie el texto y pegalo en el area del texto, seleccione el tipo de coloreado y ponga guardar.</p>
-    </div>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td colspan="3">
-                    {{ form.paste.errors }}
-                    {{ form.paste }}
-                </td>
-            </tr>
-            <tr>
-                <td class="lexer-part">
-                    <label>{{ form.lexer.label }}</label><br />
-                    {{ form.lexer.errors }}
-                    {{ form.lexer }}
-                </td>
-                <td class="title-part">
-                    <label>{{ form.title.label }}</label><br />
-                    {{ form.title.errors }}
-                    {{ form.title }}
-                </td>
-                <td class="group-part">
-                    <label>{{ form.group.label }}</label><br />
-                    {{ form.group.errors }}
-                    {{ form.group }}
-                </td>
-            </tr>
-        </table>
-        <div class="form-part">
-            <input type="submit" value="{% trans "Save" %}" />
-        </div>
-    </form>
-
-    <div class="paste-list">
+    </section>
+    <section class="form">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td colspan="3">
+                        {{ form.paste.errors }}
+                        {{ form.paste }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lexer-part">
+                        <label>{{ form.lexer.label }}</label><br />
+                        {{ form.lexer.errors }}
+                        {{ form.lexer }}
+                    </td>
+                    <td class="title-part">
+                        <label>{{ form.title.label }}</label><br />
+                        {{ form.title.errors }}
+                        {{ form.title }}
+                    </td>
+                    <td class="group-part">
+                        <label>{{ form.group.label }}</label><br />
+                        {{ form.group.errors }}
+                        {{ form.group }}
+                    </td>
+                </tr>
+            </table>
+            <div class="form-part">
+                <input type="submit" value="{% trans "Save" %}" />
+            </div>
+        </form>
+    </section>
+    <section class="paste-list">
         <h2>{% trans "List of old pastes:" %}</h2>
         <table class="lister">
             {% for paste in pastes %}
@@ -63,6 +54,6 @@
             </tr>
             {% endfor %}
         </table>
-    </div>
-</div>
+    </section>
+</section>
 {% endblock %}

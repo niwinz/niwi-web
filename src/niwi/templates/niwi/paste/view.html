@@ -2,20 +2,12 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block title-extension %}
-<span class="one small">~</span>
-<span class="two small">Paste</span>
-{% endblock %}
-
-{% block body %}
-<div class="submodule-paste-view">
-    <style type="text/css">
-        .code .highlight { padding-left: 5px; }
-    </style>
+{% block main %}
+<section class="submodule-paste-view">
     <div class="viewer-menu">
         <a href="{% url "web:paste-view-raw" obj.id %}">{% trans "Raw" %}</a> 
         <a href="{% url "web:paste-home" %}">{% trans "New paste" %}</a>
     </div>
     <div class="viewer-content">{{ result|safe }}</div>
-</div>
+</section>
 {% endblock %}

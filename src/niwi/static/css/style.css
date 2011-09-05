@@ -167,3 +167,21 @@ footer {
 header {
     margin-bottom: 50px;
 }
+
+.viewer-content pre { 
+    font-size: 11px; 
+    padding: 0px;
+    line-height: 14px;
+}
+
+section.form textarea { 
+    width: 620px;
+    border: 1px solid #aaa;
+}
+section.paste-list {
+    margin-top: 50px;
+}
+select, input {
+    background-color: white;
+    border: 1px solid #aaa;
+}

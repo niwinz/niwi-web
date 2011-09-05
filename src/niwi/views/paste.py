@@ -31,7 +31,7 @@ class PasteHomeView(GenericView):
     def get(self, request):
         form = PasteForm(request=request)
         context = {'form':form, 'pastes':self.get_pastes()}
-        return self.render_to_response('paste/post.html', context)
+        return self.render_to_response('niwi/paste/post.html', context)
 
     def post(self, request):
         form = PasteForm(request.POST, request=request)
@@ -45,7 +45,7 @@ class PasteHomeView(GenericView):
             return HttpResponseRedirect(reverse('web:paste-view', args=[paste_obj.id]))
         
         context = {'form':form, 'pastes':self.get_pastes()}
-        return self.render_to_response('paste/post.html', context)
+        return self.render_to_response('niwi/paste/post.html', context)
 
 
 class PasteDetailView(GenericView):
@@ -54,7 +54,7 @@ class PasteDetailView(GenericView):
         style = get_style_by_name('trac')
         lexer = get_lexer_by_name(paste_obj.lexer, stripall=True)
         formatter = HtmlFormatter(
-            linenos=True, 
+            linenos=False, 
             nobackground=True,
             encoding="utf-8",
             style=style
@@ -65,7 +65,7 @@ class PasteDetailView(GenericView):
             'obj':paste_obj,
             'style': formatter.get_style_defs('.highlight')
         }
-        return self.render_to_response("paste/view.html", context)
+        return self.render_to_response("niwi/paste/view.html", context)
 
 
 class PasteDetailRawView(GenericView):
