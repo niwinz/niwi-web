@@ -17,21 +17,26 @@
 {% endblock %}
 
 
-{% block body %}
-<div class="submodule-content">
-    <h2>{% trans "All public posts:" %}</h2>
-    <div class="post-list">
-        {% for post in page.object_list %}
-        <div class="post">
-            <div class="post-head">
-                <a class="post-title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-                <div class="post-meta"><span class="fecha">{{ post.modified_date }}</span></div>
-            </div>
-            <div class="post-content">{{ post.content|truncatewords:30 }}</div>
-        </div>
-        {% endfor %}
-    </div>
-    {% include "utils/share.block.html" %}
-    {% include "utils/pagination.html" %}
-</div>
+{% block main %}
+<header>
+    <h2>{% trans "Latest Entries" %}</h2>
+    <nav>
+        <p class="intro">See all entries published by <a href="http://www.westphahl.net/">Simon Westphahl</a> in
+            <a href="/blog/2010/">2010</a> or
+            <a href="/blog/2009/">2009</a>.
+        </p>
+    </nav>
+</header>
+<section>
+    {% for post in page.object_list %}
+    <article lang="es">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>
+        <p>
+            <span class="meta">Published on {{ post.created_date }}</span> |
+                <a class="navigation" href="{{ post.get_absolute_url }}">Read full entry</a> ↵</p>
+    </article>
+    {% endfor %}
+    {% include "niwi/utils/pagination.html" %}
+</section>
 {% endblock %}
