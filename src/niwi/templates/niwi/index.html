@@ -6,16 +6,16 @@
 {% block title %} {% trans "- Home page." %}{% endblock %}
 
 {% block opengraph %}
-<meta property="og:title" content="Niwi.Be Page"/>
+<meta property="og:title" content="{{ page_default_title }} Page"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="{{ full_host_url }}" />
-<meta property="og:image" content="{{ host }}/static/logo.png"/>
+<meta property="og:image" content="{{ page_default_logo_url }}"/>
 {% endblock %}
 
 {% block html-head %}
 <!-- TODO: set this on settings -->
-<meta name="Keywords" content="niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux" />
-<meta name="Description" content="My personal blog, dedicated to my small contribution to the opensource world." />
+<meta name="Keywords" content="{{ page_default_keyworkds }}" />
+<meta name="Description" content="{{ page_default_description }}" />
 {% endblock %}
 
 

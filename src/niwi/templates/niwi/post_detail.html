@@ -6,10 +6,10 @@
 {% block title %}- {{ object.title }} {% endblock %}
 
 {% block opengraph %}
-<meta property="og:title" content="Post - {{ object.title }}"/>
+<meta property="og:title" content="{{ page_default_title }}Post - {{ object.title }}"/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="{{ full_host_url }}" />
-<meta property="og:image" content="{{ host }}/static/logo.png"/>
+<meta property="og:image" content="{{ page_default_logo_url }}"/>
 {% endblock %}
 
 {% block html-head %}

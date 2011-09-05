@@ -3,7 +3,7 @@
     <head>
         <meta charset='utf-8' />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <title>Niwi.Be {% block title %}{% endblock %}</title>
+        <title>{{ page_default_title }} {% block title %}{% endblock %}</title>
         {% load utils %}
         {% load i18n %}
         {% load url from future %}
@@ -11,7 +11,7 @@
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/fonts.css" />
         <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/friendly.css" />
-        <link rel="alternate" type="application/atom+xml" title="Latest posts" href="{% url "web:posts-feed" %}" />
+        <link rel="alternate" type="application/atom+xml" title="{{ page_default_title }} Latest posts" href="{% url "web:posts-feed" %}" />
         {% block html-head %}{% endblock %}
         {% block opengraph %}{% endblock %}
         <meta property="fb:admins" content="{{ fcbk_admin }}" />
@@ -31,18 +31,10 @@
             {% block foother %}
             <footer>
                 {% show_page "nav" %}
-                {% comment %}
-                <span>Nav: </span><nav>
-                    <li><a href="">Home</a></li>
-                    <li><a href="">Bookmarks</a></li>
-                    <li><a href="">Paste</a></li>
-                    <li><a href="">Admin</a></li>
-                </nav>
-                {% endcomment %}
                 <p>This web application is open source, and you can download the sources from 
                     <a href="https://github.com/niwibe/niwi-web/">here.</a></p>
                 <p>Software: niwi-web v2</p>
-                <h3>Niwi.Be</h3>
+                <h3>{{ page_default_title }}</h3>
             </footer>
             {% endblock %}
         </div>
