@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from .devel import *
+#from .celery import *
+
+FCBK_APP_ID = ''
+FCBK_APP_SECRET = ''
+FCBK_APP_API = ''
+FCBK_ADMIN = ''
+
+SESSION_ENGINE='django.contrib.sessions.backends.cache'
+
+PAGE_DEFAULT_LOGO_URL='/static/logo.png'
+PAGE_DEFAULT_DESCRIPTION='My personal blog, dedicated to my small contribution to the opensource world.'
+PAGE_DEFAULT_KEYWORKDS='niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux'
+PAGE_DEFAULT_TITLE='Niwi.Be'

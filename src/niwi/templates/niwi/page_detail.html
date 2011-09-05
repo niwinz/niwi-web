@@ -9,15 +9,11 @@
 <meta name="Description" content="{{ object.content|truncatewords:30 }}" />
 {% endblock %}
 
-{% block body %}
-<div class="submodule-content">
-    <div class="project-entity">
-        <div class="content">
-            {% if object.markup %}{{ object.content|markdown }}
-            {% else %} {{ object.content|safe }}
-            {% endif %}
-        </div>
-    </div>
-    {% include "utils/share.block.html" %}
-</div>
+{% block main %}
+<section class="page">
+    {% if object.markup %}{{ object.content|markdown }}
+    {% else %} {{ object.content|safe }}
+    {% endif %}
+    {% include "niwi/utils/share.block.html" %}
+</section>
 {% endblock %}
