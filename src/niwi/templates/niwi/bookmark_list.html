@@ -5,10 +5,10 @@
 {% block title %}- Bookmarks {% endblock %}
 
 {% block opengraph %}
-<meta property="og:title" content="Latest bookmarks"/>
+<meta property="og:title" content="{{ page_default_title }} Latest bookmarks"/>
 <meta property="og:type" content="blog"/>
 <meta property="og:url" content="{{ full_host_url }}" />
-<meta property="og:image" content="{{ host }}/static/logo.png"/>
+<meta property="og:image" content="{{ page_default_logo_url }}"/>
 {% endblock %}
 
 {% block main %}
