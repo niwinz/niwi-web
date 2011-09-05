@@ -25,8 +25,6 @@
                     {% if homepage.markup %}{{ homepage.content|markdown }}
                     {% else %}{{ homepage.content|safe }}
                     {% endif %}
-                {% else %}
-                    {% include "niwi/test-header.html" %}
                 {% endif %}
             </header>
             {% endblock %}
