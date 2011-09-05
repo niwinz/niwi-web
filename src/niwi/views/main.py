@@ -54,6 +54,8 @@ class PostListView(GenericView):
         return self.render_to_response("niwi/post_list.html", context)
 
 
+import itertools
+
 class BookmarkListView(GenericView):
     def get(self, request, year=None):
         if not year:
@@ -64,7 +66,15 @@ class BookmarkListView(GenericView):
         years = [x.year for x in Bookmark.objects.filter(public=True).dates('created_date','year')]
         months = bookmarks.dates('created_date', 'month')
 
-        context = {'bookmarks': bookmarks, 'months': months, 'years': years}
+        month_result = []
+        for month in months:
+            month_result.append(Bookmark.objects.filter(
+                created_date__year=month.year,
+                created_date__month=month.month,
+            ).order_by('-created_date'))
+
+        result = itertools.izip(months, month_result)
+        context = {'bookmarks': bookmarks, 'months': months, 'years': years, 'bresult':result}
         return self.render_to_response("niwi/bookmark_list.html", context)
 
 

@@ -1,6 +1,7 @@
 {% extends "niwi/base.html" %}
 {% load i18n %}
 {% load utils %}
+{% load url from future %}
 
 {% block title %}- Bookmarks {% endblock %}
 
@@ -12,6 +13,26 @@
 {% endblock %}
 
 {% block main %}
+<header>
+    <h1>{% trans "Latest Bookmarks" %}</h1>
+    <nav>
+        <p class="intro">See all bookmarks in
+            {% for year in years %}
+            <a href="{% url 'web:bookmarks' year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}.
+        </p>
+    </nav>
+</header>
+<section class="bookmarks">
+    {% for dt, bmqs in bresult %}
+        <h2>{{ dt }}</h2>
+        {% for bm in bmqs %}
+        <a href="{{ bm.url }}">{{ bm.title|truncatewords:12 }}</a><br />
+        {% endfor %}
+    {% endfor %}
+</section>
+
+{% comment %}
 <div class="submodule-content">
     <h2>{% trans "My shared links:" %}</h2>
     <div class="link-list">
@@ -27,4 +48,5 @@
         {% endfor %}
     </div>
 </div>
+{% endcomment %}
 {% endblock %}

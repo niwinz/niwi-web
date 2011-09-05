@@ -19,6 +19,8 @@ urlpatterns = patterns('',
     url(r'^post/(?P<slug>[\w\d\-]+)/$', PostView.as_view(), name='show-post'),
 
     url(r'^bookmarks/$', BookmarkListView.as_view(), name='bookmarks'),
+    url(r'^bookmarks/year/(?P<year>\d+)/$', BookmarkListView.as_view(), name='bookmarks'),
+
     url(r'^bookmark/(?P<slug>[\w\d\-]+)/$', BookmarkView.as_view(), name='show-bookmark'),
     
     url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
