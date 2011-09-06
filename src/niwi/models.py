@@ -32,7 +32,7 @@ def slugify_uniquely(value, model, slugfield="slug"):
 
 
 class Page(models.Model):
-    slug  = models.SlugField(unique=True, db_index=True, editable=True)
+    slug  = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
     title = models.CharField(max_length=500, db_index=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
@@ -56,7 +56,7 @@ class Page(models.Model):
 
 
 class Post(models.Model):
-    slug  = models.SlugField(unique=True, db_index=True, editable=True)
+    slug  = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
