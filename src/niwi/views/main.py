@@ -25,6 +25,8 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 
 import logging
+import itertools
+
 logger = logging.getLogger("niwi")
 
 class HomePageView(GenericView):
@@ -32,7 +34,8 @@ class HomePageView(GenericView):
 
     def get(self, request):
         context = {
-            'posts': Post.objects.filter(status='public').order_by('-modified_date')[:3],
+            'posts': Post.objects.filter(status='public')\
+                .order_by('-created_date')[:4],
         }
         try:
             config = Config.objects.get()
@@ -45,25 +48,34 @@ class HomePageView(GenericView):
 class PostListView(GenericView):
     def get(self, request, year=None):
         if not year:
-            posts = Post.objects.filter(status='public').order_by('-created_date')[:20]
+            posts = Post.objects.filter(status='public')\
+                .order_by('-created_date')[:20]
         else:
-            posts = Post.objects.filter(created_date__year=year, status='public').order_by('-created_date')
+            posts = Post.objects.filter(
+                created_date__year=year, 
+                status='public'
+            ).order_by('-created_date')
         
-        years = [x.year for x in Post.objects.filter(status='public').dates('created_date','year')]
+        years = [x.year for x in Post.objects.filter(status='public')\
+                                            .dates('created_date','year')]
+
         context = {'posts': posts, 'years': years}
         return self.render_to_response("niwi/post_list.html", context)
 
 
-import itertools
-
 class BookmarkListView(GenericView):
     def get(self, request, year=None):
         if not year:
-            bookmarks = Bookmark.objects.filter(public=True).order_by('-created_date')[:25]
+            bookmarks = Bookmark.objects.filter(public=True)\
+                .order_by('-created_date')[:25]
         else:
-            bookmarks = Bookmark.objects.filter(public=True, created_date__year=year).order_by('-created_date')
+            bookmarks = Bookmark.objects.filter(
+                public=True,
+                created_date__year=year
+            ).order_by('-created_date')
 
-        years = [x.year for x in Bookmark.objects.filter(public=True).dates('created_date','year')]
+        years = [x.year for x in Bookmark.objects.filter(public=True)\
+                                            .dates('created_date','year')]
         months = list(bookmarks.dates('created_date', 'month'))
         months.reverse()
 
@@ -75,7 +87,9 @@ class BookmarkListView(GenericView):
             ).order_by('-created_date'))
 
         result = itertools.izip(months, month_result)
-        context = {'bookmarks': bookmarks, 'months': months, 'years': years, 'bresult':result}
+        context = {'bookmarks': bookmarks, 'months': months, 
+                    'years': years, 'bresult':result}
+
         return self.render_to_response("niwi/bookmark_list.html", context)
 
 
