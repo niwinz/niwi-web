@@ -4,9 +4,9 @@ from django.conf.urls.defaults import *
 from django.core.urlresolvers import reverse
 from django.views.generic import TemplateView, RedirectView
 
-from .feeds import *
-from .views.main import *
-from .views.paste import *
+from niwi.feeds import *
+from niwi.views.main import *
+from niwi.views.paste import *
 
 urlpatterns = patterns('',
     url(r'^$', HomePageView.as_view(), name='show-home'),
@@ -30,5 +30,3 @@ urlpatterns = patterns('',
     url(r'^paste/(?P<pasteid>\d+)/$', PasteDetailView.as_view(), name='paste-view'),
     url(r'^paste/(?P<pasteid>\d+)/raw/$', PasteDetailRawView.as_view(), name='paste-view-raw'),
 )
-
-

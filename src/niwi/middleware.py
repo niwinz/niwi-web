@@ -49,4 +49,3 @@ class FacebookMiddleware(object):
             logger.debug('FacebookMiddleware: %s' % (str(signed_request)))
 
         return None
-

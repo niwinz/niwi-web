@@ -1,17 +1,8 @@
 # -*- coding: utf-8 -*-
-from niwi.models import *
 
+from niwi.models import *
 from django.contrib import admin
 import datetime
-
-
-def make_published(modeladmin, request, queryset):
-    queryset.update(status='public')
-
-
-def make_private(modeladmin, request, queryset):
-    queryset.update(status='private')
-
 
 class GenericModelAdmin(admin.ModelAdmin):
     class Media:
@@ -30,7 +21,6 @@ class GenericPostModelAdmin(GenericModelAdmin):
     list_display = ('id', 'title', 'created_date', 'modified_date', 'status',)
     list_display_links = list_display
     list_filter = ('status', 'created_date')
-    #exclude = ('content_type',)
     fieldsets = (
         ('Head', {
             'fields': ('title', 'slug', ('markup', 'status'),)
@@ -43,7 +33,6 @@ class GenericPostModelAdmin(GenericModelAdmin):
             'fields': ('created_date', 'modified_date'),
         }),
     )
-    actions = [make_published, make_private]
 
     def save_model(self, request, obj, form, change):
         obj.owner = request.user
@@ -55,7 +44,6 @@ class BookmarkModelAdmin(GenericModelAdmin):
     list_display = ('id','title', 'public',)
     list_display_links = list_display
     list_filter = ('created_date', 'modified_date', 'public',)
-    actions = [make_published, make_private]
 
     def save_model(self, request, obj, form, change):
         obj.owner = request.user

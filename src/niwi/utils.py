@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import re
+
+RX = re.compile(r'\s*<title>(.+)</title>\s*', flags=re.U+re.I)
 
 class Singleton(type):
     """ Singleton metaclass. """
@@ -15,13 +18,10 @@ class Singleton(type):
         return cls.__instance
 
 
-import re
-rx = re.compile(r'\s*<title>(.+)</title>\s*', flags=re.U+re.I)
-
 def get_url_data(url):
     response = requests.get(url)
     if response.status_code == 200:
-        pos = rx.findall(response.content)
+        pos = RX.findall(response.content)
         if len(pos) > 0:
             return pos[0], url
     
