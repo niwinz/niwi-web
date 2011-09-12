@@ -1,24 +1,19 @@
 # -*- coding: utf-8 -*-
+
 from django.views.decorators.cache import cache_page
-from django.views.generic import View
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect, HttpResponse
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext, loader
-from django.contrib import messages
-from django.core.mail import EmailMessage
-from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
-from ..models import Paste
-from ..forms.paste import PasteForm
-from .generic import GenericView
+from niwi.models import Paste
+from niwi.forms import PasteForm
+from niwi.views.generic import GenericView
 
 import logging
 logger = logging.getLogger("niwi")

@@ -41,19 +41,8 @@ class PasteForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
         
-        real_ip = "HTTP_X_REAL_IP" in self._request.META and self._request.META['HTTP_X_REAL_IP'] \
-           or self._request.META['REMOTE_HOST']
-       
-        #try:
-        #    robj = RestrictedLog.objects.get(host=real_ip)
-        #    stamp_control = datetime.datetime.now() - datetime.timedelta(seconds=15)
-        #    if robj.stamp > (datetime.datetime.now() - datetime.timedelta(seconds=15)):
-        #        self._errors['paste'] = self.error_class([u'No puede publicar mas de un paste en 15 segundos.'])
-        #    else:
-        #        robj.stamp = datetime.datetime.now()
-        #        robj.save()
-
-        #except RestrictedLog.DoesNotExist:
-        #    RestrictedLog.objects.create(host=real_ip, stamp=datetime.datetime.now())
+        real_ip = "HTTP_X_REAL_IP" in self._request.META and \
+            self._request.META['HTTP_X_REAL_IP'] or\
+            self._request.META['REMOTE_HOST']
 
         return cleaned_data

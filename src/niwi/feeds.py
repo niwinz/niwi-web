@@ -6,7 +6,7 @@ from django.utils.feedgenerator import Atom1Feed
 from django.contrib.markup.templatetags.markup import markdown
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Post, Page
+from niwi.models import Post, Page
 
 class LatestPostsFeed(Feed):
     feed_type = Atom1Feed
