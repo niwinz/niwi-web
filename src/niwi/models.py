@@ -7,7 +7,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
 from niwi.utils import get_url_data
-from niwi.forms.paste import LEXER_CHOICES
+from niwi.forms import LEXER_CHOICES
 from niwi.contrib.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 import datetime, uuid

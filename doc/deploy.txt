@@ -1,0 +1,5 @@
+Uwsgi normal deploy:
+uwsgi --uwsgi-socket /tmp/niwibe.sock -C 666 -w wsgi --workers 2 -M -z 60 -l 5000 -A 4 -L --threads 2 -T -H /srv/www/virtualpy
+
+Testing embedded http server:
+uwsgi --http-socket :8000 -w wsgi -T
