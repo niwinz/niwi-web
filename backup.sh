@@ -3,7 +3,7 @@
 export AWS_ACCESS_KEY=""
 export AWS_SECRET_KEY=""
 
-STAMP=`date +%d-%m-%Y.%H%M`
+STAMP=`date +%Y-%m-%d.%H%M`
 BUCKET='backups'
 PREFIX='niwibe'
 S3PUT='/usr/local/bin/s3put.py'
