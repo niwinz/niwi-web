@@ -54,6 +54,9 @@ class Page(models.Model):
 
         super(Page, self).save(*args, **kwargs)
 
+    def __unicode__(self):
+        return u"Page: %s" % (self.title)
+
 
 class Post(models.Model):
     slug  = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
@@ -68,6 +71,9 @@ class Post(models.Model):
     
     class Meta:
         db_table = 'posts'
+
+    def __unicode__(self):
+        return u"Post: %s" % (self.title) 
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -91,6 +97,9 @@ class Bookmark(models.Model):
     modified_date = models.DateTimeField(auto_now_add=True)
     
     public = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return u"Bookmark: %s" % (self.title)
 
     class Meta:
         db_table = 'bookmarks'
@@ -125,6 +134,9 @@ class Paste(models.Model):
     title = models.CharField(max_length=100, blank=True)
     group = models.CharField(max_length=100, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return u"Paste: %s" % (self.title)
 
     class Meta:
         db_table = 'paste'
