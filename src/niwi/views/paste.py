@@ -2,7 +2,7 @@
 
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
@@ -28,7 +28,7 @@ class PasteHomeView(GenericView):
     def get(self, request):
         form = PasteForm(request=request)
         context = {'form':form, 'pastes':self.get_pastes()}
-        return self.render_to_response('niwi/paste/post.html', context)
+        return self.render_to_response(self.template_name, context)
 
     def post(self, request):
         form = PasteForm(request.POST, request=request)

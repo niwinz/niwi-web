@@ -42,7 +42,12 @@ class PasteForm(forms.Form):
         cleaned_data = self.cleaned_data
         
         real_ip = "HTTP_X_REAL_IP" in self._request.META and \
-            self._request.META['HTTP_X_REAL_IP'] or\
-            self._request.META['REMOTE_HOST']
+            self._request.META['HTTP_X_REAL_IP'] or None
+
+        if not real_ip:
+            if "REMOTE_HOST" not in self._request.META:
+                real_ip = "127.0.0.1"
+            else:
+                real_ip = self._request.META['REMOTE_HOST']
 
         return cleaned_data
