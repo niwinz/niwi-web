@@ -20,6 +20,8 @@ logger = logging.getLogger("niwi")
 
 
 class PasteHomeView(GenericView):
+    template_name = "paste/post.html"
+
     def get_pastes(self):
         return Paste.objects.order_by('-created')[:20]
 
@@ -40,10 +42,12 @@ class PasteHomeView(GenericView):
             return HttpResponseRedirect(reverse('web:paste-view', args=[paste_obj.id]))
         
         context = {'form':form, 'pastes':self.get_pastes()}
-        return self.render_to_response('niwi/paste/post.html', context)
+        return self.render_to_response(self.template_name, context)
 
 
 class PasteDetailView(GenericView):
+    template_name = "paste/view.html"
+
     def get(self, request, pasteid):
         paste_obj = get_object_or_404(Paste, pk=int(pasteid))
         style = get_style_by_name('trac')
@@ -60,7 +64,7 @@ class PasteDetailView(GenericView):
             'obj':paste_obj,
             'style': formatter.get_style_defs('.highlight')
         }
-        return self.render_to_response("niwi/paste/view.html", context)
+        return self.render_to_response(self.template_name, context)
 
 
 class PasteDetailRawView(GenericView):

@@ -9,7 +9,16 @@ FCBK_APP_SECRET = ''
 FCBK_APP_API = ''
 FCBK_ADMIN = ''
 
+TEMPLATES_THEME='niwi'
+
 PAGE_DEFAULT_LOGO_URL='http://www.niwi.be/static/logo.png'
 PAGE_DEFAULT_DESCRIPTION='My personal blog, dedicated to my small contribution to the opensource world.'
 PAGE_DEFAULT_KEYWORKDS='niwi, niwi.be, projects, links, photos, opensource, bsd, freebsd, linux'
 PAGE_DEFAULT_TITLE='Niwi.Be'
+
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#    }
+#}

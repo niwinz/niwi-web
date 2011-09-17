@@ -30,7 +30,7 @@ import itertools
 logger = logging.getLogger("niwi")
 
 class HomePageView(GenericView):
-    template_name = 'niwi/index.html'
+    template_name = 'index.html'
 
     def get(self, request):
         context = {
@@ -46,6 +46,8 @@ class HomePageView(GenericView):
         
 
 class PostListView(GenericView):
+    template_name = "post_list.html"
+
     def get(self, request, year=None):
         if not year:
             posts = Post.objects.filter(status='public')\
@@ -60,10 +62,11 @@ class PostListView(GenericView):
                                             .dates('created_date','year')]
 
         context = {'posts': posts, 'years': years}
-        return self.render_to_response("niwi/post_list.html", context)
+        return self.render_to_response(self.template_name, context)
 
 
 class BookmarkListView(GenericView):
+    template_name = "bookmark_list.html"
     def get(self, request, year=None):
         if not year:
             bookmarks = Bookmark.objects.filter(public=True)\
@@ -88,23 +91,26 @@ class BookmarkListView(GenericView):
 
         result = itertools.izip(months, month_result)
         context = {'bookmarks': bookmarks, 'months': months, 
-                    'years': years, 'bresult':result}
+                                'years': years, 'bresult':result}
 
-        return self.render_to_response("niwi/bookmark_list.html", context)
+        return self.render_to_response(self.template_name, context)
 
 
 class PageView(GenericView):
+    template_name = "page_detail.html"
     def get(self, request, slug):
         page = get_object_or_404(Page, slug=slug)
         context = {'object':page}
-        return self.render_to_response("niwi/page_detail.html", context)
+        return self.render_to_response(self.template_name, context)
         
 
 class PostView(GenericView):
+    template_name = "post_detail.html"
+
     def get(self, request, slug):
         post = get_object_or_404(Post, slug=slug)
         context = {'object':post}
-        return self.render_to_response("niwi/post_detail.html", context)
+        return self.render_to_response(self.template_name, context)
 
 
 class BookmarkView(GenericView):
