@@ -32,7 +32,7 @@ def slugify_uniquely(value, model, slugfield="slug"):
 
 
 class Page(models.Model):
-    slug  = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
+    slug  = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)
     title = models.CharField(max_length=500, db_index=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
@@ -59,7 +59,7 @@ class Page(models.Model):
 
 
 class Post(models.Model):
-    slug  = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
+    slug  = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
@@ -89,7 +89,7 @@ class Post(models.Model):
 
 class Bookmark(models.Model):
     title = models.CharField(max_length=500, blank=True)
-    slug = models.SlugField(unique=True, db_index=True, editable=True, blank=True)
+    slug = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)
     url = models.CharField(max_length=1000, unique=True, db_index=True)
     tags = models.CharField(max_length=1000, db_index=True, blank=True, default='')
     owner = models.ForeignKey('auth.User', related_name='bookmarks')
