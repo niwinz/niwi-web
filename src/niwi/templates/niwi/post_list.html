@@ -19,7 +19,10 @@
 
 {% block main %}
 <header>
-    <h2>{% trans "Latest Entries" %}</h2>
+    <h2>{% trans "Latest Entries" %}{% if tag %}<br />
+        {% trans "filtered by tag:" %} {{ tag }} | <a href="{% url 'web:posts' %}">{% trans "Return" %}</a> {% endif %}</h2>
+    {% if tag %}
+    {% endif %}
     <nav>
         <p class="intro">See all entries published by in
             {% for year in years %}
