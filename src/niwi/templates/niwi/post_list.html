@@ -23,7 +23,11 @@
     <nav>
         <p class="intro">See all entries published by in
             {% for year in years %}
-            <a href="{% url 'web:posts' year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+                {% if tag %}
+                <a href="{% url 'web:posts' tag year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+                {% else %}
+                <a href="{% url 'web:posts' year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+                {% endif %}
             {% endfor %}.
         </p>
     </nav>
@@ -40,6 +44,5 @@
         </p>
     </article>
     {% endfor %}
-    {% include "niwi/utils/pagination.html" %}
 </section>
 {% endblock %}

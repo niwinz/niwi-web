@@ -14,6 +14,8 @@ urlpatterns = patterns('',
 
     url(r'^posts/$', PostListView.as_view(), name='posts'),
     url(r'^posts/year/(?P<year>\d+)/$', PostListView.as_view(), name='posts'),
+    url(r'^posts/tag/(?P<tag>[\#\w\d\-]+)/$', PostListView.as_view(), name='posts'),
+    url(r'^posts/tag/(?P<tag>[\#\w\d\-]+)/year/(?P<year>\d+)/$', PostListView.as_view(), name='posts'),
 
     url(r'^posts/feed/$', LatestPostsFeed(), name='posts-feed'),
     url(r'^post/(?P<slug>[\w\d\-]+)/$', PostView.as_view(), name='show-post'),

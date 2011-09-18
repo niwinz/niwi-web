@@ -48,20 +48,33 @@ class HomePageView(GenericView):
 class PostListView(GenericView):
     template_name = "post_list.html"
 
-    def get(self, request, year=None):
+    def get(self, request, tag=None, year=None):
         if not year:
             posts = Post.objects.filter(status='public')\
-                .order_by('-created_date')[:20]
+                .order_by('-created_date')
         else:
             posts = Post.objects.filter(
                 created_date__year=year, 
                 status='public'
             ).order_by('-created_date')
-        
-        years = [x.year for x in Post.objects.filter(status='public')\
-                                            .dates('created_date','year')]
 
-        context = {'posts': posts, 'years': years}
+        if tag:
+            posts = posts.filter(tags__icontains=tag)
+
+        if tag:
+            years_queryset = Post.objects.filter(
+                status='public',
+                tags__icontains=tag
+            ).dates('created_date','year')
+        else:
+            years_queryset = Post.objects.filter(status='public')\
+                        .dates('created_date','year')
+
+        context = {
+            'tag':tag,
+            'posts': posts[:20], 
+            'years': [x.year for x in years_queryset],
+        }
         return self.render_to_response(self.template_name, context)
 
 

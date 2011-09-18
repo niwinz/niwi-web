@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import template
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
@@ -92,5 +93,6 @@ def show_page(parser, token):
 def parse_tags(value):
     split = None if "," not in value else ","
     tags = [tag.strip() for tag in value.split(split)]
-    tags_html = ['<a href="%s">%s</a>' % ('', tagname) for tagname in tags]
+    tags_html = ['<a href="%s">%s</a>' % \
+        (reverse('web:posts', kwargs={'tag':tagname}), tagname) for tagname in tags]
     return mark_safe(", ".join(tags_html))
