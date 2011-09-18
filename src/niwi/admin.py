@@ -18,9 +18,27 @@ class GenericModelAdmin(admin.ModelAdmin):
 class GenericPostModelAdmin(GenericModelAdmin):
     save_on_top = True
     search_fields = ('title', 'slug', 'uuid')
-    list_display = ('id', 'title', 'created_date', 'modified_date', 'status',)
+    list_display = ('id', 'title', 'created_date', 'modified_date', 'status', 'owner')
     list_display_links = list_display
     list_filter = ('status', 'created_date')
+    fieldsets = (
+        ('Head', {
+            'fields': ('title', 'slug', 'tags', ('markup', 'status'),)
+        }),
+        ('Content', {
+            'fields': ('content',)
+        }),
+        ('Meta', {
+            'classes': ('collapse',),
+            'fields': ('created_date', 'modified_date', 'owner'),
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        obj.owner = request.user
+        super(GenericModelAdmin, self).save_model(request, obj, form, change)
+
+class GenericPageModelAdmin(GenericPostModelAdmin):
     fieldsets = (
         ('Head', {
             'fields': ('title', 'slug', ('markup', 'status'),)
@@ -30,18 +48,14 @@ class GenericPostModelAdmin(GenericModelAdmin):
         }),
         ('Meta', {
             'classes': ('collapse',),
-            'fields': ('created_date', 'modified_date'),
+            'fields': ('created_date', 'modified_date', 'owner'),
         }),
     )
-
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
 
 class BookmarkModelAdmin(GenericModelAdmin):
     search_fields = ('title',)
-    list_display = ('id','title', 'public',)
+    list_display = ('id','title', 'public', 'owner')
     list_display_links = list_display
     list_filter = ('created_date', 'modified_date', 'public',)
 
@@ -60,5 +74,5 @@ class PasteModelAdmin(GenericModelAdmin):
 admin.site.register(Post, GenericPostModelAdmin)
 admin.site.register(Bookmark, BookmarkModelAdmin)
 admin.site.register(Paste, PasteModelAdmin)
-admin.site.register(Page, GenericPostModelAdmin)
+admin.site.register(Page, GenericPageModelAdmin)
 admin.site.register(Config)

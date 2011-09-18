@@ -88,3 +88,9 @@ def show_page(parser, token):
 
 
 
+@register.filter(name="parse_tags")
+def parse_tags(value):
+    split = None if "," not in value else ","
+    tags = [tag.strip() for tag in value.split(split)]
+    tags_html = ['<a href="%s">%s</a>' % ('', tagname) for tagname in tags]
+    return mark_safe(", ".join(tags_html))

@@ -28,7 +28,7 @@
     <article>
         <h3>{{ post.title }}</h3>
         <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>
-        <p><span class="meta">Published on {{ post.created_date }}</span> | 
+        <p><span class="meta">Published on {{ post.created_date|date:"j F Y" }}</span> | 
             <a class="navigation" href="{{ post.get_absolute_url }}">Read full entry</a> ↵</p>
     </article>
     {% endfor %}

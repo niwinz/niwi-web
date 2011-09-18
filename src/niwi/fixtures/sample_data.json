@@ -36,7 +36,7 @@
             "markup": false,
             "content": "<h2>Niwi.Be - Andrei Antoukh</h2>\r\n<p class=\"intro\">Niwi.Be is a kind of web / blog that I use as a platform to publish documentation and other items of personal interest, such as links, snippets, news, etc ...</p>\r\n<p class=\"intro\">The source for this page is available under BSD LICENSE. (To access a repository see footnote).</p>\r\n<p class=\"intro\">You can get more information about me in the <a href=\"/page/about/\">About</a> section.\r\n",
             "created_date": "2011-06-05 10:45:24",
-            "owner": 2,
+            "owner": null,
             "slug": "home-page"
         }
     },
@@ -50,7 +50,7 @@
             "markup": true,
             "content": "<div class=\"basic-desc\">\r\n<strong>Name: </strong> Andrei Antoukh<br />\r\n<strong>Location: </strong>Madrid (Spain)<br />\r\n<strong>Twitter: </strong><a href=\"http://twitter.com/#!/niwibe\">@niwibe</a><br />\r\n<strong>GitHub: </strong><a href=\"https://github.com/niwibe\">github.com/niwibe</a><br />\r\n</div>\r\n\r\n### Small description: ###\r\nI specialize in web development, real time applications and infrastructure design for high scalability.\r\n\r\nIn my job, I usually working with python and django, but I like to experiment with other technologies that I look \"interesting\". \r\n\r\n### My interests are: ###\r\n\r\n* **Operating System**: FreeBSD and Linux<br />\r\n* **Programming language**: Python2/3 and JavaScript<br />\r\n* **Databases**: PostgreSQL, MongoDB, Redis and CouchDB<br />\r\n* **Version control**: git and mercurial<br />\r\n\r\n#### Other technology stack: ####\r\n\r\nAnd a long list of other tools with which to work or play every day often:\r\n \r\n* celery\r\n* gevent \r\n* nodejs\r\n* zeromq\r\n* nginx\r\n* lighttpd\r\n* jQuery\r\n* tornado\r\n* flask\r\n* apache\r\n* C++/Qt4\r\n* MySQL\r\n\r\nMy contributions to the opensource world: <https://github.com/niwibe>\r\n\r\n### My photo: ###\r\n\r\n<img src=\"https://s3-eu-west-1.amazonaws.com/niwi-web/i2.jpg\" width=\"870\"></img>",
             "created_date": "2011-06-11 02:54:54",
-            "owner": 2,
+            "owner": null,
             "slug": "about"
         }
     },
@@ -64,7 +64,7 @@
             "markup": false,
             "content": "{% load url from future %}\r\n<span>Nav: </span><nav>\r\n    <li><a href=\"{% url 'web:show-home' %}\">Home</a></li>\r\n    <li><a href=\"{% url 'web:bookmarks' %}\">Bookmarks</a></li>\r\n    <li><a href=\"{% url 'web:paste-home' %}\">Paste</a></li>\r\n    <li><a href=\"/admin/\">Admin</a></li>\r\n</nav>\r\n",
             "created_date": "2011-09-05 23:22:54",
-            "owner": 1,
+            "owner": null,
             "slug": "nav"
         }
     }

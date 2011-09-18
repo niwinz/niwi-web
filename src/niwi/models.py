@@ -37,7 +37,7 @@ class Page(models.Model):
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
-    owner = models.ForeignKey('auth.User', related_name='pages')
+    owner = models.ForeignKey('auth.User', related_name='pages', null=True, default=None)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -63,8 +63,9 @@ class Post(models.Model):
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
-    owner = models.ForeignKey('auth.User', related_name='posts')
+    owner = models.ForeignKey('auth.User', related_name='posts', null=True, default=None)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
+    tags = models.CharField(max_length=200, blank=True, null=True, default='', db_index=True)
 
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
