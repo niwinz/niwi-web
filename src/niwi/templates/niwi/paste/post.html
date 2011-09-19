@@ -49,7 +49,7 @@
             {% for paste in pastes %}
             <tr>
                 <td class="title"><a href="{% url "web:paste-view" paste.id %}">{{ paste.title|default_title }}</a></td>
-                <td class="created">{{ paste.created }}</td>
+                <td class="created">{{ paste.created|date:"j F Y" }}</td>
                 <td class="lexer">{{ paste.lexer }}</td>
             </tr>
             {% endfor %}
