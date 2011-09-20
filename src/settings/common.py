@@ -126,7 +126,7 @@ ROOT_URLCONF = 'urls'
 TEMPLATE_DIRS = (
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -136,7 +136,7 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     'niwi',
     #'niwi_apps.twitter_filter',
-)
+]
 
 LOGGING = {
     'version': 1,

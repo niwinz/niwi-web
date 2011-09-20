@@ -27,7 +27,14 @@ class ImageAdapter(object):
            lower = width + upper
 
         img = img.crop((left, upper, right, lower))
-        img.thumbnail(THUMB_SIZE, Image.ANTIALIAS)
+        img.thumbnail(sqsize, Image.ANTIALIAS)
         img.save(savefile, quality=quality)
 
+        return File(savefile)
+
+    @staticmethod
+    def resize(imgpath, savefile, maxsize, quality=100):
+        img = Image.open(imgpath)
+        img.thumbnail((maxsize, maxsize), Image.ANTIALIAS)
+        img.save(savefile, quality=quality)
         return File(savefile)
