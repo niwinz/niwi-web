@@ -20,7 +20,10 @@
     <body>
         <div class="main-container">
             {% block main %}
-            <header>
+            <header class="nav-header">
+                {% show_page "nav" %}
+            </header>
+            <header class="main-header">
                 {% if homepage %}
                     {% if homepage.markup %}{{ homepage.content|markdown }}
                     {% else %}{{ homepage.content|safe }}

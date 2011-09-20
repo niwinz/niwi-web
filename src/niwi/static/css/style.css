@@ -164,8 +164,11 @@ footer {
     color: #A8A7A6;
     font-size: 11px;
 }
-header {
+header.main-header {
     margin-bottom: 50px;
+}
+header.nav-header {
+    margin-bottom: 20px;
 }
 
 .viewer-content pre { 
@@ -185,11 +188,19 @@ select, input {
     background-color: white;
     border: 1px solid #aaa;
 }
+
+
+header nav, header nav li,
 footer  nav, footer nav li {
     display: inline;
     list-style: none;
     padding: 5px;
 }
+
+header nav, footer nav {
+    padding-bottom: 20px;
+}
+
 ul {
     padding-left: 30px;
 }
