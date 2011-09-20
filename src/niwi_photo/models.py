@@ -29,13 +29,13 @@ class Photo(models.Model):
 
     original = models.ImageField(max_length=200, upload_to='original/%Y/%m/%d')
     large = models.ImageField(max_length=200, upload_to='large/%Y/%m/%d',
-        serialize=False, editable=False) # Max 1200px
+        serialize=False, editable=True, blank=True) # Max 1200px
     medium = models.ImageField(max_length=200, upload_to='medium/%Y/%m/%d',
-        serialize=False, editable=False) # Max 900px
+        serialize=False, editable=True, blank=True) # Max 900px
     small = models.ImageField(max_length=200, upload_to='small/%Y/%m/%d',
-        serialize=False, editable=False) #max 450px
+        serialize=False, editable=True, blank=True) #max 450px
     square = models.ImageField(max_length=200, upload_to='square/%Y/%m/%d', 
-        serialize=False, editable=False, null=True) # 120x120
+        serialize=False, editable=True, blank=True, null=True) # 120x120
 
     def save(self, *args, **kwargs):
         if not self.slug:
