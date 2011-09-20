@@ -1,0 +1,22 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load utils %}
+{% load url from future %}
+
+{% block title %} {% trans "- Photo albums." %}{% endblock %}
+
+{% block opengraph %}
+<meta property="og:title" content="{{ page_default_title }} Page"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="{{ full_host_url }}" />
+<meta property="og:image" content="{{ page_default_logo_url }}"/>
+{% endblock %}
+
+{% block html-head %}
+<meta name="Keywords" content="{{ page_default_keyworkds }}" />
+<meta name="Description" content="{{ page_default_description }}" />
+{% endblock %}
+
+
+{% block main %}
+{% endblock %}
