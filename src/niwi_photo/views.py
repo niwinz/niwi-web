@@ -12,9 +12,17 @@ from django.template import RequestContext, loader
 from django.contrib import messages
 
 from niwi.models import *
+from niwi_photo.models import *
 from niwi.views.generic import GenericView
 
 import logging, itertools
-
 logger = logging.getLogger("niwi")
 
+
+class PhotoHome(GenericView):
+    template_name = 'photo/index.html'
+
+    def get(self, request):
+        albums = Album.objects.all()
+        return self.render(self.template_name, {'albums': albums})
+    
