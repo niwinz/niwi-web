@@ -1,33 +1,22 @@
 # -*- coding: utf-8 -*-
 
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.conf import settings
 
 from niwi_photo.models import Photo
-from niwi_photo.image import ImageAdapter
-
-import tempfile
+import os
 
 @receiver(post_save, sender=Photo)
 def photo_post_save(sender, instance, created, **kwargs):
     """ Create resized images for photo instance. """
-    
     if created:
-        if not instance.large:
-            f1 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
-            instance.large = ImageAdapter.resize(instance.original.path, f1, 1200)
+        instance.rehash_thumbnails(commit=True)
 
-        if not instance.medium:
-            f2 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
-            instance.medium = ImageAdapter.resize(instance.original.path, f2, 900)
-        
-        if not instance.small:
-            f3 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
-            instance.small = ImageAdapter.resize(instance.original.path, f3, 450)
 
-        if not instance.square:
-            f4 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True) 
-            instance.square = ImageAdapter.square(instance.original.path, f4)
-
-        instance.save()
+@receiver(pre_delete, sender=Photo)
+def photo_pre_delete(sender, instance, **kwargs):
+    if instance.large: os.remove(instance.large.path)
+    if instance.medium: os.remove(instance.medium.path)
+    if instance.small: os.remove(instance.small.path)
+    if instance.square: os.remove(instance.square.path)

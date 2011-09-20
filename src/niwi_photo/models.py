@@ -11,7 +11,10 @@ from niwi.contrib.db.fields import ModificationDateTimeField
 from niwi.contrib.db.fields import DictField
 
 from niwi.models import slugify_uniquely
-import datetime, uuid
+from niwi_photo.image import ImageAdapter
+
+import datetime, uuid, tempfile, os
+
 
 class Album(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -19,6 +22,7 @@ class Album(models.Model):
 
     def __unicode__(self):
         return u"Album: %s" % (self.name)
+
 
 class Photo(models.Model):
     album = models.ForeignKey('niwi_photo.Album', related_name='photos')
@@ -40,5 +44,26 @@ class Photo(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify_uniquely(self.small_description, self.__class__)
-
+        
         super(Photo, self).save(*args, **kwargs)
+
+    def rehash_thumbnails(self, commit=False):
+        if self.large: os.remove(self.large.path)
+        if self.medium: os.remove(self.medium.path)
+        if self.small: os.remove(self.small.path)
+        if self.square: os.remove(self.square.path)
+    
+        f1 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
+        self.large = ImageAdapter.resize(self.original.path, f1, 1200)
+    
+        f2 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
+        self.medium = ImageAdapter.resize(self.original.path, f2, 900)
+            
+        f3 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
+        self.small = ImageAdapter.resize(self.original.path, f3, 450)
+    
+        f4 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True) 
+        self.square = ImageAdapter.square(self.original.path, f4)
+
+        if commit:
+            self.save()
