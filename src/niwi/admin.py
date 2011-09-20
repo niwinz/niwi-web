@@ -38,6 +38,7 @@ class GenericPostModelAdmin(GenericModelAdmin):
         obj.owner = request.user
         super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
+
 class GenericPageModelAdmin(GenericPostModelAdmin):
     fieldsets = (
         ('Head', {
