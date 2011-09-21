@@ -40,6 +40,8 @@
     {% endfor %}
     <p class="navigation bottom tright"><a href="{% url "web:posts" %}">See more entries</a> →</p>
 </section>
+
+{% if photos.count > 0 %}
 <section class="latest-photos">
     <h2>{% trans "Recent Photos" %}</h2>
     <hr />
@@ -62,4 +64,5 @@
     <div style="clear: left;"></div>
     <p class="navigation bottom tright"><a href="{% url "photo:show-home" %}">See more photos</a> →</p>
 </section>
+{% endif %}
 {% endblock %}
