@@ -19,6 +19,10 @@ import datetime, uuid, tempfile, os
 class Album(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True, db_index=True)
+    
+    owner = models.ForeignKey('auth.User', related_name='albums')
+    created_date = CreationDateTimeField(editable=True)
+    modified_date = ModificationDateTimeField(editable=True)
 
     def __unicode__(self):
         return u"Album: %s" % (self.name)
@@ -40,6 +44,13 @@ class Photo(models.Model):
         serialize=False, editable=True, blank=True) #max 450px
     square = models.ImageField(max_length=200, upload_to='square/%Y/%m/%d', 
         serialize=False, editable=True, blank=True, null=True) # 120x120
+
+    owner = models.ForeignKey('auth.User', related_name='photos')
+    created_date = CreationDateTimeField(editable=True)
+    modified_date = ModificationDateTimeField(editable=True)
+
+    def __unicode__(self):
+        return u"Photo: %s" % (self.small_description)
 
     def save(self, *args, **kwargs):
         if not self.slug:
