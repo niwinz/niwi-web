@@ -20,7 +20,7 @@ class Album(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True, db_index=True)
     
-    owner = models.ForeignKey('auth.User', related_name='albums')
+    owner = models.ForeignKey('auth.User', related_name='albums', null=True, blank=True)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -37,7 +37,7 @@ class Photo(models.Model):
     small_description = models.CharField(max_length=300)
     slug = models.SlugField(max_length=200, unique=True, db_index=True)
     description = models.TextField(blank=True)
-    exifdata = DictField()
+    exifdata = DictField(editable=True)
 
     original = models.ImageField(max_length=200, upload_to='original/%Y/%m/%d')
     large = models.ImageField(max_length=200, upload_to='large/%Y/%m/%d',
@@ -66,6 +66,7 @@ class Photo(models.Model):
     def desc_html(self):
         return u"<a href='%s'>%s" % ('', self.small_description)
 
+
     def rehash_thumbnails(self, commit=False):
         if self.large and os.path.exists(self.large.path): 
             os.remove(self.large.path)
@@ -87,6 +88,7 @@ class Photo(models.Model):
     
         f4 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True) 
         self.square = ImageAdapter.square(self.original.path, f4)
+        self.exifdata = ImageAdapter.get_exif_dict(self.original.path)
 
         if commit:
             self.save()
