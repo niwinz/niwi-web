@@ -19,10 +19,10 @@
     </head>
     <body>
         <div class="main-container">
-            {% block main %}
             <header class="nav-header">
                 {% show_page "nav" %}
             </header>
+            {% block main %}
             <header class="main-header">
                 {% if homepage %}
                     {% if homepage.markup %}{{ homepage.content|markdown }}

@@ -32,4 +32,33 @@ class PhotoHome(GenericView):
         }
 
         return self.render_to_response(self.template_name, context)
-    
+ 
+
+class AlbumsView(GenericView):
+    template_name = 'photo/albums.html'
+
+    def get(self, request):
+        albums = Album.objects.order_by('-created_date')[:20]
+        years_queryset = Album.objects.dates('created_date','year')
+        
+        context = {
+            'albums': albums,
+            'years': [x.year for x in years_queryset],
+        }
+        return self.render_to_response(self.template_name, context)
+
+
+class AlbumPhotosView(GenericView):
+    template_name = 'photo/album_detail.html'
+
+    def get(self, request, aslug):
+        album = get_object_or_404(Album, slug=aslug)
+        photos = album.photos.all()
+        years_queryset = photos.dates('created_date','year')
+
+        context = {
+            'album': album,
+            'photos': photos,
+            'years': [x.year for x in years_queryset],
+        }
+        return self.render_to_response(self.template_name, context)

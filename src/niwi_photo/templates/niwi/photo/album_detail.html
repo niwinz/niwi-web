@@ -22,9 +22,10 @@
 <script type="text/javascript" src="{{ STATIC_URL }}colorbox/jquery.colorbox-min.js"></script>
 {% endblock %}
 
+
 {% block main %}
 <header class="latest-photos">
-    <h2>{% trans "Latest photos" %} / <a href="{% url 'photo:show-albums' %}">{% trans "Show albums" %}</a></h2>
+    <h2>{% trans "Album:" %} {{ album.name }} / <a href="{% url 'photo:show-albums' %}">{% trans "return" %}</a></h2>
     <nav>
         <p class="intro">{% trans "See all photos published in" %}
             {% for year in years %}
@@ -36,7 +37,7 @@
 <section class="latest-photos">
     {% for photo in photos %}
     <article class="photo" lang="es">
-        <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.desc_html }}">
+        <a href="{{ photo.medium.url }}" rel="photo" title="<a href=''>{{ photo.small_description }}</a>">
             <img src="{{ photo.square.url }}" class="preview"></img>
         </a>
         <div class="photo-meta">

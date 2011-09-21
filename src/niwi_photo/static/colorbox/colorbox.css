@@ -3,6 +3,7 @@
     The following CSS is consistent between example themes and should not be altered.
 */
 #colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
+#cboxWrapper { padding: 20px; outline: 1px solid #DDD;  }
 #cboxOverlay{position:fixed; width:100%; height:100%;}
 #cboxMiddleLeft, #cboxBottomLeft{clear:left;}
 #cboxContent{position:relative;}
@@ -18,9 +19,11 @@
     Change the following styles to modify the appearance of ColorBox.  They are
     ordered & tabbed in a way that represents the nesting of the generated HTML.
 */
-#cboxOverlay{background:#fff;}
-#colorbox{}
-    #cboxTopLeft{width:25px; height:25px; background:url(images/border1.png) no-repeat 0 0;}
+#cboxOverlay{background:#aaa;}
+#colorbox{
+    padding: 2em 2em;
+}
+/*    #cboxTopLeft{width:25px; height:25px; background:url(images/border1.png) no-repeat 0 0;}
     #cboxTopCenter{height:25px; background:url(images/border1.png) repeat-x 0 -50px;}
     #cboxTopRight{width:25px; height:25px; background:url(images/border1.png) no-repeat -25px 0;}
     #cboxBottomLeft{width:25px; height:25px; background:url(images/border1.png) no-repeat 0 -25px;}
@@ -28,7 +31,8 @@
     #cboxBottomRight{width:25px; height:25px; background:url(images/border1.png) no-repeat -25px -25px;}
     #cboxMiddleLeft{width:25px; background:url(images/border2.png) repeat-y 0 0;}
     #cboxMiddleRight{width:25px; background:url(images/border2.png) repeat-y -25px 0;}
-    #cboxContent{background:#fff; overflow:hidden;}
+*/
+    #cboxContent{background:#fff; overflow:hidden; }
         #cboxError{padding:50px; border:1px solid #ccc;}
         #cboxLoadedContent{margin-bottom:20px;}
         #cboxTitle{position:absolute; bottom:0px; left:0; text-align:center; width:100%; color:#999;}
@@ -43,6 +47,7 @@
   The following fixes a problem where IE7 and IE8 replace a PNG's alpha transparency with a black fill
   when an alpha filter (opacity change) is set on the element or ancestor element.  This style is not applied to IE9.
 */
+/*
 .cboxIE #cboxTopLeft,
 .cboxIE #cboxTopCenter,
 .cboxIE #cboxTopRight,
@@ -53,10 +58,11 @@
 .cboxIE #cboxMiddleRight {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF);
 }
-
+*/
 /*
   The following provides PNG transparency support for IE6
 */
+/*
 .cboxIE6 #cboxTopLeft{background:url(images/ie6/borderTopLeft.png);}
 .cboxIE6 #cboxTopCenter{background:url(images/ie6/borderTopCenter.png);}
 .cboxIE6 #cboxTopRight{background:url(images/ie6/borderTopRight.png);}
@@ -76,3 +82,4 @@
 .cboxIE6 #cboxMiddleRight {
     _behavior: expression(this.src = this.src ? this.src : this.currentStyle.backgroundImage.split('"')[1], this.style.background = "none", this.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=" + this.src + ", sizingMethod='scale')");
 }
+*/

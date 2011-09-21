@@ -27,6 +27,10 @@ class Album(models.Model):
     def __unicode__(self):
         return u"Album: %s" % (self.name)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('photo:show-album', (), {'aslug':self.slug})
+
 
 class Photo(models.Model):
     album = models.ForeignKey('niwi_photo.Album', related_name='photos')
@@ -57,6 +61,10 @@ class Photo(models.Model):
             self.slug = slugify_uniquely(self.small_description, self.__class__)
         
         super(Photo, self).save(*args, **kwargs)
+
+    @property
+    def desc_html(self):
+        return u"<a href='%s'>%s" % ('', self.small_description)
 
     def rehash_thumbnails(self, commit=False):
         if self.large and os.path.exists(self.large.path): 

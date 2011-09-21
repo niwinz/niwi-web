@@ -15,18 +15,14 @@
 {% block html-head %}
 <meta name="Keywords" content="{{ page_default_keyworkds }}" />
 <meta name="Description" content="{{ page_default_description }}" />
-<link type="text/css" rel="stylesheet" media="screen" href="{{ STATIC_URL }}colorbox/colorbox.css" />
 {% endblock %}
 
-{% block scripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}colorbox/jquery.colorbox-min.js"></script>
-{% endblock %}
 
 {% block main %}
 <header class="latest-photos">
-    <h2>{% trans "Latest photos" %} / <a href="{% url 'photo:show-albums' %}">{% trans "Show albums" %}</a></h2>
+    <h2>{% trans "Albums" %} / <a href="{% url 'photo:show-home' %}">{% trans "Show latest photos" %}</a></h2>
     <nav>
-        <p class="intro">{% trans "See all photos published in" %}
+        <p class="intro">{% trans "See all albums published in" %}
             {% for year in years %}
             <a href="">{{ year }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
@@ -34,19 +30,24 @@
     </nav>
 </header>
 <section class="latest-photos">
-    {% for photo in photos %}
-    <article class="photo" lang="es">
-        <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.desc_html }}">
+    {% for album in albums %}
+    <article class="photo album" lang="es">
+        <h4>{{ album.name }}</h4>
+        <a href="{{ album.get_absolute_url }}" rel="photo" title="">
+            {% with photo=album.photos.all.0 %}
             <img src="{{ photo.square.url }}" class="preview"></img>
+            {% endwith %}
         </a>
         <div class="photo-meta">
             <p class="small-description">
-                {{ photo.created_date|date:"j F Y" }}<br />
-                {{ photo.small_description|wordwrap:28|linebreaksbr }}</p>
+                {{ album.created_date|date:"j F Y" }}<br />
+{% blocktrans count counter=album.photos.all.count %}
+1 photo inside the album.
+{% plural %}
+{{ counter }} photos inside the album.
+{% endblocktrans %}
+            </p>
         </div>
-        <a class="show-detail icon" href="">
-            <img src="{{ STATIC_URL }}icons/eye.png"></img>
-        </a>
     </article>
     {% endfor %}
 </section>

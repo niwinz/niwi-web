@@ -1,5 +1,5 @@
 var niwiPhoto_bindings = function() {
-    $('article.photo a[rel="photo"]').colorbox({ width:"75%", height: "95%"});
+    $('article.photo a[rel="photo"]').colorbox({ width:"800px", height: "540px"});
 };
 
 $(document).ready( function() {
