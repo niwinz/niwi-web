@@ -14,7 +14,7 @@ class PhotoModelAdmin(GenericModelAdmin):
     prepopulated_fields = {"slug": ("small_description",)}
     fieldsets = (
         ('Photo', {
-            'fields': ('original',)
+            'fields': (('original', 'show_on_home'),)
         }),
         ('Photo data', {
             'fields': (('small_description', 'slug'), 'album'),
@@ -38,7 +38,7 @@ class PhotoInlineAdmin(admin.StackedInline):
     model = Photo
     extra = 1
     can_delete = True
-    fields = (('small_description','slug'), 'original')
+    fields = (('small_description','slug'), ('original', 'show_on_home'),)
     prepopulated_fields = {"slug": ("small_description",)}
 
 

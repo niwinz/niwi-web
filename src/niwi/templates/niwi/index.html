@@ -36,4 +36,26 @@
     {% endfor %}
     <p class="navigation bottom tright"><a href="{% url "web:posts" %}">See more entries</a> →</p>
 </section>
+<section class="latest-photos">
+    <h2>{% trans "Recent Photos" %}</h2>
+    <hr />
+
+    {% for photo in photos %}
+    <article class="photo" lang="es">
+        <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.small_description }}">
+            <img src="{{ photo.square.url }}" class="preview"></img>
+        </a>
+        <div class="photo-meta">
+            <p class="small-description">
+                {{ photo.created_date|date:"j F Y" }}<br />
+                {{ photo.small_description|wordwrap:28|linebreaksbr }}</p>
+        </div>
+        <a class="show-detail icon" href="{{ photo.get_absolute_url }}">
+            <img src="{{ STATIC_URL }}icons/eye.png"></img>
+        </a>
+    </article>
+    {% endfor %}
+    <div style="clear: left;"></div>
+    <p class="navigation bottom tright"><a href="{% url "photo:show-home" %}">See more photos</a> →</p>
+</section>
 {% endblock %}

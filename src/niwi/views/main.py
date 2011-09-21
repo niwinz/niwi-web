@@ -18,6 +18,7 @@ from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
 from niwi.models import *
+from niwi_photo.models import *
 from niwi.views.generic import GenericView
 
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
@@ -36,6 +37,8 @@ class HomePageView(GenericView):
         context = {
             'posts': Post.objects.filter(status='public')\
                 .order_by('-created_date')[:4],
+            'photos': Photo.objects.exclude(
+                show_on_home = False).order_by('-created_date')[:3],
         }
         try:
             config = Config.objects.get()

@@ -52,6 +52,7 @@ class Photo(models.Model):
     owner = models.ForeignKey('auth.User', related_name='photos', null=True, blank=True)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
+    show_on_home = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u"Photo: %s" % (self.small_description)
