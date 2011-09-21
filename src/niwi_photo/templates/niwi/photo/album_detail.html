@@ -37,7 +37,7 @@
 <section class="latest-photos">
     {% for photo in photos %}
     <article class="photo" lang="es">
-        <a href="{{ photo.medium.url }}" rel="photo" title="<a href=''>{{ photo.small_description }}</a>">
+        <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.small_description }}">
             <img src="{{ photo.square.url }}" class="preview"></img>
         </a>
         <div class="photo-meta">
@@ -45,7 +45,7 @@
                 {{ photo.created_date|date:"j F Y" }}<br />
                 {{ photo.small_description|wordwrap:28|linebreaksbr }}</p>
         </div>
-        <a class="show-detail icon" href="">
+        <a class="show-detail icon" href="{{ photo.get_absolute_url }}">
             <img src="{{ STATIC_URL }}icons/eye.png"></img>
         </a>
     </article>

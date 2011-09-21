@@ -66,6 +66,11 @@ class Photo(models.Model):
     def desc_html(self):
         return u"<a href='%s'>%s" % ('', self.small_description)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('photo:show-photo', (), 
+            {'aslug': self.album.slug, 'pslug': self.slug})
+
 
     def rehash_thumbnails(self, commit=False):
         if self.large and os.path.exists(self.large.path): 

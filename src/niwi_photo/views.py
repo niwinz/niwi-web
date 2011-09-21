@@ -62,3 +62,17 @@ class AlbumPhotosView(GenericView):
             'years': [x.year for x in years_queryset],
         }
         return self.render_to_response(self.template_name, context)
+
+
+class PhotoView(GenericView):
+    template_name = 'photo/photo.html'
+
+    def get(self, request, aslug, pslug):
+        album = get_object_or_404(Album, slug=aslug)
+        photo = get_object_or_404(album.photos, slug=pslug)
+
+        context = {
+            'photo': photo,
+            'album': album,
+        }
+        return self.render_to_response(self.template_name, context)

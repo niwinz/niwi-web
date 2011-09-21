@@ -248,3 +248,23 @@ section article.photo a.show-detail {
 section article.photo a.show-detail img {
     width: 25px;
 }
+
+section article.photo-detail img {
+    width: 630px;
+}
+
+section section.exif-data {
+    margin-top: 10px;
+}
+section section.exif-data h2 {
+    margin-bottom: 0px;
+}
+section section.exif-data table {
+    width: 95%;
+}
+section section.exif-data table th {
+    text-align: left;
+}
+section.comments {
+    margin-top: 20px;
+}
