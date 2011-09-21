@@ -45,7 +45,7 @@ class Photo(models.Model):
     square = models.ImageField(max_length=200, upload_to='square/%Y/%m/%d', 
         serialize=False, editable=True, blank=True, null=True) # 120x120
 
-    owner = models.ForeignKey('auth.User', related_name='photos')
+    owner = models.ForeignKey('auth.User', related_name='photos', null=True, blank=True)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -59,10 +59,14 @@ class Photo(models.Model):
         super(Photo, self).save(*args, **kwargs)
 
     def rehash_thumbnails(self, commit=False):
-        if self.large: os.remove(self.large.path)
-        if self.medium: os.remove(self.medium.path)
-        if self.small: os.remove(self.small.path)
-        if self.square: os.remove(self.square.path)
+        if self.large and os.path.exists(self.large.path): 
+            os.remove(self.large.path)
+        if self.medium and os.path.exists(self.medium.path): 
+            os.remove(self.medium.path)
+        if self.small and os.path.exists(self.small.path): 
+            os.remove(self.small.path)
+        if self.square and os.path.exists(self.square.path): 
+            os.remove(self.square.path)
     
         f1 = tempfile.NamedTemporaryFile(suffix=".jpg", delete=True)
         self.large = ImageAdapter.resize(self.original.path, f1, 1200)

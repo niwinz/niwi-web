@@ -16,8 +16,8 @@ from django.views.generic import RedirectView
 from niwi.views.main import Sitemap, Robots
 
 urlpatterns += patterns('',
-    #url(r'^$', RedirectView.as_view(url="/w/"), name="root"),
     url(r'^', include('niwi.urls', namespace="web")),
+    url(r'^photo/', include('niwi_photo.urls', namespace='photo')),
     url(r'^robots.txt$', Robots.as_view(), name='robots'),
     url(r'^sitemap.xml$', Sitemap.as_view(), name='sitemap'),
 )

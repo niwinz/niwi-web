@@ -5,7 +5,7 @@ from django.core.files import File
 
 class ImageAdapter(object):
     @staticmethod
-    def square(imgpath, savefile, size=120, quality=100):
+    def square(imgpath, savefile, size=300, quality=98):
         """
         Method for generate 100x100 square thumbnails.
         """

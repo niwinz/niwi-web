@@ -16,7 +16,11 @@ def photo_post_save(sender, instance, created, **kwargs):
 
 @receiver(pre_delete, sender=Photo)
 def photo_pre_delete(sender, instance, **kwargs):
-    if instance.large: os.remove(instance.large.path)
-    if instance.medium: os.remove(instance.medium.path)
-    if instance.small: os.remove(instance.small.path)
-    if instance.square: os.remove(instance.square.path)
+    if instance.large and os.path.exists(instance.large.path): 
+        os.remove(instance.large.path)
+    if instance.medium and os.path.exists(instance.medium.path): 
+        os.remove(instance.medium.path)
+    if instance.small and os.path.exists(instance.small.path): 
+        os.remove(instance.small.path)
+    if instance.square and os.path.exists(instance.square.path): 
+        os.remove(instance.square.path)

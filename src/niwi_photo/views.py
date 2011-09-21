@@ -23,6 +23,13 @@ class PhotoHome(GenericView):
     template_name = 'photo/index.html'
 
     def get(self, request):
-        albums = Album.objects.all()
-        return self.render(self.template_name, {'albums': albums})
+        photos = Photo.objects.order_by('-created_date')[:20]
+        years_queryset = Photo.objects.dates('created_date','year')
+        
+        context = {
+            'photos': photos,
+            'years': [x.year for x in years_queryset],
+        }
+
+        return self.render_to_response(self.template_name, context)
     

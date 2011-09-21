@@ -210,3 +210,30 @@ section.page img {
 section.month {
     margin-bottom: 30px;
 }
+
+/* PHOTO */
+section.latest-photos {
+    overflow: hidden;
+}
+
+section article.photo {
+    width: 200px;
+    height: 270px;
+    float: left;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #FFF;
+}
+section article.photo:hover {
+    border: 1px solid #999;
+}
+section article.photo img {
+    width: 200px;
+}
+section article.photo div.photo-meta {
+    font-size: 12px;
+    line-height: 1em;
+}
+section article.photo div.photo-meta p.small-description {
+    line-height: 1em;
+}

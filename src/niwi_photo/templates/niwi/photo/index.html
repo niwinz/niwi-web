@@ -19,4 +19,26 @@
 
 
 {% block main %}
+<header class="latest-photos">
+    <h2>{% trans "Latest photos" %} / <a href="">{% trans "Show albums" %}</a></h2>
+    <nav>
+        <p class="intro">{% trans "See all photos published in" %}
+            {% for year in years %}
+            <a href="">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    </nav>
+</header>
+<section class="latest-photos">
+    {% for photo in photos %}
+    <article class="photo" lang="es">
+        <img src="{{ photo.square.url }}" class="preview"></img>
+        <div class="photo-meta">
+            <p class="small-description">
+                {{ photo.created_date|date:"j F Y" }}<br />
+                {{ photo.small_description|wordwrap:28|linebreaksbr }}</p>
+        </div>
+    </article>
+    {% endfor %}
+</section>
 {% endblock %}
