@@ -15,6 +15,11 @@
 {% block html-head %}
 <meta name="Keywords" content="{{ page_default_keyworkds }}" />
 <meta name="Description" content="{{ page_default_description }}" />
+<link type="text/css" rel="stylesheet" media="screen" href="{{ STATIC_URL }}colorbox/colorbox.css" />
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}colorbox/jquery.colorbox-min.js"></script>
 {% endblock %}
 
 
@@ -32,7 +37,9 @@
 <section class="latest-photos">
     {% for photo in photos %}
     <article class="photo" lang="es">
-        <img src="{{ photo.square.url }}" class="preview"></img>
+        <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.small_description }}">
+            <img src="{{ photo.square.url }}" class="preview"></img>
+        </a>
         <div class="photo-meta">
             <p class="small-description">
                 {{ photo.created_date|date:"j F Y" }}<br />

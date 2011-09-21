@@ -51,11 +51,12 @@ body {
     font: 16px/24px 'Walter Turncoat', serif;
     background-color: #edebea;
     color: #4f4f4f;
+    padding-top: 3em;
 }
 body>div {
     width: 40em;
     padding: 3em 3em 1.5em;
-    margin: 3em auto;
+    margin: 0em auto;
     background-color: #fff;
 }
 h1,h2,h3 {
@@ -236,4 +237,28 @@ section article.photo div.photo-meta {
 }
 section article.photo div.photo-meta p.small-description {
     line-height: 1em;
+}
+
+#lightbox {
+    width: 650px;
+    min-height: 400px;
+    border: 1px solid #333;
+    z-index: 10000;
+    position: absolute;
+    top: 100px;
+    left: 10%;
+    right: 10%;
+    display: none;
+}
+#lightbox img.preview { width: 650px; }
+#fade {
+    display: none;
+    opacity: 0.5;
+    background-color: #888;
+    position:absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 8000;
 }
