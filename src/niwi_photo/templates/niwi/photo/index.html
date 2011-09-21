@@ -33,6 +33,7 @@
         </p>
     </nav>
 </header>
+{% if photos.count > 0 %}
 <section class="latest-photos">
     {% for photo in photos %}
     <article class="photo" lang="es">
@@ -51,4 +52,5 @@
     </article>
     {% endfor %}
 </section>
+{% endif %}
 {% endblock %}
