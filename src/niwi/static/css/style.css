@@ -226,9 +226,6 @@ section article.photo {
     border: 1px solid #FFF;
     position: relative;
 }
-section article.photo:hover {
-    border: 1px solid #999;
-}
 section article.photo img {
     width: 200px;
 }

@@ -42,7 +42,8 @@
         <div class="photo-meta">
             <p class="small-description">
                 {{ photo.created_date|date:"j F Y" }}<br />
-                {{ photo.small_description|wordwrap:28|linebreaksbr }}</p>
+                {{ photo.small_description|wordwrap:28|linebreaksbr }} / 
+                {{ photo.album.name }}</p>
         </div>
         <a class="show-detail icon" href="{{ photo.get_absolute_url }}">
             <img src="{{ STATIC_URL }}icons/eye.png"></img>

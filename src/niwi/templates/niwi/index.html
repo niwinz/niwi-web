@@ -13,9 +13,13 @@
 {% endblock %}
 
 {% block html-head %}
-<!-- TODO: set this on settings -->
 <meta name="Keywords" content="{{ page_default_keyworkds }}" />
 <meta name="Description" content="{{ page_default_description }}" />
+<link type="text/css" rel="stylesheet" media="screen" href="{{ STATIC_URL }}colorbox/colorbox.css" />
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}colorbox/jquery.colorbox-min.js"></script>
 {% endblock %}
 
 
