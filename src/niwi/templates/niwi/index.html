@@ -25,6 +25,8 @@
 
 {% block main %}
 {{ block.super }}
+
+{% if config.show_entries_on_homepage %}
 <section>
     <h2>{% trans "Recent Entries" %}</h2>
     <hr />
@@ -40,8 +42,9 @@
     {% endfor %}
     <p class="navigation bottom tright"><a href="{% url "web:posts" %}">See more entries</a> →</p>
 </section>
+{% endif %}
 
-{% if photos.count > 0 %}
+{% if photos.count > 0 and config.show_photo_on_homepage %}
 <section class="latest-photos">
     <h2>{% trans "Recent Photos" %}</h2>
     <hr />

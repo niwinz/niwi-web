@@ -23,13 +23,7 @@
                 {% show_page "nav" %}
             </header>
             {% block main %}
-            <header class="main-header">
-                {% if homepage %}
-                    {% if homepage.markup %}{{ homepage.content|markdown }}
-                    {% else %}{{ homepage.content|safe }}
-                    {% endif %}
-                {% endif %}
-            </header>
+                {% homepage %}
             {% endblock %}
             {% block foother %}
             <footer>

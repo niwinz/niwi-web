@@ -1,0 +1,9 @@
+{% load markdown from utils %}
+
+<header class="main-header">
+{% if markup %}
+    {{ hpage|markdown }}
+{% else %}
+    {{ hpage|safe }}
+{% endif %}
+</header>

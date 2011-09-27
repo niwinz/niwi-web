@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
+from django.template import loader
 
 from niwi.utils import Singleton
 from niwi.models import Config
@@ -24,30 +25,60 @@ def markdown(value, arg=''):
 
 markdown.is_safe = True
 
-
 @register.filter(name="fixname")
 def correct_filename(name):
     return name.rsplit("/",1)[-1]
+
+
+class HomePageNode(template.Node):
+    def __init__(self):
+        self.homepage = Config.objects.home_page
+
+    def render_filepaste(self, context):
+        return u""
+
+    def render_page(self, context):
+        from niwi.models import Page
+        try:
+            page = Page.objects.get(slug=self.homepage)
+        except Page.DoesNotExist:
+            return mark_safe(u"")
+    
+        context = {
+            'hpage':page.content,
+            'markup':page.markup
+        }
+        template_name = "%s/utils/homepage.html" % (settings.TEMPLATES_THEME)
+        return mark_safe(loader.render_to_string(template_name, context))
+
+    def render(self, context):
+        if self.homepage == 'filepaste':
+            return self.render_filepaste(context)
+        else:
+            return self.render_page(context)
+
+
+@register.tag(name="homepage")
+def homepage(parser, token):
+    return HomePageNode()
 
 
 class AnalyticsNode(template.Node):
     """ Analytics singleton Node. """
 
     def __init__(self):
-        self.enabled = None
-        try:
-            config_object = Config.objects.get()
-            self.analytics_code = config_object.google_analytics_code
-            self.analytics_domain = config_object.google_analytics_domain
-            self.enabled = True
+        self.enabled = False
+        self.analytics_code = Config.objects.google_analytics_code
+        self.analytics_domain = Config.objects.google_analytics_domain
 
-        except Config.DoesNotExist:
-            self.enabled = False
+        if self.analytics_code:
+            self.enabled = True
 
     def render(self, context):
         if self.enabled:
             context.update({'code': self.analytics_code, 'domain': self.analytics_domain})
-            return template.loader.render_to_string("niwi/utils/analytics.html", context)
+            return template.loader.render_to_string(
+                "%s/utils/analytics.html" % (settings.TEMPLATES_THEME), context)
         else:
             return ''
 

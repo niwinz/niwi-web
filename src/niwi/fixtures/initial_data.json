@@ -1,0 +1,30 @@
+[
+    {
+        "pk": "google.analytics.domain",
+        "model": "niwi.config",
+        "fields": {
+            "val": " "
+        }
+    },
+    {
+        "pk": "google.analytics.code",
+        "model": "niwi.config",
+        "fields": {
+            "val": " "
+        }
+    },
+    {
+        "pk": "core.homepage",
+        "model": "niwi.config",
+        "fields": {
+            "val": "1"
+        }
+    },
+    {
+        "pk": "core.photo_on_homepage",
+        "model": "niwi.config",
+        "fields": {
+            "val": "1"
+        }
+    }
+]

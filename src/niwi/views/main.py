@@ -39,12 +39,8 @@ class HomePageView(GenericView):
                 .order_by('-created_date')[:4],
             'photos': Photo.objects.exclude(
                 show_on_home = False).order_by('-created_date')[:3],
+            'config': Config.objects,
         }
-        try:
-            config = Config.objects.get()
-            context['homepage'] = Page.objects.get(pk=config.core_homepage)
-        except (Page.DoesNotExist, Config.DoesNotExist):
-            context['homepage'] = None
         return self.render_to_response(self.template_name, context)
         
 

@@ -120,10 +120,38 @@ class Bookmark(models.Model):
         return ('web:show-bookmark', (), {'slug': self.slug})
 
 
+class ConfigManager(models.Manager):
+    @property
+    def google_analytics_domain(self):
+        queryset = self.get_query_set().filter(key="google.analytics.domain")
+        return queryset.get().val if len(queryset) else ""
+
+    @property
+    def google_analytics_code(self):
+        queryset = self.get_query_set().filter(key="google.analytics.code")
+        return queryset.get().val if len(queryset) else ""
+
+    @property
+    def home_page(self):
+        queryset = self.get_query_set().filter(key="core.homepage")
+        return queryset.get().val if len(queryset) else None
+
+    @property
+    def show_photo_on_homepage(self):
+        queryset = self.get_query_set().filter(key="core.photo_on_homepage")
+        return True if len(queryset) and queryset.get().val == "1" else False
+
+    @property
+    def show_entries_on_homepage(self):
+        queryset = self.get_query_set().filter(key="core.entires_on_homepage")
+        return True if len(queryset) and queryset.get().val == "1" else False
+
+
 class Config(models.Model):
-    google_analytics_domain = models.CharField(max_length=200, blank=True)
-    google_analytics_code = models.CharField(max_length=200, blank=True)
-    core_homepage = models.CharField(max_length=200, blank=True)
+    key = models.CharField(primary_key=True, max_length=200)
+    val = models.CharField(max_length=1000)
+
+    objects = ConfigManager()
 
     class Meta:
         db_table = 'config'
