@@ -15,7 +15,9 @@
         <div class="row-desc">{{ fl.description }}</div>
         <div class="row-data">{{ fl.created_date|date:"Y F m H:i"}}</div>
         <div class="row-size">{{ fl.attached_file.size|filesizeformat }}</div>
-        <div class="row-icon"><img src="/static/niwi/filepaste/download.png"></img></div>
+        <div class="row-icon">
+            <a href="{{ fl.get_download_url }}"><img src="/static/niwi/filepaste/download.png"></img></a>
+        </div>
     </div>
     {% endfor %}
 </section>

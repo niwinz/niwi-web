@@ -107,7 +107,6 @@ class ShowPageNode(template.Node):
 
     def render(self, context):
         pagename = self.pagename.resolve(context)
-        print pagename
         from niwi.models import Page
         try:
             page = Page.objects.get(slug=pagename)

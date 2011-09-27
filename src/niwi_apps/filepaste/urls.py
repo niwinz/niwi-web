@@ -7,4 +7,5 @@ from django.views.generic import TemplateView, RedirectView
 from niwi_apps.filepaste.views import *
 
 urlpatterns = patterns('',
+    url(r'^(?P<slug>[\d\w\-]+)/download/$', WebFileDownload.as_view(), name="download-wfile"),
 )

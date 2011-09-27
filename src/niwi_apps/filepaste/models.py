@@ -26,3 +26,7 @@ class WebFile(models.Model):
             self.slug = slugify_uniquely(self.desciption, self.__class__)
 
         super(WebFile, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_download_url(self):
+        return ('filepaste:download-wfile', (), {'slug':self.slug})

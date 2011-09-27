@@ -18,6 +18,7 @@ from niwi.views.main import Sitemap, Robots
 urlpatterns += patterns('',
     url(r'^', include('niwi.urls', namespace="web")),
     url(r'^photo/', include('niwi_photo.urls', namespace='photo')),
+    url(r'^filepaste/', include('niwi_apps.filepaste.urls', namespace='filepaste')),
     url(r'^robots.txt$', Robots.as_view(), name='robots'),
     url(r'^sitemap.xml$', Sitemap.as_view(), name='sitemap'),
 )
