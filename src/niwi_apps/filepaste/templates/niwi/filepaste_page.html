@@ -11,7 +11,11 @@
 <section class="filepaste">
     {% for fl in files %}
     <div class="file-item row">
+        {% if fl.password %}
+        <div class="row-icon"><img src="/static/niwi/filepaste/key.png"></img></div>
+        {% else %}
         <div class="row-icon"><img src="/static/niwi/filepaste/clip.png"></img></div>
+        {% endif %}
         <div class="row-desc">{{ fl.description }}</div>
         <div class="row-data">{{ fl.created_date|date:"Y F m H:i"}}</div>
         <div class="row-size">{{ fl.attached_file.size|filesizeformat }}</div>

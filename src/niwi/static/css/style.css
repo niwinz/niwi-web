@@ -2,7 +2,13 @@
    v2.0 | 20110126
    License: none (public domain)
 */
-
+ul.errorlist {
+    padding: 3px;
+    margin: 0px;
+    font-size: 10px;
+    color: red;
+    list-style: none;
+}
 
 .btn01{background-color:#EFEFEF; 
 padding: 5px 20px; font-size: 15px; color: #9c9c9c; font-weight:bold; text-decoration: none;

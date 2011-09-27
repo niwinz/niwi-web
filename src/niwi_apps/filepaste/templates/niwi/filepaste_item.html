@@ -7,14 +7,14 @@
 
 {% block main %}
 <section class="filepaste-item">
-    <h2>{% trans "File:" %}{{ file.description }}</h2>
+    <h2>{% trans "File:" %} {{ file.description }}</h2>
+    <h3>{% trans "Size:" %} {{ file.attached_file.size|filesizeformat }}</h3>
     <hr />
     <section class="download">
         <form method="post" action="{{ full_current_url }}">
-            <label>{% trans "Password: " %}</label>
-            <input type="password" placeholder="{% trans "Write you secret password..." %}" />
-            <br />
-            <input type="submit" value="{% trans "Download" %}" />
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn01" value="{% trans "Download" %}" />
         </form>
     </section>
 </section>
