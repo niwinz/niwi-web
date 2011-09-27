@@ -41,7 +41,7 @@ class HomePageNode(template.Node):
             
         from niwi_apps.filepaste.models import WebFile
         context = {
-            'files': WebFile.objects.filter(hidden=False),
+            'files': WebFile.objects.filter(hidden=False).order_by('-created_date')[:50],
             'pageslug': pageslug,
         }
         template_name = "%s/filepaste_page.html" % (settings.TEMPLATES_THEME)

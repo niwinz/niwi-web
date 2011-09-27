@@ -2,6 +2,13 @@
    v2.0 | 20110126
    License: none (public domain)
 */
+
+
+.btn01{background-color:#EFEFEF; 
+padding: 5px 20px; font-size: 15px; color: #9c9c9c; font-weight:bold; text-decoration: none;
+cursor: pointer; margin-right: 5px; border-radius: 2px; border: 1px solid #D9D9D9;}
+.btn01:hover {border: 1px solid #B9B9B9; color: #000;}
+
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,

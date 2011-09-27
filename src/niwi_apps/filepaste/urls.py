@@ -8,4 +8,5 @@ from niwi_apps.filepaste.views import *
 
 urlpatterns = patterns('',
     url(r'^(?P<slug>[\d\w\-]+)/download/$', WebFileDownload.as_view(), name="download-wfile"),
+    url(r'^upload/file/$', WebFileUpload.as_view(), name="upload-file"),
 )

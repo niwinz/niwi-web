@@ -1,0 +1,20 @@
+{% extends "niwi/base.html" %}
+{% load i18n %}
+{% load utils %}
+{% load url from future %}
+
+{% block title %} {% trans "- Home page." %}{% endblock %}
+
+{% block main %}
+<section class="filepaste-item">
+    <h2>{% trans "Upload new file:" %}</h2>
+    <hr />
+    <form method="post" action="{{ full_current_url }}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p>
+            <input class="btn01" type="submit" value="{% trans "Upload now!" %}" />
+        </p>
+    </form>
+</section>
+{% endblock %}

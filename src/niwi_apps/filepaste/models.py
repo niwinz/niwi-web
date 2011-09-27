@@ -23,7 +23,7 @@ class WebFile(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify_uniquely(self.desciption, self.__class__)
+            self.slug = slugify_uniquely(self.description, self.__class__)
 
         super(WebFile, self).save(*args, **kwargs)
 
