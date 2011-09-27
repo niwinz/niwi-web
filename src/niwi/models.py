@@ -37,7 +37,7 @@ class Page(models.Model):
     content = models.TextField()
     markup = models.BooleanField(default=False)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
-    owner = models.ForeignKey('auth.User', related_name='pages', null=True, default=None)
+    owner = models.ForeignKey('auth.User', related_name='pages', null=True, default=None, blank=True)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
@@ -63,7 +63,7 @@ class Post(models.Model):
     title = models.CharField(max_length=500, db_index=True, blank=True)
     content = models.TextField()
     markup = models.BooleanField(default=False)
-    owner = models.ForeignKey('auth.User', related_name='posts', null=True, default=None)
+    owner = models.ForeignKey('auth.User', related_name='posts', null=True, default=None, blank=True)
     status = models.CharField(max_length=40, choices=STATUS_CHOICES, db_index=True, default='draft')
     tags = models.CharField(max_length=200, blank=True, null=True, default='', db_index=True)
 
@@ -92,7 +92,7 @@ class Bookmark(models.Model):
     slug = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)
     url = models.CharField(max_length=1000, unique=True, db_index=True)
     tags = models.CharField(max_length=1000, db_index=True, blank=True, default='')
-    owner = models.ForeignKey('auth.User', related_name='bookmarks')
+    owner = models.ForeignKey('auth.User', related_name='bookmarks', blank=True, null=True)
     
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now_add=True)
