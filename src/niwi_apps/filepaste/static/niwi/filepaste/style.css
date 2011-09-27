@@ -1,0 +1,27 @@
+section.filepaste {
+    font-size: 11px;
+}
+section.filepaste .row {
+    overflow: hidden;
+    padding: 3px;
+}
+section.filepaste .row div {
+    float:left;
+    line-height: 14px;
+    vertical-align: middle;
+}
+section.filepaste .row div.row-icon {
+    width: 25px;
+}
+section.filepaste .row div.row-desc {
+    width: 320px;
+}
+section.filepaste .row div.row-data {
+    width: 160px;
+}
+section.filepaste .row div.row-size {
+    width: 60px;
+}
+section.filepaste .row img {
+    width: 14px; 
+}

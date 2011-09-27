@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load show_page from utils %}
+
+{% if pageslug %}
+<section class="header">
+    {% show_page pageslug %}
+</endsection>
+{% endif %}
+
+<link type="text/css" rel="stylesheet" href="/static/niwi/filepaste/style.css" />
+<section class="filepaste">
+    {% for fl in files %}
+    <div class="file-item row">
+        <div class="row-icon"><img src="/static/niwi/filepaste/clip.png"></img></div>
+        <div class="row-desc">{{ fl.description }}</div>
+        <div class="row-data">{{ fl.created_date|date:"Y F m H:i"}}</div>
+        <div class="row-size">{{ fl.attached_file.size|filesizeformat }}</div>
+        <div class="row-icon"><img src="/static/niwi/filepaste/download.png"></img></div>
+    </div>
+    {% endfor %}
+</section>

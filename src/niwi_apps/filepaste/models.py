@@ -7,7 +7,7 @@ from niwi.models import slugify_uniquely
 import datetime
 
 class WebFile(models.Model):
-    desciption = models.CharField(max_length=200, blank=False)
+    description = models.CharField(max_length=200, blank=False)
     slug = models.SlugField(max_length=250, unique=True, blank=True, null=True)
     attached_file = models.FileField(max_length=1000, upload_to="filepaste/%Y/%m/%d",
         serialize=False, editable=True, blank=False)

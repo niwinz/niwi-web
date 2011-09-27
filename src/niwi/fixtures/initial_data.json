@@ -17,11 +17,18 @@
         "pk": "core.homepage",
         "model": "niwi.config",
         "fields": {
-            "val": "1"
+            "val": "home-page"
         }
     },
     {
         "pk": "core.photo_on_homepage",
+        "model": "niwi.config",
+        "fields": {
+            "val": "1"
+        }
+    },
+    {
+        "pk": "core.entries_on_homepage",
         "model": "niwi.config",
         "fields": {
             "val": "1"

@@ -20,7 +20,7 @@
     <body>
         <div class="main-container">
             <header class="nav-header">
-                {% show_page "nav" %}
+                {% show_page 'nav' %}
             </header>
             {% block main %}
                 {% homepage %}
@@ -35,6 +35,8 @@
             </footer>
             {% endblock %}
         </div>
+
+        <!-- TODO: add config for this block. -->
         {% if not debug %}
             {% include "niwi/utils/facebook.html" %}
         {% endif %}

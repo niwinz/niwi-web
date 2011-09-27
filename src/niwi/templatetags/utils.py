@@ -35,7 +35,18 @@ class HomePageNode(template.Node):
         self.homepage = Config.objects.home_page
 
     def render_filepaste(self, context):
-        return u""
+        key, pageslug = None, None
+        if len(self.homepage.split(",")) == 2:
+            pageslug = self.homepage.split(",")[1]
+            
+        from niwi_apps.filepaste.models import WebFile
+        context = {
+            'files': WebFile.objects.filter(hidden=False),
+            'pageslug': pageslug,
+        }
+        template_name = "%s/filepaste_page.html" % (settings.TEMPLATES_THEME)
+        return mark_safe(loader.render_to_string(template_name, context))
+
 
     def render_page(self, context):
         from niwi.models import Page
@@ -52,7 +63,7 @@ class HomePageNode(template.Node):
         return mark_safe(loader.render_to_string(template_name, context))
 
     def render(self, context):
-        if self.homepage == 'filepaste':
+        if 'filepaste' in self.homepage:
             return self.render_filepaste(context)
         else:
             return self.render_page(context)
@@ -95,9 +106,11 @@ class ShowPageNode(template.Node):
         self.pagename = pagename
 
     def render(self, context):
+        pagename = self.pagename.resolve(context)
+        print pagename
         from niwi.models import Page
         try:
-            page = Page.objects.get(slug=self.pagename)
+            page = Page.objects.get(slug=pagename)
         except Page.DoesNotExist:
             return mark_safe('')
         
@@ -112,12 +125,7 @@ def show_page(parser, token):
         tag_name, page_name = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError("%r tag requires a single argument" % token.contents.split()[0])
-
-    if not (page_name[0] == page_name[-1] and page_name[0] in ('"', "'")):
-        raise template.TemplateSyntaxError("%r tag's argument should be in quotes" % tag_name)
-
-    return ShowPageNode(page_name[1:-1])
-
+    return ShowPageNode(parser.compile_filter(page_name))
 
 
 @register.filter(name="parse_tags")
