@@ -259,8 +259,12 @@ section article.photo a.show-detail img {
     width: 25px;
 }
 
+section article.photo-detail {
+    margin-left: -48px;
+}
+
 section article.photo-detail img {
-    width: 630px;
+    width: 636px;
 }
 
 section section.exif-data {
