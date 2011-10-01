@@ -53,7 +53,7 @@ class AlbumPhotosView(GenericView):
 
     def get(self, request, aslug):
         album = get_object_or_404(Album, slug=aslug)
-        photos = album.photos.all()
+        photos = album.photos.all().order_by('-created_date')
         years_queryset = photos.dates('created_date','year')
 
         context = {
