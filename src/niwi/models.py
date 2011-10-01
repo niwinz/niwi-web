@@ -143,7 +143,7 @@ class ConfigManager(models.Manager):
 
     @property
     def show_entries_on_homepage(self):
-        queryset = self.get_query_set().filter(key="core.entrires_on_homepage")
+        queryset = self.get_query_set().filter(key="core.entries_on_homepage")
         return True if len(queryset) and queryset.get().val == "1" else False
 
 
