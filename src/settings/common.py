@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.utils.translation import ugettext_lazy as _
-import os.path, sys
+import os, sys
 
 ADMINS = (
     ('Andrei Antoukh', 'niwi@niwi.be'),
@@ -9,8 +9,11 @@ ADMINS = (
 MANAGERS = ADMINS
 
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
+LOGS_PATH = os.path.join(PROJECT_ROOT, 'logs')
 
-FCBK_APP_ID = ''
+if not os.path.exists(LOGS_PATH):
+    os.mkdir(LOGS_PATH)
+
 FCBK_APP_SECRET = ''
 FCBK_APP_API = ''
 FCBK_ADMIN = ''
