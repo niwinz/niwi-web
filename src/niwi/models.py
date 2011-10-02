@@ -156,6 +156,9 @@ class Config(models.Model):
     class Meta:
         db_table = 'config'
 
+    def __unicode__(self):
+        return u"Config: %s" % (self.key)
+
 
 class Paste(models.Model):
     text = models.TextField()

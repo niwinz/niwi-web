@@ -79,6 +79,7 @@ class PostListView(GenericView):
 
 class BookmarkListView(GenericView):
     template_name = "bookmark_list.html"
+
     def get(self, request, year=None):
         if not year:
             bookmarks = Bookmark.objects.filter(public=True)\
@@ -110,6 +111,7 @@ class BookmarkListView(GenericView):
 
 class PageView(GenericView):
     template_name = "page_detail.html"
+    
     def get(self, request, slug):
         page = get_object_or_404(Page, slug=slug)
         context = {'object':page}
