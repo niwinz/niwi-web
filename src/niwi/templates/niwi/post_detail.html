@@ -18,15 +18,13 @@
 {% endblock %}
 
 {% block main %}
-<article>
-    <h1>{{ object.title }}</h1>
-    {% if object.markup %}
-    {{ object.content|markdown }}
-    {% else %}
-    {{ object.content|safe }}
-    {% endif %}
+    {% cache 20 object.id object.modified_date %}
+    <article>
+        <h1>{{ object.title }}</h1>
+        {% render_template object.content object.markup %}
+    </article>
+    {% endcache %}
 
-</article>
-{% include "niwi/utils/share.block.html" %}
-{% include "niwi/utils/disqus-post.html" %}
+    {% include "niwi/utils/share.block.html" %}
+    {% include "niwi/utils/disqus-post.html" %}
 {% endblock %}

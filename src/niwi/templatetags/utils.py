@@ -75,7 +75,9 @@ def homepage(parser, token):
 
 
 class AnalyticsNode(template.Node):
-    """ Analytics singleton Node. """
+    """ 
+    Analytics singleton Node. 
+    """
 
     def __init__(self):
         self.enabled = False
@@ -100,7 +102,9 @@ def analytics_tag(parser, token):
 
 
 class ShowPageNode(template.Node):
-    """ Show and render page. """
+    """ 
+    Show and render page node.
+    """
 
     def __init__(self, pagename):
         self.pagename = pagename
@@ -120,12 +124,60 @@ class ShowPageNode(template.Node):
 
 @register.tag(name="show_page")
 def show_page(parser, token):
+    """ 
+    Render litle block obtaingin source from dinamicaly
+    writed on Page model. 
+    """
     try:
         tag_name, page_name = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError("%r tag requires a single argument" % token.contents.split()[0])
     return ShowPageNode(parser.compile_filter(page_name))
 
+
+class TemplateNode(template.Node):
+    def __init__(self, content, markup=False):
+        self.content = content
+        self.markup = markup
+
+    def render(self, context):
+        content = self.content.resolve(context)
+        markup = self.content.resolve(context)
+
+        t = template.Template(content)
+        content = t.render(template.Context(context))
+
+        if markup:
+            from niwi.contrib.markdown2 import markdown
+            extensions = {'code-color':{'style':'trac'}}
+            content = markdown(force_unicode(content), extras=extensions)
+
+        return mark_safe(content)
+
+
+@register.tag(name="render_template")
+def render_tmpl(parser, token):
+    """
+    Render text as template and compile markdown if
+    necesary.
+    """
+
+    tag_name = content = markup = None
+
+    try:
+        tag_name, content, markup = token.split_contents()
+    except ValueError:
+        try:
+            tag_name, content = token.split_contents()
+            markup = False
+        except ValueError:
+            raise template.TemplateSyntaxError("%r tag requires a single"
+                                        " argument or double argument" % \
+                                        token.contents.split()[0])
+
+    content = parser.compile_filter(content)
+    markup = parser.compile_filter(markup)
+    return TemplateNode(content, markup)
 
 @register.filter(name="parse_tags")
 def parse_tags(value):
