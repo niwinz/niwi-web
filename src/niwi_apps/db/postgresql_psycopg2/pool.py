@@ -64,16 +64,23 @@ class QueuePool(object):
         else:
             conn.close()
 
+    #def getconn(self):
+    #    self._lock.acquire()
+    #    try:
+    #        return self._getconn()
+    #    finally:
+    #        self._lock.release()
+
+    #def putconn(self, conn):
+    #    self._lock.acquire()
+    #    try:
+    #        self._putconn(conn)
+    #    finally:
+    #        self._lock.release()
+
+
     def getconn(self):
-        self._lock.acquire()
-        try:
-            return self._getconn()
-        finally:
-            self._lock.release()
+        return self._getconn()
 
     def putconn(self, conn):
-        self._lock.acquire()
-        try:
-            self._putconn(conn)
-        finally:
-            self._lock.release()
+        self._putconn(conn)
