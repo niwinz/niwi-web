@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+"""
+TODO:
+    * set all pool params fron settings
+    * add documentation to use with server
+        side cursors.
+"""
+
+
 from psycopg2.extras import register_hstore
 from psycopg2.pool import ThreadedConnectionPool, PersistentConnectionPool
 

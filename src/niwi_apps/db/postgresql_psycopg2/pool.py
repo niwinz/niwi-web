@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 TODO:
- * consider use this snippet http://djangosnippets.org/snippets/1707/ 
-    for check if connection state is connected.
- * make thread persistent pool.
+    * make connection counter with auto garbage
+        collection procedure.
 """
 
 from Queue import Queue
