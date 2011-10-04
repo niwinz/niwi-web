@@ -14,17 +14,32 @@ class PoolError(Exception):
 
 
 class QueuePool(object):
+    """ 
+    Psycopg2-Django ORM Queue connection pool implementation.
+    """
+
     def __init__(self, maxconn, dbparams, ilevel, settings):
+        """
+        Queue pool constructor.
+
+        :param int maxconn: max connections on memory pool.
+        :param dict dbparams: pyscopg2.connect() connection dictionary.
+        :param enum ileve: pyscopg2 isolation level
+        :param object settings: django settings part.
+        """
+
         self.maxconn = maxconn
-        self.closed = False
         self.dbparams = dbparams
         self._pool = Queue()
         self._isolation_level = ilevel
-        self._conns = []
         self._settings = settings
         self._lock = threading.Lock()
 
     def _connect(self):
+        """
+        Method for make a new database connection
+        and set correct timezone and client encoding..
+        """
         conn = psycopg2.connect(**self.dbparams)
         conn.set_client_encoding('UTF8')
         conn.set_isolation_level(self._isolation_level)
@@ -32,18 +47,29 @@ class QueuePool(object):
         cursor = conn.cursor()
         cursor.execute("SET TIME ZONE %s", [self._settings['TIME_ZONE']])
         cursor.close()
-
-        self._conns.append(id(conn))
         return conn
 
     def _try_connected(self, connection):
+        """
+        Try if connection object is connected
+        to a database.
+
+        :param psycopg.connection connection: db connection.
+        :returns: True or False
+        :rtype: bool
+        """
         try:
             connection.cursor().execute("SELECT 1;")
             return True
         except psycopg2.OperationalError:
             return False
 
+
     def _getconn(self):
+        """
+        Internal method: get connection from
+        pool or create one new connection.
+        """
         if self._pool.qsize() == 0:
             return True, self._connect()
         else:
@@ -54,15 +80,28 @@ class QueuePool(object):
                 return True, self._connect()
 
     def _putconn(self, conn):
-        if id(conn) in self._conns:
-            self._pool.put(conn, block=True)
-        else:
-            conn.close()
+        """
+        Internal method: put connection into a pool
+        if this not full else, close connection.
+        """
+        with threading.Lock():
+            if self._pool.qsize() >= self.maxconn:
+                conn.close()
+            else:
+                self._pool.put(conn, block=False)
 
     def getconn(self):
+        """
+        Public method for get connection 
+        from a pool.
+        """
         return self._getconn()
 
     def putconn(self, conn):
+        """
+        Public method for put connection
+        into a pool.
+        """
         self._putconn(conn)
 
 
