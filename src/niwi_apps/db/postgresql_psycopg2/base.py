@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-TODO:
-    * set all pool params fron settings
-    * add documentation to use with server
-        side cursors.
-"""
-
-
 from psycopg2.extras import register_hstore
 from psycopg2.pool import ThreadedConnectionPool, PersistentConnectionPool
 
@@ -48,14 +40,46 @@ def make_connection_params(self, settings_dict):
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     """
-    Psycopg2 database backend that allows the use of server side cursors.
-    
-    Usage:
+    Psycopg2 database backend that allows the use 
+    of server side cursors and connection poolings
+    support.
+
+    Server side cursors usage
+    -------------------------
     
     qs = Model.objects.all()
-    with server_side_cursors(qs, itersize=x):
+    with server_side_cursors(qs, itersize=100):
         for item in qs.iterator():
             item.value
+
+    It is very efficient with tables, with lots of 
+    data, and to reduce large amounts of memory when 
+    evaluating a QuerySet.
+
+
+    Connection pool config
+    ----------------------
+
+    This step is very simple, just using this backend 
+    is already using the pool of connections. Just need 
+    to configure the maximum connections that can be
+    kept in memory (optional).
+
+    Example:
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'niwi_apps.db.postgresql_psycopg2',
+                'NAME': 'niwiweb',
+                'USER': 'niwi',
+                'PASSWORD': '123123',
+                'HOST': '127.0.0.1',
+                'PORT': '5432',
+                'OPTIONS': {
+                    'POOLSIZE': 5, # default is 10
+                }
+            }, 
+        }
     
     """
     def __init__(self, *args, **kwargs):
@@ -82,9 +106,10 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         global pool, connections
         
         if not pool:
-            from .pool import QueuePool, PersistentPool
+            from .pool import QueuePool
             conn_params = make_connection_params(self, self.settings_dict)
-            pool = PersistentPool(7, conn_params, self.isolation_level, self.settings_dict)
+            pool = QueuePool(conn_params, self.isolation_level,
+                self.settings_dict)
 
         if not self.connection:
             newcon, self.connection = pool.getconn()
@@ -93,7 +118,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
         cursor = None
         if self.server_side_cursors:
-            # give the cursor a unique name which will invoke server side cursors
             cursor = self.connection.cursor(name='cur%s' % str(uuid.uuid4()).replace('-', ''))
             cursor.tzinfo_factory = None
             if self.server_side_cursor_itersize is not None:

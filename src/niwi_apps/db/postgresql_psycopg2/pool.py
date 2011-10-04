@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-TODO:
-    * make connection counter with auto garbage
-        collection procedure.
-"""
 
 from Queue import Queue
 import threading
@@ -18,17 +13,18 @@ class QueuePool(object):
     Psycopg2-Django ORM Queue connection pool implementation.
     """
 
-    def __init__(self, maxconn, dbparams, ilevel, settings):
+    def __init__(self, dbparams, ilevel, settings):
         """
         Queue pool constructor.
 
-        :param int maxconn: max connections on memory pool.
         :param dict dbparams: pyscopg2.connect() connection dictionary.
         :param enum ileve: pyscopg2 isolation level
         :param object settings: django settings part.
         """
+        options = settings.get('OPTIONS', {})
+        self.maxconn = "POOLSIZE" in options \
+            and int(options['POOLSIZE']) or 10
 
-        self.maxconn = maxconn
         self.dbparams = dbparams
         self._pool = Queue()
         self._isolation_level = ilevel
@@ -106,6 +102,18 @@ class QueuePool(object):
 
 
 class PersistentPool(QueuePool):
+    """
+    Thread persistent connection pool.
+
+    QueuePool is similar to, but maintains 
+    a queue for each thread, thus ensuring 
+    that a thread always receives the same 
+    connections.
+
+    In most of my tests with django, only one 
+    connection is maintained by thread.
+    """
+    
     def __init__(self, *args, **kwargs):
         super(PersistentPool, self).__init__(*args, **kwargs)
         self._pool = {}
