@@ -14,8 +14,7 @@ class PoolError(Exception):
 
 
 class QueuePool(object):
-    def __init__(self, minconn, maxconn, dbparams, ilevel, settings):
-        self.minconn = minconn
+    def __init__(self, maxconn, dbparams, ilevel, settings):
         self.maxconn = maxconn
         self.closed = False
         self.dbparams = dbparams
@@ -24,9 +23,6 @@ class QueuePool(object):
         self._conns = []
         self._settings = settings
         self._lock = threading.Lock()
-
-        for x in xrange(self.minconn):
-            self._pool.put(self._connect())
 
     def _connect(self):
         conn = psycopg2.connect(**self.dbparams)
@@ -63,23 +59,36 @@ class QueuePool(object):
         else:
             conn.close()
 
-    #def getconn(self):
-    #    self._lock.acquire()
-    #    try:
-    #        return self._getconn()
-    #    finally:
-    #        self._lock.release()
-
-    #def putconn(self, conn):
-    #    self._lock.acquire()
-    #    try:
-    #        self._putconn(conn)
-    #    finally:
-    #        self._lock.release()
-
-
     def getconn(self):
         return self._getconn()
 
     def putconn(self, conn):
         self._putconn(conn)
+
+
+class PersistentPool(QueuePool):
+    def __init__(self, *args, **kwargs):
+        super(PersistentPool, self).__init__(*args, **kwargs)
+        self._pool = {}
+
+    def _getconn(self):
+        key = threading.current_thread().ident
+        newc, conn = None, None
+
+        if key not in self._pool:
+            self._pool[key] = Queue()
+            newc, conn = True, self._connect()
+        else:
+            if self._pool[key].qsize() == 0:
+                newc, conn = True, self._connect()
+            else:
+                newc, conn = False, self._pool[key].get(block=True)
+
+        return newc, conn
+
+    def _putconn(self, conn):
+        key = threading.current_thread().ident
+        if key in self._pool:
+            self._pool[key].put(conn, block=False)
+        else:
+            conn.close()

@@ -61,20 +61,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     def __init__(self, *args, **kwargs):
         self.server_side_cursors = False
         self.server_side_cursor_itersize = None
-
         super(DatabaseWrapper, self).__init__(*args, **kwargs)
 
     def close(self):
         global pool
-        
         if self.connection is None:
             return
-        
         if not self.connection.closed:
             pool.putconn(self.connection)
-
         self.connection = None
-        #print "close()"
 
     def _cursor(self):
         """
@@ -84,17 +79,14 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         new_connection = False
         set_tz = False
         settings_dict = self.settings_dict
-
         global pool, connections
         
         if not pool:
-            from .pool import QueuePool
+            from .pool import QueuePool, PersistentPool
             conn_params = make_connection_params(self, self.settings_dict)
-            pool = QueuePool(3, 7, conn_params, self.isolation_level,
-                self.settings_dict)
+            pool = PersistentPool(7, conn_params, self.isolation_level, self.settings_dict)
 
         if not self.connection:
-            #key = threading.current_thread().ident
             newcon, self.connection = pool.getconn()
             if newcon:
                 new_connection = True
@@ -104,7 +96,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             # give the cursor a unique name which will invoke server side cursors
             cursor = self.connection.cursor(name='cur%s' % str(uuid.uuid4()).replace('-', ''))
             cursor.tzinfo_factory = None
-            
             if self.server_side_cursor_itersize is not None:
                 cursor.itersize = self.server_side_cursor_itersize
         else:
