@@ -33,5 +33,12 @@
         "fields": {
             "val": "1"
         }
+    },
+    {
+        "pk": "core.host",
+        "model": "niwi.config",
+        "fields": {
+            "val": "http://www.example.com"
+        }
     }
 ]
