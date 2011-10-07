@@ -46,6 +46,7 @@
 </section>
 <section class="comments">
 {% with object=photo %}
+    {% include "niwi/utils/share.block.html" %}
     {% include "niwi/utils/disqus-post.html" %}
 {% endwith %}
 </section>

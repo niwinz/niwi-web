@@ -156,6 +156,11 @@ class ConfigManager(models.Manager):
         queryset = self.get_query_set().filter(key="disqus.shortname")
         return queryset.get().val if len(queryset) else ''
 
+    @property
+    def twitter_referer(self):
+        queryset = self.get_query_set().filter(key="twitter.referrer")
+        return queryset.get().val if len(queryset) else ''
+
 
 class Config(models.Model):
     key = models.CharField(primary_key=True, max_length=200)

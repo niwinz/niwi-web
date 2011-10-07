@@ -8,8 +8,10 @@ def main(request):
         debug=settings.DEBUG,
         current_url = request.META.get('PATH_INFO'),
         full_host_url = settings.HOST + request.META.get('PATH_INFO'),
+        
         fcbk_admin = settings.FCBK_ADMIN,
         fcbk_app_id = settings.FCBK_APP_ID,
+
         config = Config.objects,
         page_default_logo_url = settings.PAGE_DEFAULT_LOGO_URL,
         page_default_description = settings.PAGE_DEFAULT_DESCRIPTION,

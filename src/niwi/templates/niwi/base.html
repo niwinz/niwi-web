@@ -36,12 +36,9 @@
             {% endblock %}
         </div>
 
-        <!-- TODO: add config for this block. -->
-        {% if not debug %}
-            {% include "niwi/utils/facebook.html" %}
-        {% endif %}
-
+        {% include "niwi/utils/facebook.html" %}
         {% analytics %}
+
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.1.min.js"></script>
         {% block scripts %}{% endblock %}
         <script type="text/javascript" src="{{ STATIC_URL }}js/base.js"></script>

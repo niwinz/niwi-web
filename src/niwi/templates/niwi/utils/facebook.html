@@ -1,7 +1,8 @@
+{% if fcbk_app_id %}
 <div id="fb-root" style="display:none"></div>
 <script type="text/javascript">
     window.fbAsyncInit = function() {
-        FB.init({appId: '217309748280027', status: true, cookie: true, xfbml: true});
+        FB.init({appId: '{{ fcbk_app_id }}', status: true, cookie: true, xfbml: true});
     };
 
     (function() {
@@ -10,4 +11,4 @@
         document.getElementById('fb-root').appendChild(e);
     }());
 </script>
-
+{% endif %}
