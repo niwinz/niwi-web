@@ -146,6 +146,16 @@ class ConfigManager(models.Manager):
         queryset = self.get_query_set().filter(key="core.entries_on_homepage")
         return True if len(queryset) and queryset.get().val == "1" else False
 
+    @property
+    def host(self):
+        queryset = self.get_query_set().filter(key="core.host")
+        return queryset.get().val if len(queryset) else ''
+    
+    @property
+    def disqus_shortname(self):
+        queryset = self.get_query_set().filter(key="disqus.shortname")
+        return queryset.get().val if len(queryset) else ''
+
 
 class Config(models.Model):
     key = models.CharField(primary_key=True, max_length=200)

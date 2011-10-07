@@ -40,5 +40,12 @@
         "fields": {
             "val": "http://www.example.com"
         }
+    },
+    {
+        "pk": "disqus.shortname",
+        "model": "niwi.config",
+        "fields": {
+            "val": "exampledisqus_shortname"
+        }
     }
 ]

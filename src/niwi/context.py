@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
+from niwi.models import Config
 
 def main(request):
     context_extra = dict(
@@ -9,7 +10,7 @@ def main(request):
         full_host_url = settings.HOST + request.META.get('PATH_INFO'),
         fcbk_admin = settings.FCBK_ADMIN,
         fcbk_app_id = settings.FCBK_APP_ID,
-        host = settings.HOST,
+        config = Config.objects,
         page_default_logo_url = settings.PAGE_DEFAULT_LOGO_URL,
         page_default_description = settings.PAGE_DEFAULT_DESCRIPTION,
         page_default_keyworkds = settings.PAGE_DEFAULT_KEYWORKDS,
