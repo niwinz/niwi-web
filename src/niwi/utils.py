@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.core.cache import cache
 import requests
 import re
 
@@ -26,3 +27,19 @@ def get_url_data(url):
             return pos[0], url
     
     return url, url
+
+
+
+def cacheable(cache_key, timeout=3600):
+    def paramed_decorator(func):
+        def decorated(self):
+            key = cache_key % self.__dict__
+            res = cache.get(key)
+            if res == None:
+                res = func(self)
+                cache.set(key, res, timeout)
+            return res
+        decorated.__doc__ = func.__doc__
+        decorated.__dict__ = func.__dict__
+        return decorated 
+    return paramed_decorator

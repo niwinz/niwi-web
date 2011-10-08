@@ -6,7 +6,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-from niwi.utils import get_url_data
+from niwi.utils import get_url_data, cacheable
 from niwi.forms import LEXER_CHOICES
 from niwi.contrib.db.fields import CreationDateTimeField, ModificationDateTimeField
 
@@ -121,42 +121,55 @@ class Bookmark(models.Model):
 
 
 class ConfigManager(models.Manager):
+    """ 
+    TODO: improve cacheable decorator to generate key 
+    automaticaly for method name and this docstring.
+    """
+
     @property
+    @cacheable("google_analytics_domain", timeout=30)
     def google_analytics_domain(self):
         queryset = self.get_query_set().filter(key="google.analytics.domain")
         return queryset.get().val if len(queryset) else ""
 
     @property
+    @cacheable("google_analytics_code", timeout=30)
     def google_analytics_code(self):
         queryset = self.get_query_set().filter(key="google.analytics.code")
         return queryset.get().val if len(queryset) else ""
 
     @property
+    @cacheable("home_page", timeout=20)
     def home_page(self):
         queryset = self.get_query_set().filter(key="core.homepage")
         return queryset.get().val if len(queryset) else None
 
     @property
+    @cacheable("show_photo_on_homepage", timeout=30)
     def show_photo_on_homepage(self):
         queryset = self.get_query_set().filter(key="core.photo_on_homepage")
         return True if len(queryset) and queryset.get().val == "1" else False
 
     @property
+    @cacheable("show_entries_on_homepage", timeout=30)
     def show_entries_on_homepage(self):
         queryset = self.get_query_set().filter(key="core.entries_on_homepage")
         return True if len(queryset) and queryset.get().val == "1" else False
 
     @property
+    @cacheable("host", timeout=60)
     def host(self):
         queryset = self.get_query_set().filter(key="core.host")
         return queryset.get().val if len(queryset) else ''
     
     @property
+    @cacheable("disqus_shortname", timeout=60)
     def disqus_shortname(self):
         queryset = self.get_query_set().filter(key="disqus.shortname")
         return queryset.get().val if len(queryset) else ''
 
     @property
+    @cacheable("twitter_referer", timeout=60)
     def twitter_referer(self):
         queryset = self.get_query_set().filter(key="twitter.referrer")
         return queryset.get().val if len(queryset) else ''
