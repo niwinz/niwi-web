@@ -6,10 +6,10 @@
 {% block title %} {% trans "- Photo:" %} {{ photo.small_description }}{% endblock %}
 
 {% block opengraph %}
-<meta property="og:title" content="{{ page_default_title }} Page"/>
+<meta property="og:title" content="Photo: {{ photo.small_description }} - {{ page_default_title }}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="{{ full_host_url }}" />
-<meta property="og:image" content="{{ page_default_logo_url }}"/>
+<meta property="og:image" content="{{ photo.square.url }}"/>
 {% endblock %}
 
 {% block html-head %}
@@ -24,7 +24,7 @@
 </header>
 <section class="photo-detail">
     <article class="photo-detail">
-        <img src="{{ photo.medium.url }}"></img>
+        <img src="{{ photo.medium.url }}" alt="{{ photo.small_description }}"></img>
     </article>
     <section class="other-sizes">
         <h4>Other sizes: <a href="{{ photo.large.url }}">Large</a> & <a href="{{ photo.original.url }}">Original</a></h4>
