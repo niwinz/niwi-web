@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
-from niwi.models import Config
+from django_dbconf.conf import config
 
 def main(request):
     context_extra = dict(
@@ -12,7 +12,7 @@ def main(request):
         fcbk_admin = settings.FCBK_ADMIN,
         fcbk_app_id = settings.FCBK_APP_ID,
 
-        config = Config.objects,
+        config = config,
         page_default_logo_url = settings.PAGE_DEFAULT_LOGO_URL,
         page_default_description = settings.PAGE_DEFAULT_DESCRIPTION,
         page_default_keyworkds = settings.PAGE_DEFAULT_KEYWORKDS,

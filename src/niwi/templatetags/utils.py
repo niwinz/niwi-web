@@ -7,8 +7,7 @@ from django.utils.safestring import mark_safe
 from django.template import loader
 
 from niwi.utils import Singleton
-from niwi.models import Config
-
+from django_dbconf.conf import config
 register = template.Library()
 
 @register.filter(name="markdown")
@@ -30,9 +29,10 @@ def correct_filename(name):
     return name.rsplit("/",1)[-1]
 
 
+
 class HomePageNode(template.Node):
     def __init__(self):
-        self.homepage = Config.objects.home_page
+        self.home_page = config.get('core.homepage', '')
 
     def render_filepaste(self, context):
         key, pageslug = None, None
@@ -81,8 +81,8 @@ class AnalyticsNode(template.Node):
 
     def __init__(self):
         self.enabled = False
-        self.analytics_code = Config.objects.google_analytics_code
-        self.analytics_domain = Config.objects.google_analytics_domain
+        self.analytics_code = config.get('google.analytics.code')
+        self.analytics_domain = config.get('google.analytics.domain')
 
         if self.analytics_code:
             self.enabled = True

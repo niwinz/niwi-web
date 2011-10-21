@@ -14,13 +14,6 @@ class GenericModelAdmin(admin.ModelAdmin):
 
         super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
-class ConfigModelAdmin(GenericModelAdmin):
-    list_display = ('key', 'val')
-    list_display_links = list_display
-
-    def queryset(self, *args, **kwargs):
-        return Config.objects.all().order_by('key')
-
 
 class GenericPostModelAdmin(GenericModelAdmin):
     save_on_top = True
@@ -83,4 +76,3 @@ admin.site.register(Post, GenericPostModelAdmin)
 admin.site.register(Bookmark, BookmarkModelAdmin)
 admin.site.register(Paste, PasteModelAdmin)
 admin.site.register(Page, GenericPageModelAdmin)
-admin.site.register(Config, ConfigModelAdmin)

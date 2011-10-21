@@ -175,18 +175,6 @@ class ConfigManager(models.Manager):
         return queryset.get().val if len(queryset) else ''
 
 
-class Config(models.Model):
-    key = models.CharField(primary_key=True, max_length=200)
-    val = models.CharField(max_length=1000)
-
-    objects = ConfigManager()
-
-    class Meta:
-        db_table = 'config'
-
-    def __unicode__(self):
-        return u"Config: %s" % (self.key)
-
 
 class Paste(models.Model):
     text = models.TextField()

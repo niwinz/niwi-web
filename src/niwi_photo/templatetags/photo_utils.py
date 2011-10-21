@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 from django.template import loader
 
 from niwi.utils import Singleton
-from niwi.models import Config
 
 register = template.Library()
 
