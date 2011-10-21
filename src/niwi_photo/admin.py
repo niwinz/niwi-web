@@ -38,7 +38,7 @@ class PhotoInlineAdmin(admin.StackedInline):
     model = Photo
     extra = 1
     can_delete = True
-    fields = (('small_description','slug'), ('original', 'show_on_home'),)
+    #fields = (('small_description','slug'), ('original', 'show_on_home'),)
     prepopulated_fields = {"slug": ("small_description",)}
 
 
@@ -48,7 +48,7 @@ class AlbumModelAdmin(GenericModelAdmin):
     list_display = ('id', 'slug', 'name',)
     list_display_links = list_display
     prepopulated_fields = {"slug": ('name', )}
-    inlines = [PhotoInlineAdmin]
+    #inlines = [PhotoInlineAdmin]
 
     fieldsets = (
         (None, {

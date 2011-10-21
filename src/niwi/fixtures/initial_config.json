@@ -1,56 +1,56 @@
 [
     {
         "pk": "google.analytics.domain",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": " "
         }
     },
     {
         "pk": "google.analytics.code",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": " "
         }
     },
     {
         "pk": "core.homepage",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "home-page"
         }
     },
     {
         "pk": "core.homepage.photo.display",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "1"
         }
     },
     {
         "pk": "core.homepage.entries.display",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "1"
         }
     },
     {
         "pk": "core.host",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "http://www.example.com"
         }
     },
     {
         "pk": "disqus.shortname",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "exampledisqus_shortname"
         }
     },
     {
         "pk": "twitter.referrer",
-        "model": "django_dbconf.config",
+        "model": "django_dbconf.conf",
         "fields": {
             "val": "niwibe"
         }
