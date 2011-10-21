@@ -139,6 +139,7 @@ INSTALLED_APPS = [
     'django.contrib.webdesign',
     'niwi',
     'niwi_photo',
+    'django_dbconf',
     #'niwi_apps.filepaste',
     #'niwi_apps.twitter_filter',
 ]
