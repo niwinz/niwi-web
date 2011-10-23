@@ -35,7 +35,7 @@ INSTALLED_APPS += [
 ]
 
 DEVSERVER_MODULES = (
-    #'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLRealTimeModule',
     'devserver.modules.sql.SQLSummaryModule',
     'devserver.modules.profile.ProfileSummaryModule',
 

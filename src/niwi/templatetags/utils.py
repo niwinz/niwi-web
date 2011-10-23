@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from django.template import loader
 
 from niwi.utils import Singleton
+from niwi.utils import cacheable
 from django_dbconf.conf import config
 register = template.Library()
 
@@ -29,15 +30,14 @@ def correct_filename(name):
     return name.rsplit("/",1)[-1]
 
 
-
 class HomePageNode(template.Node):
     def __init__(self):
         self.home_page = config.get('core.homepage', '')
 
     def render_filepaste(self, context):
         key, pageslug = None, None
-        if len(self.homepage.split(",")) == 2:
-            pageslug = self.homepage.split(",")[1]
+        if len(self.home_page.split(",")) == 2:
+            pageslug = self.home_page.split(",")[1]
             
         from niwi_apps.filepaste.models import WebFile
         context = {
@@ -47,11 +47,10 @@ class HomePageNode(template.Node):
         template_name = "%s/filepaste_page.html" % (settings.TEMPLATES_THEME)
         return mark_safe(loader.render_to_string(template_name, context))
 
-
     def render_page(self, context):
         from niwi.models import Page
         try:
-            page = Page.objects.get(slug=self.homepage)
+            page = Page.objects.get(slug=self.home_page)
         except Page.DoesNotExist:
             return mark_safe(u"")
     
@@ -61,9 +60,10 @@ class HomePageNode(template.Node):
         }
         template_name = "%s/utils/homepage.html" % (settings.TEMPLATES_THEME)
         return mark_safe(loader.render_to_string(template_name, context))
-
+    
+    @cacheable("%(home_page)s_homepagenode", timeout=30)
     def render(self, context):
-        if 'filepaste' in self.homepage:
+        if 'filepaste' in self.home_page:
             return self.render_filepaste(context)
         else:
             return self.render_page(context)
@@ -101,6 +101,7 @@ def analytics_tag(parser, token):
     return AnalyticsNode()
 
 
+
 class ShowPageNode(template.Node):
     """ 
     Show and render page node.
@@ -108,7 +109,8 @@ class ShowPageNode(template.Node):
 
     def __init__(self, pagename):
         self.pagename = pagename
-
+    
+    @cacheable("%(pagename)s", timeout=30)
     def render(self, context):
         pagename = self.pagename.resolve(context)
         from niwi.models import Page
@@ -178,6 +180,7 @@ def render_tmpl(parser, token):
     content = parser.compile_filter(content)
     markup = parser.compile_filter(markup)
     return TemplateNode(content, markup)
+
 
 @register.filter(name="parse_tags")
 def parse_tags(value):
