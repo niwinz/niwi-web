@@ -41,6 +41,11 @@ class Page(models.Model):
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
 
+    # Only for test new features on django_postgresql
+    aditional_indexes = [
+        ('%(tablename)s_title_gist_idx0', 'btree', 'lower(title)', 'varchar_pattern_ops'),
+    ]
+
     class Meta:
         db_table = 'pages'
 
