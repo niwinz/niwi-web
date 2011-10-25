@@ -30,8 +30,8 @@ def slugify_uniquely(value, model, slugfield="slug"):
             return potential
         suffix += 1
 
-from django_postgresql.fts.manager import SearchManager
-from django_postgresql.fts.fields import VectorField
+#from django_orm.postgresql.fts.manager import SearchManager
+#from django_orm.postgresql.fts.fields import VectorField
 
 class Page(models.Model):
     slug  = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)

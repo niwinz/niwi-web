@@ -34,8 +34,8 @@ INSTALLED_APPS += [
     'devserver',
 ]
 
-DEVSERVER_MODULES = (
-    'devserver.modules.sql.SQLRealTimeModule',
+DEVSERVER_MODULES = [
+    #'devserver.modules.sql.SQLRealTimeModule',
     'devserver.modules.sql.SQLSummaryModule',
     'devserver.modules.profile.ProfileSummaryModule',
 
@@ -44,4 +44,4 @@ DEVSERVER_MODULES = (
     #'devserver.modules.profile.MemoryUseModule',
     'devserver.modules.cache.CacheSummaryModule',
     'devserver.modules.profile.LineProfilerModule',
-)
+]

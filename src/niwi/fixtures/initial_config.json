@@ -3,56 +3,72 @@
         "pk": "google.analytics.domain",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": " "
+            "val": " ",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "google.analytics.code",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": " "
+            "val": " ",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "core.homepage",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "home-page"
+            "val": "home-page",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "core.homepage.photo.display",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "1"
+            "val": "1",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "core.homepage.entries.display",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "1"
+            "val": "1",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "core.host",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "http://www.example.com"
+            "val": "http://www.example.com",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "disqus.shortname",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "exampledisqus_shortname"
+            "val": "exampledisqus_shortname",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     },
     {
         "pk": "twitter.referrer",
         "model": "django_dbconf.conf",
         "fields": {
-            "val": "niwibe"
+            "val": "niwibe",
+            "created_date": "2011-08-08 09:21:33", 
+            "last_modified_date": "2011-08-08 09:21:33"
         }
     }
 ]
