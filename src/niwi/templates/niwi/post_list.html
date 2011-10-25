@@ -19,8 +19,8 @@
 
 {% block main %}
 <header>
-    <h2>{% trans "Latest Entries" %}{% if tag %}<br />
-        {% trans "filtered by tag:" %} {{ tag }} | <a href="{% url 'web:posts' %}">{% trans "Return" %}</a> {% endif %}</h2>
+    <h3>{% trans "Latest Entries" %}{% if tag %}<br />
+        {% trans "filtered by tag:" %} {{ tag }} | <a href="{% url 'web:posts' %}">{% trans "Return" %}</a> {% endif %}</h3>
     {% if tag %}
     {% endif %}
     <nav>
@@ -29,7 +29,7 @@
                 {% if tag %}
                 <a href="{% url 'web:posts' tag year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
                 {% else %}
-                <a href="{% url 'web:posts' year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url 'web:posts' year=year %}">{{ year }}</a>{% if not forloop.last %}, {% endif %}
                 {% endif %}
             {% endfor %}.
         </p>
@@ -38,12 +38,14 @@
 <section>
     {% for post in posts %}
     <article lang="es">
-        <h3>{{ post.title }}</h3>
+        <h2>{{ post.title }}</h2>
         <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>
         <p>
             <span class="meta">Published on {{ post.created_date|date:"j F Y" }}</span> |
             <a class="navigation" href="{{ post.get_absolute_url }}">Read full entry</a> ↵<br />
-            {% if post.tags %}{{ post.tags|parse_tags }}{% endif %}
+            {% if post.tags %}
+            <span class="tags"><b>{% trans "Tags:" %}</b> {{ post.tags|parse_tags }}</span>
+            {% endif %}
         </p>
     </article>
     {% endfor %}

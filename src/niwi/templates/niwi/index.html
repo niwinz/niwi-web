@@ -28,15 +28,17 @@
 
 {% if config.core_homepage_entries_display %}
 <section>
-    <h2>{% trans "Recent Entries" %}</h2>
+    <small>{% trans "Recent Entries:" %}</small>
     <hr />
     {% for post in posts %}
     <article>
-        <h3>{{ post.title }}</h3>
+        <h2>{{ post.title }}</h2>
         <p>{{ post.content|markdown|striptags|truncatewords:30 }}</p>
         <p><span class="meta">Published on {{ post.created_date|date:"j F Y" }}</span> | 
             <a class="navigation" href="{{ post.get_absolute_url }}">Read full entry</a> ↵<br />
-            {% if post.tags %}{{ post.tags|parse_tags }}{% endif %}
+            {% if post.tags %}
+            <span class="tags"><b>{% trans "Tags:" %}</b> {{ post.tags|parse_tags }}</span>
+            {% endif %}
         </p>
     </article>
     {% endfor %}
@@ -46,9 +48,8 @@
 
 {% if config.core_homepage_photo_display %}
 <section class="latest-photos">
-    <h2>{% trans "Recent Photos" %}</h2>
+    <small>{% trans "Recent Photos:" %}</small>
     <hr />
-
     {% for photo in photos %}
     <article class="photo" lang="es">
         <a href="{{ photo.medium.url }}" rel="photo" title="{{ photo.small_description }}">

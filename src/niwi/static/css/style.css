@@ -61,7 +61,7 @@ table {
 
 /* Styles for westphahl.net */
 body {
-    font: 16px/24px 'Walter Turncoat', serif;
+    font: 16px/20px 'Panefresco250wtRegular', serif;
     background-color: #edebea;
     color: #4f4f4f;
     padding-top: 3em;
@@ -74,7 +74,16 @@ body>div {
 }
 h1,h2,h3 {
     font-weight: normal;
-    font-family: 'Walter Turncoat', sans-serif;
+    font-family: 'Panefresco500wtRegular', sans-serif;
+}
+span.tags {
+    font-size: 12px;
+}
+span.tags a {
+    text-decoration: none;
+}
+small {
+    font-size: 14px;
 }
 h1 {
     font-size: 32px;
@@ -82,18 +91,18 @@ h1 {
     margin: 0 0 24px 0;
 }
 h2 {
-    font-size: 26px;
+    font-size: 28px;
     line-height: 48px;
     margin: 0 0 24px 0 ;
 }
 h3 {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 24px;
     margin: 0 0 24px 0;
 }
 p, ul, ol, dl {
     line-height: 24px;
-    margin: 0 0 24px 0;
+    margin: 0 0 12px 0;
 }
 ul {
     list-style-type: square;
@@ -137,15 +146,11 @@ img.avatar {
 }
 header > p,
 p.intro {
-    font-family: 'Walter Turncoat', serif;
-    font-size: 18px;
-    /*color: #b3aca2;
-    color: #A8A196;*/
-    color: #a8a7a6;
+    font-size: 16px;
+    color: #A8A7C3;
 }
 .meta {
-    font-family: 'Droid Serif', serif;
-    font-style: italic;
+    font-family: 'Panefresco400wtItalic';
     color: #a8a7a6;
     font-size: 13px;
 }
@@ -153,16 +158,14 @@ dl .meta {
     margin: 0 0 24px 0;
 }
 dl .url {
-    font-family: 'Droid Serif', serif;
-    font-style: italic;
+    font-family: 'Panefresco400wtItalic';
     color: #a8a7a6;
 }
 dl.bookmarks-home .url {
     margin: 0 0 24px 0;
 }
 .navigation {
-    font-family: 'Droid Serif', serif;
-    font-style: italic;
+    font-family: 'Panefresco400wtItalic';
     font-size: 13px;
 }
 .bottom {
@@ -173,7 +176,6 @@ dl.bookmarks-home .url {
 
 footer { 
     margin-top: 40px;
-    font-family: 'Walter Turncoat', serif;
     font-style: italic;
     color: #A8A7A6;
     font-size: 11px;
