@@ -30,6 +30,8 @@ def slugify_uniquely(value, model, slugfield="slug"):
             return potential
         suffix += 1
 
+from django_postgresql.fts.manager import SearchManager
+from django_postgresql.fts.fields import VectorField
 
 class Page(models.Model):
     slug  = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)
@@ -40,6 +42,14 @@ class Page(models.Model):
     owner = models.ForeignKey('auth.User', related_name='pages', null=True, default=None, blank=True)
     created_date = CreationDateTimeField(editable=True)
     modified_date = ModificationDateTimeField(editable=True)
+
+    #search_index = VectorField()
+    #
+    #objects = SearchManager(
+    #    fields = [('title', None), ('content', None)],
+    #    config = 'pg_catalog.spanish',
+    #    search_field = 'search_index',
+    #)
 
     class Meta:
         db_table = 'pages'
@@ -200,3 +210,4 @@ class Paste(models.Model):
 
     class Meta:
         db_table = 'paste'
+

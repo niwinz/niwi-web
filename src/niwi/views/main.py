@@ -38,8 +38,7 @@ class HomePageView(GenericView):
             'posts': Post.objects.filter(status='public')\
                 .order_by('-created_date')[:4],
             'photos': Photo.objects.exclude(
-                show_on_home = False).order_by('-created_date')[:3],
-            'config': Config.objects,
+                show_on_home = False).order_by('-created_date')[:3]
         }
         return self.render_to_response(self.template_name, context)
         
