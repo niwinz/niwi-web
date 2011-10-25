@@ -32,11 +32,11 @@ def get_url_data(url):
 
 def cacheable(cache_key, timeout=3600):
     def paramed_decorator(func):
-        def decorated(self):
+        def decorated(self, *args, **kwargs):
             key = cache_key % self.__dict__
             res = cache.get(key)
             if res == None:
-                res = func(self)
+                res = func(self, *args, **kwargs)
                 cache.set(key, res, timeout)
             return res
         decorated.__doc__ = func.__doc__

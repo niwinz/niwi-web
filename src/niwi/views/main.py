@@ -34,11 +34,14 @@ class HomePageView(GenericView):
     template_name = 'index.html'
 
     def get(self, request):
+        posts = Post.objects.filter(status='public')\
+            .order_by('-created_date')[:4]
+        photos = Photo.objects.select_related().exclude(
+            show_on_home=False).order_by('-created_date')[:3]
+
         context = {
-            'posts': Post.objects.filter(status='public')\
-                .order_by('-created_date')[:4],
-            'photos': Photo.objects.exclude(
-                show_on_home = False).order_by('-created_date')[:3]
+            'posts': posts,
+            'photos': photos,
         }
         return self.render_to_response(self.template_name, context)
         

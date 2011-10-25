@@ -26,7 +26,7 @@
 {% block main %}
 {{ block.super }}
 
-{% if config.show_entries_on_homepage %}
+{% if config.core_homepage_entries_display %}
 <section>
     <h2>{% trans "Recent Entries" %}</h2>
     <hr />
@@ -44,7 +44,7 @@
 </section>
 {% endif %}
 
-{% if config.show_photo_on_homepage %}
+{% if config.core_homepage_photo_display %}
 <section class="latest-photos">
     <h2>{% trans "Recent Photos" %}</h2>
     <hr />
