@@ -71,6 +71,10 @@ body>div {
     padding: 3em 3em 1.5em;
     margin: 0em auto;
     background-color: #fff;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
 }
 h1,h2,h3 {
     font-weight: normal;
