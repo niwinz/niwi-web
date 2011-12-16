@@ -10,6 +10,12 @@ ul.errorlist {
     list-style: none;
 }
 
+
+@font-face {
+    font-family: "Museo";
+    src: url("../fonts/Museo300-Regular.otf");
+}
+
 .btn01{background-color:#EFEFEF; 
 padding: 5px 20px; font-size: 15px; color: #9c9c9c; font-weight:bold; text-decoration: none;
 cursor: pointer; margin-right: 5px; border-radius: 2px; border: 1px solid #D9D9D9;}
@@ -28,47 +34,55 @@ article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
-	display: block;
+    display: block;
 }
 body {
-	line-height: 1;
 }
+
 ol, ul {
-	list-style: none;
+    list-style: none;
 }
 blockquote, q {
-	quotes: none;
+    quotes: none;
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
-	content: none;
+    content: '';
+    content: none;
 }
 table {
-	border-collapse: collapse;
-	border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
 }
 
 /* Styles for westphahl.net */
 body {
+    line-height: 1;
+    /*
     font: 16px/20px 'Panefresco250wtRegular', serif;
-    background-color: #edebea;
-    color: #4f4f4f;
+    font-family: Museo,Palatino,Georgia,Serif;
+    */
+    font: 16px/20px Museo,Palatino,Georgia,Serif;
+    font-family
+    font-size: 100%;
+    /*background-color: #edebea;*/
+    color: black;
     padding-top: 3em;
 }
+
 body>div {
     width: 40em;
-    padding: 3em 3em 1.5em;
+    padding: 0em 3em 1.5em;
     margin: 0em auto;
     background-color: #fff;
     border-radius: 3px;
