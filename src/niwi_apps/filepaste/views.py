@@ -6,9 +6,9 @@ from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, get_object_or_404
 
-from niwi.views.generic import GenericView
-from niwi_apps.filepaste.models import WebFile
-from niwi_apps.filepaste.forms import UploadForm, DownloadForm
+from niwi.niwi.views.generic import GenericView
+from niwi.niwi_apps.filepaste.models import WebFile
+from niwi.niwi_apps.filepaste.forms import UploadForm, DownloadForm
 import os.path
 
 class WebFileDownload(GenericView):

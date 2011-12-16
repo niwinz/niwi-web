@@ -29,7 +29,6 @@ def get_url_data(url):
     return url, url
 
 
-
 def cacheable(cache_key, timeout=3600):
     def paramed_decorator(func):
         def decorated(self, *args, **kwargs):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from niwi.models import *
+from niwi.web.models import *
 from django.contrib import admin
 import datetime
 

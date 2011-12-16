@@ -10,8 +10,8 @@ from niwi.contrib.db.fields import CreationDateTimeField
 from niwi.contrib.db.fields import ModificationDateTimeField
 from niwi.contrib.db.fields import DictField
 
-from niwi.models import slugify_uniquely
-from niwi_photo.image import ImageAdapter
+from niwi.web.models import slugify_uniquely
+from niwi.photo.image import ImageAdapter
 
 import datetime, uuid, tempfile, os
 
@@ -33,7 +33,7 @@ class Album(models.Model):
 
 
 class Photo(models.Model):
-    album = models.ForeignKey('niwi_photo.Album', related_name='photos')
+    album = models.ForeignKey('photo.Album', related_name='photos')
     small_description = models.CharField(max_length=300)
     slug = models.SlugField(max_length=200, unique=True, db_index=True)
     description = models.TextField(blank=True)

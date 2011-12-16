@@ -1,34 +1,37 @@
 # -*- coding: utf-8 -*-
 
 from django.conf.urls.defaults import *
-from django.core.urlresolvers import reverse
-from django.views.generic import TemplateView, RedirectView
+from django.contrib import admin
+from django.conf import settings
 
-from niwi.feeds import *
-from niwi.views.main import *
-from niwi.views.paste import *
+admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', HomePageView.as_view(), name='show-home'),
-    url(r'^404/$', TemplateView.as_view(template_name="404.html"), name="404"),
-
-    url(r'^posts/$', PostListView.as_view(), name='posts'),
-    url(r'^posts/year/(?P<year>\d+)/$', PostListView.as_view(), name='posts'),
-    url(r'^posts/tag/(?P<tag>[\#\w\d\-]+)/$', PostListView.as_view(), name='posts'),
-    url(r'^posts/tag/(?P<tag>[\#\w\d\-]+)/year/(?P<year>\d+)/$', PostListView.as_view(), name='posts'),
-
-    url(r'^posts/feed/$', LatestPostsFeed(), name='posts-feed'),
-    url(r'^post/(?P<slug>[\w\d\-]+)/$', PostView.as_view(), name='show-post'),
-
-    url(r'^bookmarks/$', BookmarkListView.as_view(), name='bookmarks'),
-    url(r'^bookmarks/year/(?P<year>\d+)/$', BookmarkListView.as_view(), name='bookmarks'),
-
-    url(r'^bookmark/(?P<slug>[\w\d\-]+)/$', BookmarkView.as_view(), name='show-bookmark'),
-    
-    url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
-    url(r'^set/lang/$', LangChangeView.as_view(), name="set-lang"),
-    
-    url(r'^paste/$', PasteHomeView.as_view(), name='paste-home'),
-    url(r'^paste/(?P<pasteid>\d+)/$', PasteDetailView.as_view(), name='paste-view'),
-    url(r'^paste/(?P<pasteid>\d+)/raw/$', PasteDetailRawView.as_view(), name='paste-view-raw'),
+    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^memcached/', include('niwi.contrib.memcache_status.urls', namespace='memcachestatus')),
+    #url(r'^s3uploader/', include('niwi.contrib.s3uploader.urls', namespace='s3uploader')),
 )
+
+from django.views.generic import RedirectView
+from niwi.web.views.main import Sitemap, Robots
+
+urlpatterns += patterns('',
+    url(r'^', include('niwi.web.urls', namespace="web")),
+    url(r'^photo/', include('niwi.photo.urls', namespace='photo')),
+    #url(r'^filepaste/', include('niwi_apps.filepaste.urls', namespace='filepaste')),
+    url(r'^robots.txt$', Robots.as_view(), name='robots'),
+    url(r'^sitemap.xml$', Sitemap.as_view(), name='sitemap'),
+)
+
+# Static files
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
+
+if settings.DEBUG:
+    from django.views.static import serve
+    _media_url = settings.MEDIA_URL
+    if _media_url.startswith('/'):
+        _media_url = _media_url[1:]
+        urlpatterns += patterns('', 
+            (r'^%s(?P<path>.*)$' % _media_url, serve, {'document_root': settings.MEDIA_ROOT})
+        )

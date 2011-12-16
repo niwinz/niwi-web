@@ -3,7 +3,7 @@
 from django.contrib.auth.utils import make_password, check_password
 from django.db import models
 
-from niwi.models import slugify_uniquely
+from niwi.niwi.models import slugify_uniquely
 import datetime
 
 class WebFile(models.Model):

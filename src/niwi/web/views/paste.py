@@ -11,9 +11,9 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter, ImageFormatter
 from pygments.styles import get_style_by_name
 
-from niwi.models import Paste
-from niwi.forms import PasteForm
-from niwi.views.generic import GenericView
+from niwi.web.models import Paste
+from niwi.web.forms import PasteForm
+from niwi.web.views.generic import GenericView
 
 import logging
 logger = logging.getLogger("niwi")

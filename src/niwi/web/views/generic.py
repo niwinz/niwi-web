@@ -20,7 +20,3 @@ class GenericView(View):
 
     def msgerror(self, message):
         message.error(self.request, message)
-
-    def dispatch(self, *args, **kwargs):
-        self.head = self.get
-        return super(GenericView, self).dispatch(*args, **kwargs)

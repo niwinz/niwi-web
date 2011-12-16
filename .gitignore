@@ -10,4 +10,4 @@ migrations*
 src/niwi/contrib/logging/devel.py
 src/celerybeat-schedule.db
 src/static*
-src/dump.json
+src/dump*.json

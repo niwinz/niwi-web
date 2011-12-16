@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-#from gevent import monkey; monkey.patch_all()
-from django.core.management import execute_manager
-import settings.local as settings
-
+import os, sys
 if __name__ == "__main__":
-    execute_manager(settings)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "niwi.settings")
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(sys.argv)

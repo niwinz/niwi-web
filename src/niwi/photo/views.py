@@ -11,9 +11,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader
 from django.contrib import messages
 
-from niwi.models import *
-from niwi_photo.models import *
-from niwi.views.generic import GenericView
+from niwi.web.models import *
+from niwi.photo.models import *
+from niwi.web.views.generic import GenericView
 
 import logging, itertools
 logger = logging.getLogger("niwi")

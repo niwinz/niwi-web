@@ -4,7 +4,7 @@ from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.conf import settings
 
-from niwi_photo.models import Photo
+from niwi.photo.models import Photo
 import os
 
 @receiver(post_save, sender=Photo)

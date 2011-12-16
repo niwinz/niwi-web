@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from niwi_photo.models import *
-from niwi.admin import GenericModelAdmin
+from niwi.photo.models import *
+from niwi.web.admin import GenericModelAdmin
 
 from django.contrib import admin
 import datetime

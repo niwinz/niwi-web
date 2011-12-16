@@ -3,7 +3,7 @@
 from celery.decorators import task
 from django.utils import simplejson
 
-from niwi.models import Bookmark
+from niwi.niwi.models import Bookmark
 from .models import TwitterFilterConfig
 
 import requests

@@ -8,8 +8,11 @@ from django.template import loader
 
 from niwi.utils import Singleton
 from niwi.utils import cacheable
+
 from django_dbconf.conf import config
+
 register = template.Library()
+
 
 @register.filter(name="markdown")
 def markdown(value, arg=''):
@@ -48,7 +51,7 @@ class HomePageNode(template.Node):
         return mark_safe(loader.render_to_string(template_name, context))
 
     def render_page(self, context):
-        from niwi.models import Page
+        from niwi.web.models import Page
         try:
             page = Page.objects.get(slug=self.home_page)
         except Page.DoesNotExist:
@@ -113,7 +116,7 @@ class ShowPageNode(template.Node):
     @cacheable("%(pagename)s", timeout=30)
     def render(self, context):
         pagename = self.pagename.resolve(context)
-        from niwi.models import Page
+        from niwi.web.models import Page
         try:
             page = Page.objects.get(slug=pagename)
         except Page.DoesNotExist:

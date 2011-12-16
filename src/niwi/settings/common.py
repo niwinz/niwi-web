@@ -8,7 +8,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
+PROJECT_ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 LOGS_PATH = os.path.join(PROJECT_ROOT, 'logs')
 
 if not os.path.exists(LOGS_PATH):
@@ -78,6 +78,8 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
+USE_TZ = True
+
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
@@ -102,17 +104,11 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', 
-    'django.middleware.csrf.CsrfResponseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'niwi.middleware.FacebookMiddleware',
 ]
 
-import django
-# django 1.4 compatibility layer
-if django.VERSION[:2] > (1,3):
-    i = MIDDLEWARE_CLASSES.index("django.middleware.csrf.CsrfResponseMiddleware")
-    del MIDDLEWARE_CLASSES[i]
- 
+WSGI_APPLICATION = 'niwi.wsgi.application'
 
 TEMPLATE_CONTEXT_PROCESSORS = [
     "django.contrib.auth.context_processors.auth",
@@ -120,11 +116,11 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.media",
     'django.core.context_processors.static',
     "django.contrib.messages.context_processors.messages",
-    "niwi.context.main",
+    "niwi.web.context.main",
 ]
 
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'niwi.urls'
 
 TEMPLATE_DIRS = (
 )
@@ -137,8 +133,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.webdesign',
-    'niwi',
-    'niwi_photo',
+    'niwi.web',
+    'niwi.photo',
     'django_dbconf',
     #'niwi_apps.filepaste',
     #'niwi_apps.twitter_filter',
@@ -147,6 +143,11 @@ INSTALLED_APPS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'formatters': {
         'verbose': {
             'format': '%(levelname)s:%(module)s:%(process)d:%(message)s'
@@ -164,6 +165,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         },
     },
@@ -174,7 +176,7 @@ LOGGING = {
             'level':'DEBUG',
         },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },
