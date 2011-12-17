@@ -65,8 +65,5 @@ class AlbumModelAdmin(GenericModelAdmin):
         super(AlbumModelAdmin, self).save_model(request, obj, form, change)
 
 
-
-
-
 admin.site.register(Photo, PhotoModelAdmin)
 admin.site.register(Album, AlbumModelAdmin)

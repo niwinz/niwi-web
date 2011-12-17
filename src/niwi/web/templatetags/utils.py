@@ -181,3 +181,55 @@ def parse_tags(value):
     tags_html = ['<a href="%s">%s</a>' % \
         (reverse('web:posts', kwargs={'tag':tagname}), tagname) for tagname in tags]
     return mark_safe(", ".join(tags_html))
+
+
+class PostFileLinkNode(template.Node):
+    def __init__(self, slug):
+        self.slug = slug
+
+    @cacheable("%(slug)s_post_file_link", timeout=30)
+    def render(self, context):
+        slug = self.slug.resolve(context)
+        from niwi.web.models import PostAttachment
+        
+        try:
+            self.attachment = PostAttachment.objects.get(slug=slug)
+        except PostAttachment.DoesNotExist:
+            class DummyClass(object):
+                name = u'File not found'
+
+            self.attachment = DummyClass()
+            return mark_safe('')
+            
+        return mark_safe(self.attachment.file.url)
+
+
+class PostFileLinkTagNode(PostFileLinkNode):
+    def render(self, context):
+        link = super(PostFileLinkTagNode, self).render(context)
+        return mark_safe("<a href='{0}' class='post-file-link'>{1}</a>".format(
+            link, self.attachment.name))
+
+
+@register.tag(name='post_file_link')
+def post_file_link(parser, token):
+    try:
+        tag_name, slug = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag requires a single argument" % \
+                                        token.contents.split()[0])
+
+    slug = parser.compile_filter(slug)
+    return PostFileLinkTagNode(slug)
+
+
+@register.tag(name='post_file_url')
+def post_file_url(parser, token):
+    try:
+        tag_name, slug = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%r tag requires a single argument" % \
+                                        token.contents.split()[0])
+
+    slug = parser.compile_filter(slug)
+    return PostFileLinkNode(slug)
