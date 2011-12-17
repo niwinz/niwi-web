@@ -13,3 +13,12 @@
 input, select, textarea {
     font-family: Monaco, 'MonacoRegular', 'Courier New', monospace;
 }
+
+.vLargeTextField {
+    width: 900px;
+    min-height: 600px;
+}
+
+.vTextField {
+    width: 40em;
+}
