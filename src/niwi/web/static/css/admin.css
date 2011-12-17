@@ -15,10 +15,10 @@ input, select, textarea {
 }
 
 .vLargeTextField {
-    width: 900px;
-    min-height: 600px;
+    width: 900px !important;
+    min-height: 600px !important;
 }
 
 .vTextField {
-    width: 40em;
+    width: 40em !important;
 }
