@@ -16,6 +16,18 @@ ul.errorlist {
     src: url("../fonts/Museo300-Regular.otf");
 }
 
+@font-face {
+    font-family: 'MonacoRegular';
+    src: /* IE doesn't draw well */
+         /*url('monaco-webfont.eot?') format('eot'),*/
+         url('../fonts/monaco-webfont.woff') format('woff'),
+         url('../fonts/monaco-webfont.ttf') format('truetype'),
+         url('../fonts/monaco-webfont.svg#webfontyFRf53FT') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 .btn01{background-color:#EFEFEF; 
 padding: 5px 20px; font-size: 15px; color: #9c9c9c; font-weight:bold; text-decoration: none;
 cursor: pointer; margin-right: 5px; border-radius: 2px; border: 1px solid #D9D9D9;}
@@ -81,7 +93,7 @@ body {
 }
 
 body>div {
-    width: 40em;
+    width: 50em;
     padding: 0em 3em 1.5em;
     margin: 0em auto;
     background-color: #fff;
@@ -131,14 +143,6 @@ ol {
 dt {
     font-family: 'Droid Sans', sans-serif;
     font-weight: bold;
-}
-pre {
-    background-color: #edebea;
-    overflow: auto;
-    font-family: 'Droid Sans Mono', monospace;
-    font-size: 14px;
-    padding: 12px;
-    margin: 0 0 24px;
 }
 hr {
     border: 0;
@@ -213,10 +217,20 @@ header.nav-header {
     margin-bottom: 20px;
 }
 
-.viewer-content pre { 
-    font-size: 11px; 
-    padding: 0px;
+pre {
+    font-family: Monaco, 'MonacoRegular', 'Courier New', monospace;
     line-height: 14px;
+    font-size: 12px;
+    overflow: auto;
+    padding: 12px;
+    margin: 0 0 24px;
+}
+
+.viewer-content pre {
+    padding: 7px;
+    box-shadow: 0px 0px 25px 0px #aaa;
+    border: 1px solid #aaa;
+    margin-top: 15px;
 }
 
 section.form textarea { 
