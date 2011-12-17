@@ -187,28 +187,31 @@ class PostFileLinkNode(template.Node):
     def __init__(self, slug):
         self.slug = slug
 
-    @cacheable("%(slug)s_post_file_link", timeout=30)
-    def render(self, context):
+    
+    def get_attachment(self, context):
         slug = self.slug.resolve(context)
         from niwi.web.models import PostAttachment
-        
+
         try:
-            self.attachment = PostAttachment.objects.get(slug=slug)
+            attachment = PostAttachment.objects.get(slug=slug)
         except PostAttachment.DoesNotExist:
-            class DummyClass(object):
-                name = u'File not found'
-
-            self.attachment = DummyClass()
-            return mark_safe('')
+            return None
             
-        return mark_safe(self.attachment.file.url)
+        return attachment
 
+    @cacheable("%(slug)s_post_file_link", timeout=30)
+    def render(self, context):
+        attachment = self.get_attachment(context)
+        return mark_safe(attachment.file.url)
+        
 
 class PostFileLinkTagNode(PostFileLinkNode):
     def render(self, context):
-        link = super(PostFileLinkTagNode, self).render(context)
+        attachment = self.get_attachment(context)
         return mark_safe("<a href='{0}' class='post-file-link'>{1}</a>".format(
-            link, self.attachment.name))
+            attachment.file.url, 
+            attachment.name
+        ))
 
 
 @register.tag(name='post_file_link')
