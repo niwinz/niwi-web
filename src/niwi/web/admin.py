@@ -15,7 +15,14 @@ class GenericModelAdmin(admin.ModelAdmin):
         super(GenericModelAdmin, self).save_model(request, obj, form, change)
 
 
-class GenericPostModelAdmin(GenericModelAdmin):
+class PostAttachmentInline(admin.TabularInline):
+    model = PostAttachment
+    extra = 1
+    can_delete = True
+    prepopulated_fields = {"slug": ("name",)}
+
+
+class PostModelAdmin(GenericModelAdmin):
     save_on_top = True
     search_fields = ('title', 'slug', 'uuid')
     list_display = ('id', 'title', 'created_date', 'modified_date', 'status', 'owner')
@@ -33,13 +40,14 @@ class GenericPostModelAdmin(GenericModelAdmin):
             'fields': ('created_date', 'modified_date', 'owner'),
         }),
     )
+    inlines = [PostAttachmentInline]
 
     def save_model(self, request, obj, form, change):
         obj.owner = request.user
-        super(GenericModelAdmin, self).save_model(request, obj, form, change)
+        super(PostModelAdmin, self).save_model(request, obj, form, change)
 
 
-class GenericPageModelAdmin(GenericPostModelAdmin):
+class PageModelAdmin(PostModelAdmin):
     fieldsets = (
         ('Head', {
             'fields': ('title', 'slug', ('markup', 'status'),)
@@ -52,6 +60,8 @@ class GenericPageModelAdmin(GenericPostModelAdmin):
             'fields': ('created_date', 'modified_date', 'owner'),
         }),
     )
+
+    inlines = []
 
 
 class BookmarkModelAdmin(GenericModelAdmin):
@@ -72,7 +82,9 @@ class PasteModelAdmin(GenericModelAdmin):
     list_filter = ('lexer', 'created')
 
 
-admin.site.register(Post, GenericPostModelAdmin)
+
+
+admin.site.register(Post, PostModelAdmin)
 admin.site.register(Bookmark, BookmarkModelAdmin)
 admin.site.register(Paste, PasteModelAdmin)
-admin.site.register(Page, GenericPageModelAdmin)
+admin.site.register(Page, PageModelAdmin)

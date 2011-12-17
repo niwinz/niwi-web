@@ -141,18 +141,16 @@ def show_page(parser, token):
 
 
 class TemplateNode(template.Node):
-    def __init__(self, content, markup=False):
-        self.content = content
-        self.markup = markup
+    def __init__(self, obj):
+        self.obj = obj
 
     def render(self, context):
-        content = self.content.resolve(context)
-        markup = self.content.resolve(context)
+        obj = self.obj.resolve(context)
 
-        t = template.Template(content)
+        t = template.Template(obj.content)
         content = t.render(template.Context(context))
 
-        if markup:
+        if obj.markup:
             from niwi.contrib.markdown2 import markdown
             extensions = {'code-color':{'style':'trac'}}
             content = markdown(force_unicode(content), extras=extensions)
@@ -160,29 +158,20 @@ class TemplateNode(template.Node):
         return mark_safe(content)
 
 
-@register.tag(name="render_template")
+@register.tag(name="render_page_as_template")
 def render_tmpl(parser, token):
     """
-    Render text as template and compile markdown if
-    necesary.
+    Renders model objects content as template.
     """
 
-    tag_name = content = markup = None
-
     try:
-        tag_name, content, markup = token.split_contents()
+        tag_name, obj = token.split_contents()
     except ValueError:
-        try:
-            tag_name, content = token.split_contents()
-            markup = False
-        except ValueError:
-            raise template.TemplateSyntaxError("%r tag requires a single"
-                                        " argument or double argument" % \
+        raise template.TemplateSyntaxError("%r tag requires a single argument" % \
                                         token.contents.split()[0])
 
-    content = parser.compile_filter(content)
-    markup = parser.compile_filter(markup)
-    return TemplateNode(content, markup)
+    obj = parser.compile_filter(obj)
+    return TemplateNode(obj)
 
 
 @register.filter(name="parse_tags")

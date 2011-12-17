@@ -87,6 +87,14 @@ class Post(models.Model):
         return ('web:show-post', (), {'slug': self.slug})
 
 
+class PostAttachment(models.Model):
+    post = models.ForeignKey('Post', related_name='attachments')
+    slug = models.SlugField(max_length=200, unique=True, db_index=True, editable=True, blank=True)
+    name = models.CharField(max_length=500, db_index=True, blank=True)
+    file = models.FileField(max_length=500, upload_to="attachments/%Y/%m/%d",
+        serialize=False, editable=True, blank=True)
+
+
 class Bookmark(models.Model):
     title = models.CharField(max_length=500, blank=True)
     slug = models.SlugField(max_length=100, unique=True, db_index=True, editable=True, blank=True)

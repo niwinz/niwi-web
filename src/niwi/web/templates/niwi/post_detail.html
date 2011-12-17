@@ -21,7 +21,7 @@
     {% cache 40 object.id object.modified_date %}
     <article>
         <h1>{{ object.title }}</h1>
-        {% render_template object.content object.markup %}
+        {% render_page_as_template object %}
     </article>
     {% endcache %}
 

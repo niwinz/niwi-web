@@ -11,9 +11,7 @@
 
 {% block main %}
 <section class="page">
-    {% if object.markup %}{{ object.content|markdown }}
-    {% else %} {{ object.content|safe }}
-    {% endif %}
+    {% render_page_as_template object %}
     {% include "niwi/utils/share.block.html" %}
 </section>
 {% endblock %}

@@ -154,14 +154,22 @@ strong {
 }
 a {
     color: #e04f04;
+    color: #2060A0;
 }
+
+header.nav-header nav a {
+    color: #e04f04;
+}
+/*
 a:visited {
     color: #e69b69;
 }
+*/
 img.avatar {
     position: relative;
     float: right;
 }
+
 header > p,
 p.intro {
     font-size: 16px;

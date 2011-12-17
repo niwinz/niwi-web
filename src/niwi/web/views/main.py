@@ -61,12 +61,11 @@ class PostListView(GenericView):
 
         if tag:
             posts = posts.filter(tags__icontains=tag)
-
-        if tag:
             years_queryset = Post.objects.filter(
                 status='public',
                 tags__icontains=tag
             ).dates('created_date','year')
+
         else:
             years_queryset = Post.objects.filter(status='public')\
                         .dates('created_date','year')
