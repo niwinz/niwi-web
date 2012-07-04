@@ -44,7 +44,7 @@ class HomePageView(GenericView):
             'photos': photos,
         }
         return self.render_to_response(self.template_name, context)
-        
+
 
 class PostListView(GenericView):
     template_name = "post_list.html"
@@ -55,7 +55,7 @@ class PostListView(GenericView):
                 .order_by('-created_date')
         else:
             posts = Post.objects.filter(
-                created_date__year=year, 
+                created_date__year=year,
                 status='public'
             ).order_by('-created_date')
 
@@ -72,7 +72,7 @@ class PostListView(GenericView):
 
         context = {
             'tag':tag,
-            'posts': posts[:20], 
+            'posts': posts[:20],
             'years': [x.year for x in years_queryset],
         }
         return self.render_to_response(self.template_name, context)
@@ -104,7 +104,7 @@ class BookmarkListView(GenericView):
             ).order_by('-created_date'))
 
         result = itertools.izip(months, month_result)
-        context = {'bookmarks': bookmarks, 'months': months, 
+        context = {'bookmarks': bookmarks, 'months': months,
                                 'years': years, 'bresult':result}
 
         return self.render_to_response(self.template_name, context)
@@ -112,12 +112,12 @@ class BookmarkListView(GenericView):
 
 class PageView(GenericView):
     template_name = "page_detail.html"
-    
+
     def get(self, request, slug):
         page = get_object_or_404(Page, slug=slug)
         context = {'object':page}
         return self.render_to_response(self.template_name, context)
-        
+
 
 class PostView(GenericView):
     template_name = "post_detail.html"

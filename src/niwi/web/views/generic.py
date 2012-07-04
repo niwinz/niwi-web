@@ -12,7 +12,7 @@ class GenericView(View):
 
     def render_to_response(self, template_name, context, **kwargs):
         template = os.path.join(self.template_theme, template_name)
-        return render_to_response(template, context, 
+        return render_to_response(template, context,
             context_instance=RequestContext(self.request), **kwargs)
 
     def msginfo(self, message):

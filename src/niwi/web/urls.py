@@ -24,10 +24,10 @@ urlpatterns = patterns('',
     url(r'^bookmarks/year/(?P<year>\d+)/$', BookmarkListView.as_view(), name='bookmarks'),
 
     url(r'^bookmark/(?P<slug>[\w\d\-]+)/$', BookmarkView.as_view(), name='show-bookmark'),
-    
+
     url(r'^page/(?P<slug>[\w\d\-]+)/$', PageView.as_view(), name="show-page"),
     url(r'^set/lang/$', LangChangeView.as_view(), name="set-lang"),
-    
+
     url(r'^paste/$', PasteHomeView.as_view(), name='paste-home'),
     url(r'^paste/(?P<pasteid>\d+)/$', PasteDetailView.as_view(), name='paste-view'),
     url(r'^paste/(?P<pasteid>\d+)/raw/$', PasteDetailRawView.as_view(), name='paste-view-raw'),

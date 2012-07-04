@@ -7,9 +7,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^admin/', include(admin.site.urls)),
-    #url(r'^memcached/', include('niwi.contrib.memcache_status.urls', namespace='memcachestatus')),
-    #url(r'^s3uploader/', include('niwi.contrib.s3uploader.urls', namespace='s3uploader')),
+    url(r'^niwi-admin/', include(admin.site.urls)),
 )
 
 from django.views.generic import RedirectView
@@ -25,13 +23,21 @@ urlpatterns += patterns('',
 
 # Static files
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-urlpatterns += staticfiles_urlpatterns()
 
-if settings.DEBUG:
-    from django.views.static import serve
+def mediafiles_urlpatterns():
+    """
+    Method for serve media files with runserver.
+    """
+
     _media_url = settings.MEDIA_URL
     if _media_url.startswith('/'):
         _media_url = _media_url[1:]
-        urlpatterns += patterns('', 
-            (r'^%s(?P<path>.*)$' % _media_url, serve, {'document_root': settings.MEDIA_ROOT})
-        )
+
+    from django.views.static import serve
+    return patterns('',
+        (r'^%s(?P<path>.*)$' % _media_url, serve,
+            {'document_root': settings.MEDIA_ROOT})
+    )
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += mediafiles_urlpatterns()
